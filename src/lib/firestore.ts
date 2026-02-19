@@ -45,6 +45,16 @@ export async function getGridByFlipCode(flipCode: string): Promise<Grid | null> 
     return null;
 }
 
+export async function getGridsForOwner(ownerId: string): Promise<Grid[]> {
+    const q = query(
+        collection(db, "grids"),
+        where("ownerId", "==", ownerId),
+        orderBy("createdAt", "desc")
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Grid));
+}
+
 // --- Topics ---
 
 export async function createTopic(data: Omit<Topic, "id">): Promise<string> {
