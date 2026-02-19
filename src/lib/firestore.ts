@@ -14,7 +14,7 @@ import {
     Timestamp
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Grid, Topic, Response, UserProfile, UserRole } from "./types";
+import { Grid, Topic, Response, UserProfile, UserRole, TopicStatus } from "./types";
 
 // --- Grids ---
 
@@ -130,4 +130,16 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 export async function updateUserRole(uid: string, role: UserRole): Promise<void> {
     await updateDoc(doc(db, "users", uid), { role });
+}
+
+export async function updateTopicStatus(topicId: string, status: TopicStatus): Promise<void> {
+    await updateDoc(doc(db, "topics", topicId), { status });
+}
+
+export async function approveResponse(responseId: string): Promise<void> {
+    await updateDoc(doc(db, "responses", responseId), { status: "active" });
+}
+
+export async function hideResponse(responseId: string): Promise<void> {
+    await updateDoc(doc(db, "responses", responseId), { status: "hidden" });
 }
