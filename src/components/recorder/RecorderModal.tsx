@@ -169,10 +169,10 @@ export default function RecorderModal({
                         />
                     )}
 
-                    {recorderState === "SUBMIT" && (
+                    {recorderState === "SUBMIT" && mediaBlobUrl && selfieBlob && (
                         <SubmitState
-                            videoBlobUrl={mediaBlobUrl!}
-                            selfieBlob={selfieBlob!}
+                            videoBlobUrl={mediaBlobUrl}
+                            selfieBlob={selfieBlob}
                             topicId={topicId}
                             topicTitle={topicTitle}
                             userId={userId}

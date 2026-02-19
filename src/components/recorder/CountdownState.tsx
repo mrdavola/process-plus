@@ -11,7 +11,13 @@ export default function CountdownState({ stream, onComplete }: CountdownStatePro
     const videoRef = useRef<HTMLVideoElement>(null);
     const [count, setCount] = useState(3);
     const onCompleteRef = useRef(onComplete);
+    const mountedRef = useRef(true);
     onCompleteRef.current = onComplete;
+
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => { mountedRef.current = false; };
+    }, []);
 
     useEffect(() => {
         if (videoRef.current) {
@@ -21,10 +27,14 @@ export default function CountdownState({ stream, onComplete }: CountdownStatePro
 
     useEffect(() => {
         if (count === 0) {
-            onCompleteRef.current();
+            if (mountedRef.current) {
+                onCompleteRef.current();
+            }
             return;
         }
-        const timer = setTimeout(() => setCount(c => c - 1), 1000);
+        const timer = setTimeout(() => {
+            if (mountedRef.current) setCount(c => c - 1);
+        }, 1000);
         return () => clearTimeout(timer);
     }, [count]);
 

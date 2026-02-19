@@ -41,15 +41,29 @@ export default function TopicPage() {
             where("status", "==", "active"),
             orderBy("createdAt", "desc")
         );
-        const unsub = onSnapshot(q, snap => {
-            setResponses(snap.docs.map(d => ({ id: d.id, ...d.data() } as Response)));
-        });
+        const unsub = onSnapshot(
+            q,
+            snap => {
+                setResponses(snap.docs.map(d => ({ id: d.id, ...d.data() } as Response)));
+            },
+            err => {
+                console.error("Firestore listener error:", err);
+            }
+        );
         return unsub;
     }, [params.topicId]);
 
     const filteredResponses = searchQuery
         ? responses.filter(r => r.userDisplayName.toLowerCase().includes(searchQuery.toLowerCase()))
         : responses;
+
+    // Close theater if the response at theaterIndex no longer exists
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+        if (theaterIndex !== null && theaterIndex >= filteredResponses.length) {
+            setTheaterIndex(null);
+        }
+    }, [filteredResponses.length, theaterIndex]);
 
     if (!topic) {
         return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
@@ -208,7 +222,7 @@ export default function TopicPage() {
                 topicId={params.topicId}
                 topicTitle={topic.title}
                 promptText={topic.promptText}
-                maxDuration={topic.settings.maxDuration}
+                maxDuration={topic.settings?.maxDuration ?? 120}
                 userId={user?.uid ?? "guest"}
             />
 

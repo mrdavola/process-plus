@@ -25,7 +25,9 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!displayName.trim()) return;
+        const trimmedName = displayName.trim();
+        if (!trimmedName) return;
+        if (trimmedName.length > 60) return;
 
         setIsUploading(true);
         setError(null);
@@ -49,7 +51,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
             await createResponse({
                 topicId,
                 userId,
-                userDisplayName: displayName.trim(),
+                userDisplayName: trimmedName,
                 videoUrl: videoDownloadUrl,
                 thumbnailUrl: selfieDownloadUrl,
                 status: "active",
@@ -100,6 +102,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="First Name Last Initial"
+                            maxLength={60}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all text-gray-900 font-medium"
                             required
                         />

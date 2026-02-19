@@ -23,11 +23,11 @@ export default function IdleState({ onRecord }: IdleStateProps) {
             <p className="mt-2 text-white/50 text-sm">Click to turn on your camera</p>
 
             <div className="mt-12 flex gap-4">
-                <button className="flex items-center gap-2 px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 text-sm font-medium transition-colors">
+                <button disabled className="flex items-center gap-2 px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-sm font-medium opacity-50 cursor-not-allowed">
                     <Upload size={18} />
                     Import Video
                 </button>
-                <button className="flex items-center gap-2 px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/70 text-sm font-medium transition-colors">
+                <button disabled className="flex items-center gap-2 px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-sm font-medium opacity-50 cursor-not-allowed">
                     <Mic size={18} />
                     Mic Only
                 </button>
