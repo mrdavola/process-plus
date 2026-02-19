@@ -99,7 +99,7 @@ export async function getOrCreateUserProfile(uid: string, email: string, display
     const docRef = doc(db, "users", uid);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
-        return snap.data() as UserProfile;
+        return { uid: snap.id, ...snap.data() } as UserProfile;
     }
     const profile: UserProfile = {
         uid,
@@ -115,7 +115,7 @@ export async function getOrCreateUserProfile(uid: string, email: string, display
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     const docRef = doc(db, "users", uid);
     const snap = await getDoc(docRef);
-    return snap.exists() ? (snap.data() as UserProfile) : null;
+    return snap.exists() ? ({ uid: snap.id, ...snap.data() } as UserProfile) : null;
 }
 
 export async function updateUserRole(uid: string, role: UserRole): Promise<void> {

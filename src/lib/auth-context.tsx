@@ -20,21 +20,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let cancelled = false;
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser);
             if (firebaseUser) {
-                const p = await getOrCreateUserProfile(
-                    firebaseUser.uid,
-                    firebaseUser.email ?? "",
-                    firebaseUser.displayName ?? "User"
-                );
-                setProfile(p);
+                try {
+                    const p = await getOrCreateUserProfile(
+                        firebaseUser.uid,
+                        firebaseUser.email ?? "",
+                        firebaseUser.displayName ?? "User"
+                    );
+                    if (!cancelled) setProfile(p);
+                } catch (err) {
+                    console.error("Failed to load user profile:", err);
+                } finally {
+                    if (!cancelled) setLoading(false);
+                }
             } else {
-                setProfile(null);
+                if (!cancelled) {
+                    setProfile(null);
+                    setLoading(false);
+                }
             }
-            setLoading(false);
         });
-        return unsub;
+        return () => {
+            cancelled = true;
+            unsub();
+        };
     }, []);
 
     return <AuthContext.Provider value={{ user, profile, loading }}>{children}</AuthContext.Provider>;
