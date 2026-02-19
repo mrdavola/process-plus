@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Share2, Copy, Video, Play, Search } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Topic, Response, Grid } from "@/lib/types";
@@ -212,16 +212,12 @@ export default function TopicPage() {
                 userId={user?.uid ?? "guest"}
             />
 
-            {/* TheaterModal props updated in separate task */}
-            {React.createElement(
-                TheaterModal as unknown as React.ComponentType<Record<string, unknown>>,
-                {
-                    responses: filteredResponses,
-                    currentIndex: theaterIndex,
-                    onClose: () => setTheaterIndex(null),
-                    onNavigate: setTheaterIndex,
-                }
-            )}
+            <TheaterModal
+                responses={filteredResponses}
+                currentIndex={theaterIndex}
+                onClose={() => setTheaterIndex(null)}
+                onNavigate={setTheaterIndex}
+            />
         </div>
     );
 }
