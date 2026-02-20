@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Video, LogOut } from "lucide-react";
+import { Video, LogOut, BookOpen } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { auth } from "@/lib/firebase";
 import { usePathname } from "next/navigation";
@@ -33,6 +33,12 @@ export default function Navbar() {
                                     {!pathname.includes("/dashboard") && (
                                         <Link href="/dashboard" className="text-sm font-bold text-brand-amber bg-brand-cream px-3 py-1.5 rounded-lg hover:bg-brand-amber/10 transition-colors">
                                             My Dashboard
+                                        </Link>
+                                    )}
+                                    {!pathname.includes("/journey") && !pathname.startsWith("/j/") && (
+                                        <Link href="/journey" className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                                            <BookOpen size={15} />
+                                            My Journey
                                         </Link>
                                     )}
                                     <NotificationBell />

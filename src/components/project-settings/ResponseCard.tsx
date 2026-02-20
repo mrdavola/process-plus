@@ -1,5 +1,5 @@
 
-import { Play, Eye, MoreHorizontal, Check, Ban, Trash2, Zap, ListVideo } from "lucide-react";
+import { Play, Eye, MoreHorizontal, Check, Ban, Trash2, Zap, ListVideo, Star } from "lucide-react";
 import { Response } from "@/lib/types";
 import { useState } from "react";
 
@@ -12,9 +12,10 @@ interface ResponseCardProps {
     onDelete?: (id: string) => void;
     onSpark?: (id: string) => void;
     onMixTape?: (id: string) => void;
+    onFeature?: (id: string, isFeatured: boolean) => void;
 }
 
-export default function ResponseCard({ response, onClick, isOwner, onApprove, onHide, onDelete, onSpark, onMixTape }: ResponseCardProps) {
+export default function ResponseCard({ response, onClick, isOwner, onApprove, onHide, onDelete, onSpark, onMixTape, onFeature }: ResponseCardProps) {
     const [showMenu, setShowMenu] = useState(false);
 
     return (
@@ -30,6 +31,14 @@ export default function ResponseCard({ response, onClick, isOwner, onApprove, on
                     alt={response.userDisplayName}
                     className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${response.status === 'hidden' ? 'opacity-50 grayscale' : ''}`}
                 />
+
+                {/* Featured Badge */}
+                {response.isFeatured && (
+                    <div className="absolute top-3 left-3 bg-amber-400 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-md shadow-sm z-20 flex items-center gap-1">
+                        <Star size={10} fill="currentColor" />
+                        Featured
+                    </div>
+                )}
 
                 {/* Status Badge */}
                 {response.status === 'hidden' && (
@@ -105,6 +114,17 @@ export default function ResponseCard({ response, onClick, isOwner, onApprove, on
                                 className="w-full text-left px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 flex items-center gap-2"
                             >
                                 <ListVideo size={14} /> Add to MixTape
+                            </button>
+                            <hr className="my-1 border-slate-100" />
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onFeature?.(response.id, !response.isFeatured); setShowMenu(false); }}
+                                className={`w-full text-left px-4 py-2 text-sm font-medium flex items-center gap-2 ${response.isFeatured
+                                    ? "text-amber-700 hover:bg-amber-50"
+                                    : "text-slate-600 hover:bg-slate-50"
+                                    }`}
+                            >
+                                <Star size={14} fill={response.isFeatured ? "currentColor" : "none"} />
+                                {response.isFeatured ? "Unfeature Moment" : "Feature on Journey"}
                             </button>
                         </div>
                     )}

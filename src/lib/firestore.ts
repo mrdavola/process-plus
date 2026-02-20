@@ -19,7 +19,7 @@ import {
     arrayRemove
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Studio, Project, Response, UserProfile, UserRole, ProjectStatus, Notification } from "./types";
+import { Studio, Project, Response, UserProfile, UserRole, ProjectStatus, Notification, JourneyShare } from "./types";
 
 // Helper to recursively remove undefined fields
 function removeUndefined(obj: any): any {
@@ -437,4 +437,43 @@ export async function markAllNotificationsRead(userId: string): Promise<void> {
         batch.update(d.ref, { read: true });
     });
     await batch.commit();
+}
+
+// --- Journey ---
+
+export async function getResponsesForUser(userId: string): Promise<Response[]> {
+    const q = query(
+        collection(db, "responses"),
+        where("userId", "==", userId),
+        where("status", "==", "active"),
+        orderBy("createdAt", "asc")  // oldest first so timeline reads top→bottom
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Response));
+}
+
+export async function getOrCreateJourneyToken(userId: string, displayName: string): Promise<string> {
+    // Check if a token already exists for this user
+    const q = query(collection(db, "journeys"), where("userId", "==", userId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+        return snap.docs[0].id; // return existing token
+    }
+    // Create a new one
+    const docRef = await addDoc(collection(db, "journeys"), {
+        userId,
+        displayName,
+        createdAt: Date.now()
+    } as Omit<JourneyShare, "id">);
+    return docRef.id;
+}
+
+export async function getJourneyByToken(token: string): Promise<JourneyShare | null> {
+    const docRef = doc(db, "journeys", token);
+    const snap = await getDoc(docRef);
+    return snap.exists() ? ({ id: snap.id, ...snap.data() } as JourneyShare) : null;
+}
+
+export async function setResponseFeatured(responseId: string, isFeatured: boolean): Promise<void> {
+    await updateDoc(doc(db, "responses", responseId), { isFeatured });
 }

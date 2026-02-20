@@ -92,7 +92,15 @@ export interface Response {
     };
     createdAt?: number;
     isSpotlighted?: boolean;
+    isFeatured?: boolean;        // teacher-starred on Journey
     observationsCount?: number;
+}
+
+export interface JourneyShare {
+    id: string;           // token used in URL /j/[token]
+    userId: string;       // whose journey it is
+    displayName: string;  // captured at share time
+    createdAt: number;
 }
 
 export interface Playlist {

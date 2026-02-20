@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Share2, Copy, Video, Play, Search, Plus, Settings, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { getStudioByProcessPlusCode, getProject, createResponse, approveResponse, hideResponse, deleteResponse, deleteProject, deleteStudio, updateProject } from "@/lib/firestore";
+import { getStudioByProcessPlusCode, getProject, createResponse, approveResponse, hideResponse, deleteResponse, deleteProject, deleteStudio, updateProject, setResponseFeatured } from "@/lib/firestore";
 import type { Studio, Project, Response } from "@/lib/types";
 import { onSnapshot, collection, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -122,6 +122,11 @@ export default function ProjectPage() {
 
     const handleMixTape = (id: string) => {
         alert("📼 Add to MixTape: This feature will add this response to a combined playlist! (Coming soon)");
+    };
+
+    const handleFeature = async (id: string, isFeatured: boolean) => {
+        if (!isOwner) return;
+        await setResponseFeatured(id, isFeatured);
     };
 
     const filteredResponses = responses.filter(r => {
@@ -433,6 +438,7 @@ export default function ProjectPage() {
                                     onDelete={handleDelete}
                                     onSpark={handleSpark}
                                     onMixTape={handleMixTape}
+                                    onFeature={handleFeature}
                                 />
                             </div>
                         ))}
