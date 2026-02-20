@@ -27,16 +27,26 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
         setBusy(true);
         setError(null);
         try {
-            const topicData: Omit<Topic, "id"> = {
+            const topicData = {
                 gridId,
                 title: title.trim(),
                 promptText: promptText.trim(),
-                settings: { maxDuration, moderation },
-                status: "active",
-                createdAt: Date.now(),
+                settings: {
+                    maxDuration,
+                    moderation,
+                    micOnly: false,
+                    uploadClip: true,
+                    pauseResume: true,
+                    selfieDecorations: true,
+                    studentReplies: false, // Defaulting to false as requested
+                    videoReactions: true,
+                    feedbackType: "none" as const,
+                    privateFeedback: false
+                },
+                status: "active" as const,
             };
             const id = await createTopic(topicData);
-            onCreated({ id, ...topicData });
+            onCreated({ id, ...topicData, joinCode: "pending", createdAt: Date.now() });
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : "Failed to create topic");
         } finally {
@@ -87,11 +97,10 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
                                     key={d}
                                     type="button"
                                     onClick={() => setMaxDuration(d)}
-                                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
-                                        maxDuration === d
-                                            ? "bg-sky-500 text-white"
-                                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                    }`}
+                                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${maxDuration === d
+                                        ? "bg-sky-500 text-white"
+                                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        }`}
                                 >
                                     {d < 60 ? `${d}s` : `${d / 60}m`}
                                 </button>

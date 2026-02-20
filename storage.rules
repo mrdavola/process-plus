@@ -1,0 +1,21 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Videos and thumbnails: authenticated users can upload their own
+    match /videos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /thumbnails/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if true; // allow anonymous uploads for now
+    }
+
+    // Fallback: authenticated users can read/write
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Educator Grid Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "primary-light": "#e3f2fd",
+                        "primary-dark": "#0d6ab0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                        "neutral-surface": "#ffffff",
+                        "neutral-border": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-slate-100">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-neutral-border dark:border-slate-800 shadow-sm">
+<div class="px-6 lg:px-12 flex h-20 items-center justify-between">
+<!-- Logo & Brand -->
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center size-10 rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Flipgrid</h1>
+</div>
+<!-- Nav Links (Desktop) -->
+<nav class="hidden md:flex flex-1 items-center justify-center gap-8">
+<a class="text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">My Activity</a>
+<a class="text-sm font-bold text-primary relative after:absolute after:-bottom-8 after:left-0 after:h-1 after:w-full after:rounded-t-lg after:bg-primary" href="#">My Grids</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">MixTapes</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">Shorts</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">GridPals</a>
+</nav>
+<!-- User Actions -->
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-2 pl-2 border-l border-neutral-border dark:border-slate-700">
+<div class="hidden lg:flex flex-col items-end">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Mr. Davola</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Educator</span>
+</div>
+<button class="relative size-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiuwOrlUq0cpuXKY91cszOd6l4pe8TN5Na4j26x4X3t1hYlHk9RO7LBvQwdbo71Z9CbChRDaen780vcfRNS9AKBW418X1oIz_HwCfPVxyEpkB4LLaY7DniyHvin9-6bFHz7unHTSpuMBjPYuCGXzZePJa03voz1su0GiLBjLEnwTxLg5KXNabjscYCxx7D_IGDBpXTefeninq7QHyoHbQ7z_bfq9gFOwxe_UkcCFOLiaqvjJPky4M5nhNrCr0Jc1r66oAmEPKFWtY"/>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-6 py-8 lg:px-12 lg:py-10 max-w-7xl mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-lg">waving_hand</span>
+<span>Welcome back!</span>
+</div>
+<h2 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">My Grids</h2>
+<p class="text-lg text-slate-500 dark:text-slate-400 mt-1">Manage your classrooms and video topics</p>
+</div>
+<button class="group flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 active:translate-y-0">
+<span class="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
+<span>New Grid</span>
+</button>
+</div>
+<!-- Search & Filters -->
+<div class="flex flex-col sm:flex-row gap-4 mb-8">
+<div class="relative flex-1">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">search</span>
+<input class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-neutral-border bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-slate-400" placeholder="Search my grids..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-4 py-3.5 rounded-xl border border-neutral-border bg-white dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+<span>Filter</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-3.5 rounded-xl border border-neutral-border bg-white dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium transition-colors">
+<span class="material-symbols-outlined">sort</span>
+<span>Sort</span>
+</button>
+</div>
+</div>
+<!-- Grid Cards Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+<!-- Card 1 -->
+<article class="group relative flex flex-col bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/10 border border-neutral-border dark:border-slate-700 overflow-hidden transition-all duration-300 hover:-translate-y-1">
+<!-- Card Header Image -->
+<div class="h-48 w-full bg-cover bg-center relative" data-alt="Students studying together in a library" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuASwEbJIZCVqLVbkKSBjQv1Z_H933nurknOZKBzMzMwjY90p6EnNVmBrhyl2m8BlUTM80hKH1cy9vKFfGdUSBm25glG4sUukjAejjzcGM18_aqaF96DLxg2Ch8Oo-zbbjR7vKP4AL8I4UClfxQqpt72vaxw1Yly8dVkc_qqOkYsXbyj_POeWepG4jubAA7zXSbRKHTvrpJxy-xhqprS-_AqXAxBq3RxKiePhqq07sxZ8h6Zg95HzFkrNQ9mLkONlUc2Q_CGZXMOm9U');">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        Active
+                    </div>
+</div>
+<!-- Card Content -->
+<div class="flex flex-col flex-1 p-6">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">Period 1: World History</h3>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+<span class="material-symbols-outlined text-lg">grid_3x3</span>
+<span class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-semibold tracking-wide">whist-p1</span>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="bg-primary-light/50 dark:bg-primary/10 p-3 rounded-xl">
+<span class="block text-2xl font-black text-primary">12</span>
+<span class="text-xs font-semibold text-primary/80 uppercase tracking-wide">Topics</span>
+</div>
+<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+<span class="block text-2xl font-black text-slate-700 dark:text-slate-300">450</span>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Videos</span>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-neutral-border dark:border-slate-700">
+<div class="flex -space-x-2">
+<img alt="Student avatar" class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800" data-alt="Portrait of a young woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbRu13jH8SXA7jpa959Z1pTJRUNauFkLNuZSXi62JDsOstvS9V5RLtdaUwHtS1IPvM7brOSc1CcBUSZ6JRrQ8E4BDmEUKH5vOun4XGtueI8M2klP8BIk2B5EaNMv_xStKfs2Pr7qJzu13Vi7lOWlZS5iOIEX-H3R1AWsrtW526Zp6fENZakILXmr0rKFkHelNdhcBrlYb9sw6hLS5ECciKLciHLu7H7LSITQfY1k36KIQ7dQR1NGfHI2r2m9O2tBjle7bGh3J-BnQ"/>
+<img alt="Student avatar" class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800" data-alt="Portrait of a young man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCADObLKbwKN-aciVWoI1k5lv46Ad4dAYahK3CW_7Bpq5tGE5iv3NgOQnv1febR5Gk-k2rDI-GU-Lfjc0zuvaLflAnP3EFHg_O9qxWLCG5jYpaho8-Z9WGS05WcWneRF-RSxo-om-lUPK9cPFW99ZC8fXEC6yqnKtFgsYEcswsGb4Zf5owlrBsYhKNpcpXhQZGZa-xezMvCeOKtw5hZazkc9m2arYOa7_GF29UMU4k_GD8Bs78hCGTkw5sFrUfouL4IEwY4OB4Jut8"/>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">+24</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/50 dark:hover:bg-primary/20 rounded-lg transition-colors" title="Edit Grid">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="flex items-center gap-1 bg-primary text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm">
+<span class="material-symbols-outlined text-lg">ios_share</span>
+                                Share
+                            </button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="group relative flex flex-col bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/10 border border-neutral-border dark:border-slate-700 overflow-hidden transition-all duration-300 hover:-translate-y-1">
+<!-- Card Header Image -->
+<div class="h-48 w-full bg-cover bg-center relative" data-alt="Science laboratory equipment" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpSY4RmQ-fEwAJ35PhuLguiY58k6_3z_IbQVlUrfto6AzprlDpL5qne8wTgOQ5yteurCmCe9jhtOUO5rnf62GV0lH0bo4BEXMOIrlpShP_2ys9ipD_eURnl-Gjd5uldK8w_LHHkAR1l6rsHEY-tboDy9GOIuldGmLkHtB0Yxir1aXVMJQYorR5mQXxB6uZ2fYMdJ2oA_HXhZirWuaL1t-zbpn6VkaazsPU0IE4AWIQs-VKUOBeBk3BdkoqK1Keg4d1ftoWBZ4MPko');">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        Active
+                    </div>
+</div>
+<!-- Card Content -->
+<div class="flex flex-col flex-1 p-6">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">Science Fair 2024</h3>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+<span class="material-symbols-outlined text-lg">grid_3x3</span>
+<span class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-semibold tracking-wide">scifair24</span>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="bg-primary-light/50 dark:bg-primary/10 p-3 rounded-xl">
+<span class="block text-2xl font-black text-primary">4</span>
+<span class="text-xs font-semibold text-primary/80 uppercase tracking-wide">Topics</span>
+</div>
+<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+<span class="block text-2xl font-black text-slate-700 dark:text-slate-300">12</span>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Videos</span>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-neutral-border dark:border-slate-700">
+<div class="flex -space-x-2">
+<img alt="Student avatar" class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800" data-alt="Portrait of a smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa8lEbrhpBp3ZzW0LyqpYrIIt6_TMG5DjjOhHDWSDyQnU3y9TlUcYwuks_rIR72Hc-NFzTAt4FlE-Xx1-5UHZSpqJ6H8oHfwgzcEDHUsenkVA7XosQlNvJzL82a6EK0ybLu70kXyz-y4sJCJO0Qu2ZtcS9rmvfwW3d6zjmH5_G5d7ZNnafKiZdvFcMJxxPO_RqZFlmklhHYqiHQU1z2AdjlxNgTtA5Y0WEs1qcOFjMw89uBuTQznOv8L0nxyt6DSU8Lf-UTM0hGbA"/>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">+3</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/50 dark:hover:bg-primary/20 rounded-lg transition-colors" title="Edit Grid">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="flex items-center gap-1 bg-primary text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm">
+<span class="material-symbols-outlined text-lg">ios_share</span>
+                                Share
+                            </button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="group relative flex flex-col bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/10 border border-neutral-border dark:border-slate-700 overflow-hidden transition-all duration-300 hover:-translate-y-1 opacity-75 hover:opacity-100">
+<!-- Card Header Image -->
+<div class="h-48 w-full bg-cover bg-center relative" data-alt="Open book on a table with flowers" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOwJuToKPz-1Avd4UHhzGjNE_Du8BVXLxySHByidGkXRKOral-g0SB7tUAi_ALHGMzg9GWx4zNBWJVkoPHP0J_bfhcUOBxFpRUTWZTMavPAgjS64WrpKFpICNRwXi45pHleXuq3Dc9TZifOn-C_ZNpWJprniUK7KcuBA-3Eyc0vXNRuNhlmGGccPRYnqR-7kVmJa8JkR_qOjYOjR__MeRjybJ57-smkoG1p47CLGl0wxPjDa3kPn-JzVa9LyYOPq-vEYhuEjPk-r8');">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-sm">visibility_off</span>
+                        Hidden
+                    </div>
+</div>
+<!-- Card Content -->
+<div class="flex flex-col flex-1 p-6">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">Book Club</h3>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+<span class="material-symbols-outlined text-lg">grid_3x3</span>
+<span class="font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 font-semibold tracking-wide">read-w-us</span>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="bg-primary-light/50 dark:bg-primary/10 p-3 rounded-xl">
+<span class="block text-2xl font-black text-primary">1</span>
+<span class="text-xs font-semibold text-primary/80 uppercase tracking-wide">Topics</span>
+</div>
+<div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+<span class="block text-2xl font-black text-slate-700 dark:text-slate-300">0</span>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Videos</span>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-auto flex items-center justify-between pt-4 border-t border-neutral-border dark:border-slate-700">
+<div class="text-sm text-slate-400 italic">No activity yet</div>
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/50 dark:hover:bg-primary/20 rounded-lg transition-colors" title="Edit Grid">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="flex items-center gap-1 bg-white border border-neutral-border text-slate-700 text-sm font-bold px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors shadow-sm dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-600">
+                                Activate
+                            </button>
+</div>
+</div>
+</div>
+</article>
+<!-- New Grid Placeholder Card -->
+<article class="group relative flex flex-col justify-center items-center h-full min-h-[400px] border-3 border-dashed border-neutral-border dark:border-slate-700 rounded-2xl bg-transparent hover:border-primary/50 hover:bg-primary-light/20 dark:hover:bg-primary/10 transition-all cursor-pointer">
+<div class="flex flex-col items-center text-center p-6 gap-4">
+<div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<div class="space-y-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Create another Grid</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Start a new classroom or group</p>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="mt-auto py-8 border-t border-neutral-border dark:border-slate-800 bg-white dark:bg-slate-900">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="size-6 text-slate-300 dark:text-slate-600">
+<span class="material-symbols-outlined">grid_view</span>
+</div>
+<span>© 2024 Flipgrid Classic. All rights reserved.</span>
+</div>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Help Center</a>
+<a class="hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -3,36 +3,40 @@
 
 import Link from "next/link";
 import { ArrowRight, Video, Users, Sparkles } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { findDestinationByCode } from "@/lib/firestore";
 
 export default function Home() {
+  const [joinCode, setJoinCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+  const [joinError, setJoinError] = useState("");
+  const router = useRouter();
+
+  const handleJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+    setIsJoining(true);
+    setJoinError("");
+    try {
+      const dest = await findDestinationByCode(joinCode);
+      if (dest) {
+        router.push(dest);
+      } else {
+        setJoinError("Code not found. Check your code and try again.");
+      }
+    } catch (err) {
+      setJoinError("An error occurred. Please try again.");
+    } finally {
+      setIsJoining(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white text-slate-900 selection:bg-sky-200">
       {/* Navbar */}
-      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-10 rounded-xl bg-sky-50 text-sky-500">
-              <Video size={24} className="fill-current" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Flipgrid <span className="text-sky-500">Rebuild</span></span>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#" className="hover:text-sky-500 transition-colors">Educators</a>
-            <a href="#" className="hover:text-sky-500 transition-colors">Students</a>
-            <a href="#" className="hover:text-sky-500 transition-colors">Resources</a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden sm:block text-sm font-bold text-slate-600 hover:text-slate-900 px-4 py-2">
-              Log In
-            </Link>
-            <Link href="/login" className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:-translate-y-0.5">
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 overflow-hidden">
@@ -50,18 +54,26 @@ export default function Home() {
             Simple, free, and accessible video discussions for educators, learners, and families. Engage your community with the power of video.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in zoom-in duration-1000 delay-300">
-            <Link
-              href="/grids/demo/topics/demo"
-              className="w-full sm:w-auto px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-sky-500/30 flex items-center justify-center gap-2 transition-all hover:scale-105"
-            >
-              Try the Demo Grid
-              <ArrowRight size={20} strokeWidth={3} />
-            </Link>
-            <Link href="/join" className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 text-lg font-bold rounded-2xl border border-slate-200 flex items-center justify-center gap-2 transition-all">
-              <Users size={20} />
-              Join as Student
-            </Link>
+          <div className="flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in duration-1000 delay-300">
+            <form onSubmit={handleJoin} className="w-full sm:w-auto flex flex-col sm:flex-row gap-3 items-center">
+              <input
+                type="text"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+                placeholder="Enter Join Code"
+                className="w-full sm:w-64 px-6 py-4 bg-white border-2 border-slate-200 text-slate-900 rounded-2xl font-bold text-center text-xl uppercase tracking-widest focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all placeholder:normal-case placeholder:tracking-normal placeholder:font-normal placeholder:text-slate-400"
+                maxLength={10}
+              />
+              <button
+                type="submit"
+                disabled={isJoining || !joinCode.trim()}
+                className="w-full sm:w-auto px-8 py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white text-lg font-bold rounded-2xl shadow-xl shadow-sky-500/30 flex items-center justify-center gap-2 transition-all hover:-translate-y-1"
+              >
+                {isJoining ? "Joining..." : "Join"}
+                {!isJoining && <ArrowRight size={20} strokeWidth={3} />}
+              </button>
+            </form>
+            {joinError && <p className="text-red-500 font-bold mt-2 animate-in fade-in">{joinError}</p>}
           </div>
         </div>
 

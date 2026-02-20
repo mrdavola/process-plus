@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Topic Response Grid View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "primary-hover": "#0e7ac7",
+                        "background-light": "#f8fafc", // Slightly lighter cool gray for that fresh feel
+                        "background-dark": "#101a22",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c2b36",
+                        "text-main": "#0f172a", // Slate 900
+                        "text-sub": "#64748b", // Slate 500
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'float': '0 10px 40px -10px rgba(19, 146, 236, 0.4)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+        @media (min-width: 1280px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+        /* Hide scrollbar for clean look in horizontal scrolls */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 font-display transition-colors duration-200 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-40 w-full bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex h-16 items-center justify-between">
+<!-- Logo -->
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 rounded-xl bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">videocam</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-text-main dark:text-white">Flipgrid</span>
+</div>
+<!-- Nav Links (Desktop) -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-text-main dark:text-slate-200 hover:text-primary transition-colors" href="#">Discussion</a>
+<a class="text-sm font-medium text-text-sub dark:text-slate-400 hover:text-primary transition-colors" href="#">Discovery</a>
+<a class="text-sm font-medium text-text-sub dark:text-slate-400 hover:text-primary transition-colors" href="#">Activity</a>
+<a class="text-sm font-medium text-text-sub dark:text-slate-400 hover:text-primary transition-colors" href="#">Mixtapes</a>
+</nav>
+<!-- Auth Buttons -->
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex items-center justify-center h-10 px-5 rounded-xl text-sm font-bold text-text-main dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        Log in
+                    </button>
+<button class="flex items-center justify-center h-10 px-5 rounded-xl bg-primary text-white text-sm font-bold shadow-md hover:bg-primary-hover hover:shadow-lg transition-all">
+                        Sign up
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+<!-- Topic Header Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+<!-- Left: Text & Prompt -->
+<div class="lg:col-span-7 flex flex-col justify-center space-y-6">
+<!-- Breadcrumb / Meta -->
+<div class="flex items-center gap-2 text-sm font-medium text-text-sub dark:text-slate-400">
+<span class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full">Week 3</span>
+<span>•</span>
+<span>Mrs. Johnson's Class</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black tracking-tight text-text-main dark:text-white leading-[1.1]">
+                    Show &amp; Tell: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">Your Favorite Hobby</span>
+</h1>
+<p class="text-lg md:text-xl text-text-sub dark:text-slate-300 leading-relaxed max-w-2xl">
+                    We want to know what makes you tick! Record a short video (under 2 mins) showing us what you love to do outside of school. Don't forget to introduce your hobby!
+                </p>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<div class="flex items-center gap-2 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 shadow-sm">
+<span class="text-xs font-bold uppercase tracking-wider text-text-sub dark:text-slate-500">Join Code</span>
+<span class="text-lg font-bold text-primary">a5e321</span>
+<button aria-label="Copy Code" class="text-text-sub hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+<button class="flex items-center gap-2 text-text-main dark:text-slate-200 font-bold hover:text-primary transition-colors">
+<span class="flex items-center justify-center size-8 rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-sm">share</span>
+</span>
+                        Share Topic
+                    </button>
+</div>
+</div>
+<!-- Right: Media Resource -->
+<div class="lg:col-span-5">
+<div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-soft group cursor-pointer bg-slate-900">
+<img alt="Teacher reading a book in a cozy library setting" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80" data-alt="Teacher reading a book in a cozy library setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1J9-2gqLtbG8RZ6njCleS9zaHec28yDpPgaKfzrW1m_Yw-_1u7VrK7sKOJFRsFdzSp9YJkQj5ej4UY0jCs1pYMORYBOY20Yx8sWXTw5FSBZkrDnMPSB07NtWkOHWrDJ0MiBy7Aq0bEqqfz7-1waqXQT4EXoIvm4TvabQbtO7Hef_QhdfYQ9Zr33pMN_KRfImYZ_gkCfeFC8sqnnss0JxyECEmnDf-5mpHEG8V_TyN1u33AR4AUKMqMbuB12Kwbp5KPtCqDM48WnY"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined text-white text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<div class="bg-black/60 backdrop-blur-sm rounded-lg p-3">
+<p class="text-white text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">smart_display</span>
+                                Watch instructions from Mrs. Johnson
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats & Actions Bar -->
+<div class="sticky top-16 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-8 sm:px-8 border-b border-slate-200/50 dark:border-slate-800/50 mb-8 transition-all">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Stats -->
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-2xl font-bold text-text-main dark:text-white leading-none">24</span>
+<span class="text-xs font-medium text-text-sub dark:text-slate-400 uppercase tracking-wide mt-1">Responses</span>
+</div>
+<div class="w-px h-8 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex flex-col">
+<span class="text-2xl font-bold text-text-main dark:text-white leading-none">120</span>
+<span class="text-xs font-medium text-text-sub dark:text-slate-400 uppercase tracking-wide mt-1">Views</span>
+</div>
+<div class="w-px h-8 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+<span class="text-xs font-bold uppercase">Active</span>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex items-center gap-3 flex-1 md:justify-end">
+<div class="relative flex-1 md:flex-none md:w-64">
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface-light dark:bg-surface-dark text-text-main dark:text-white placeholder-text-sub focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm" placeholder="Search responses..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-sub text-[20px]">search</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface-light dark:bg-surface-dark text-text-main dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-medium">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<span class="hidden sm:inline">Filter</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Masonry Grid -->
+<div class="masonry-grid pb-24">
+<!-- Response Card 1 -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[9/14] shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Young student smiling brightly at the camera" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Young student smiling brightly at the camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs-tXyFguZWwMJGwFer2svd8qbbmcea49kyZ7aNTWHcxMJW2GuMW6_ij4gD1e6KWA3KOmU746CS6J0JLUVUu2EFHrHvQBpPaXVrekJunM6n2Ua0lODQSzan_zsUjFciAs5S8zVsL0baQ74TiTUoWHz57GIurgKH4OEGnJjsdcqW6jLl1aKAqWde8sNqT9MYhhN0zBbqu2Q_lGpICFNmIdf5ZBqdn6sCcwyiXR5eGulZwBxgo5kJ__8xBIsEPdZ12iGVdJUzyATb0Y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
+<!-- Play Overlay on Hover -->
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Sarah J.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Oct 24 • 2m 13s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Card 2 (Landscape aspect) -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-video shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Student holding up a painting they made" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Student holding up a painting they made" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDekfIrDNLQJIgUoDM_4upFuAVG-CFUg39Z0mByZxVn_6WpiS2C8LQqW0JTbcqoYVV8OzQo6bbOiuaiwBwEK5aQ7iwhaA_DShn4sQJLLHzY0HL9rbrBTtw1TOWCcaSsHnb2-SOP0UdhdsuzbXOY0jJEZ545xlh1jL9Tcls72zpkxvX5mpB4bhEJZZ8nHXWjsPubVRA2fIIplS2GTjed3-LoOSzND7NL4X4bWnUcs0xgvXyZPSB48BPA0m9xAF0p-CLLH5mxV27KxBE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Mike T.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Oct 23 • 1m 45s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">8</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Card 3 -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[3/4] shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Close up of student smiling with glasses" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Close up of student smiling with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq2A5EBwCE_F7YCYKJU0b_imODPJtpDcLFycCCQrj_WUlfYS-b6rczrpV1PtaLrUvkEBPWwIwuIpjMG_4VlN_2xqd2UgX1EnXuyrAzkLOx2N8SmbTcuA3bAbtrBTPh-dkKMJ28tdvgk0Wq0Vf7ffXH8xc3rn3t67IzvC63jputKWs2z9_xaQVCr7F68PAHewxKWsREocdzOuwxioBFF_1uOXrgrJ1xWPlO79mbGrH7oJG2fkqjkL1YaaA3vuFn1qsbJe4F-WS34hw"/>
+<div class="absolute top-3 right-3 z-10">
+<span class="bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wide shadow-sm">Featured</span>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-90"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Jessica W.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Oct 22 • 58s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">45</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Card 4 -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[9/16] shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Student posing thoughtfully with hand on chin" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Student posing thoughtfully with hand on chin" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfhdD9HuGnqdo0khGDSg161W8wrTZd68PDKyIBQMgClx06sIDab7RkDKYyx24crkEi1RGMnEK_jVp8x6qWna6af1uvAoAoWb6_8VZDV10WI3Fs8BFMTZ5MyTd8ERfiDidqVJaVJqT-nIbFpF3TNCoDh9LRUuruTTS8pgdY6Q7gWp2e7vBqK85ndqqGTwpFNfmp0lg0sd5r_aHMeI45sRmvflSopKyyyIJFvdVlxAOrB9QfUkI2wXGArKIL9Rj8cYVTLpR3vMdH6dw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Emily R.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Yesterday • 1m 12s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">22</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Card 5 -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-square shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Male student portrait with neutral expression" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Male student portrait with neutral expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiy0vuHAuH8IVt6uMOg_PPzc5HTLJ3PIwVz9cMo5dOsGibQeaj7dSdvV6_PQVDrAWYfGboXE2JUXSjLVfmPsrupYzC6Q33u50sMmPH2UYXey747C2LLZdz_PY32z631UDGO2edYju-hIqhftqRtewOP9DbLTXefljxpAgbs8O5UsmronKyMj3wiBS8DGGgvhyCf-pbl33lg2rEXknDJ8xFZBn358jYcDoGbVVVk4CAV-GaWQ0J3hlWs6SaHpqJMKySTRJG4Hlm7Qg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">David K.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Oct 21 • 3m 05s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">5</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Card 6 -->
+<div class="masonry-item relative group cursor-pointer">
+<div class="relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 aspect-[4/5] shadow-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<img alt="Young woman looking up confidently" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Young woman looking up confidently" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcEgEe1ZzubhuQQE_OFuJsId_UiiYnjIf8lND5M-BTF5lQc59-jbrO46DB8fpmHsmbvpewP4MdDhF2FZvsmHaTEYFkZTy21k9bPcEgIVFiyhKEV5XO5-c7j3EPqMtvXET9_PCREs_ikKbZuNfxtNtygRJNF8FSCVUNw_puDfQ9PjprrQbebCh08W2dKRMHeyZCaks7msu441tJ-Lim_fgFz1Y2R4-1kSaLX6KvIhuzjA7eg_X6t_aPbtSrBkcf8Woy_GBBNNygmdo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-90"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="size-14 bg-primary/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-4">
+<div class="flex items-end justify-between">
+<div>
+<h3 class="text-white font-bold text-lg leading-tight">Maria S.</h3>
+<p class="text-slate-300 text-xs mt-1 font-medium">Oct 20 • 1m 20s</p>
+</div>
+<div class="flex items-center gap-1 text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span class="text-xs font-bold">19</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+<button class="flex items-center gap-3 bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-full shadow-float transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 group">
+<div class="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined text-2xl">videocam</span>
+</div>
+<span class="text-lg font-bold tracking-wide">Record a Response</span>
+</button>
+</div>
+</body></html>

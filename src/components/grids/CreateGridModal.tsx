@@ -30,8 +30,13 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
                 title: title.trim(),
                 flipCode: flipCode.trim().toLowerCase(),
                 allowedEmailDomains: accessType === "domain" && domain.trim() ? [domain.trim()] : [],
-                theme: "",
+                theme: "default",
                 coPilots: [],
+                status: "active",
+                settings: {
+                    allowGuestAccess: true,
+                    moderation: false,
+                },
                 createdAt: Date.now(),
             };
             const id = await createGrid(gridData);
@@ -87,11 +92,10 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
                                     key={type}
                                     type="button"
                                     onClick={() => setAccessType(type)}
-                                    className={`p-3 rounded-xl border-2 text-sm font-bold transition-colors ${
-                                        accessType === type
+                                    className={`p-3 rounded-xl border-2 text-sm font-bold transition-colors ${accessType === type
                                             ? "border-sky-500 bg-sky-50 text-sky-600"
                                             : "border-slate-200 text-slate-600 hover:border-slate-300"
-                                    }`}
+                                        }`}
                                 >
                                     {type === "public" ? "Public / PLC" : "School Domain"}
                                 </button>

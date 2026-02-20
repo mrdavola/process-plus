@@ -39,14 +39,7 @@ export default function CountdownState({ stream, onComplete }: CountdownStatePro
     }, [count]);
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-            <video
-                ref={videoRef}
-                autoPlay
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover transform -scale-x-100 opacity-50"
-            />
+        <div className="absolute inset-0 flex items-center justify-center bg-transparent pointer-events-none">
 
             <div className="relative z-10 flex flex-col items-center">
                 <div

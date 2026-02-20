@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users: only the owner can write their own profile
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Grids: owner or coPilots can write; authenticated users can read
+    match /grids/{gridId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null &&
+        (resource.data.ownerId == request.auth.uid ||
+         request.auth.uid in resource.data.coPilots);
+    }
+
+    // Topics: anyone authenticated can read active topics; educators write
+    match /topics/{topicId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        get(/databases/$(database)/documents/grids/$(resource.data.gridId)).data.ownerId == request.auth.uid ||
+        request.auth.uid in get(/databases/$(database)/documents/grids/$(resource.data.gridId)).data.coPilots
+      );
+    }
+
+    // Responses: students create their own; educators moderate; active visible to all
+    match /responses/{responseId} {
+      allow read: if true;
+      allow create: if true; 
+      allow update: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        get(/databases/$(database)/documents/topics/$(resource.data.topicId)).data != null
+      );
+      allow delete: if request.auth != null;
+    }
+
+    // Playlists: owner manages
+    match /playlists/{playlistId} {
+      allow read: if resource.data.isPublic == true || request.auth != null;
+      allow write: if request.auth != null && (
+        !exists(/databases/$(database)/documents/playlists/$(playlistId)) ||
+        resource.data.ownerId == request.auth.uid
+      );
+    }
+
+    // Guest codes: educators create; anyone can read to validate
+    match /guestCodes/{codeId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

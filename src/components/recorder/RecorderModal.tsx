@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useReactMediaRecorder } from "react-media-recorder";
-import { X } from "lucide-react";
+import { X, Mic } from "lucide-react";
 
 import IdleState from "./IdleState";
 import PreviewState from "./PreviewState";
@@ -11,6 +11,8 @@ import RecordingState from "./RecordingState";
 import ReviewState from "./ReviewState";
 import SelfieState from "./SelfieState";
 import SubmitState from "./SubmitState";
+import StickieOverlay from "./StickieOverlay";
+import { TopicSettings } from "@/lib/types";
 
 type RecorderState = "IDLE" | "PREVIEW" | "COUNTDOWN" | "RECORDING" | "REVIEW" | "SELFIE" | "SUBMIT";
 
@@ -20,8 +22,9 @@ interface RecorderModalProps {
     topicId: string;
     topicTitle: string;
     promptText: string;
-    maxDuration?: number;
+    topicSettings?: TopicSettings;
     userId: string;
+    replyToId?: string;
 }
 
 export default function RecorderModal({
@@ -30,16 +33,19 @@ export default function RecorderModal({
     topicId,
     topicTitle,
     promptText,
-    maxDuration = 120,
+    topicSettings,
     userId,
+    replyToId,
 }: RecorderModalProps) {
     const [recorderState, setRecorderState] = useState<RecorderState>("IDLE");
     const [selfieBlob, setSelfieBlob] = useState<Blob | null>(null);
     const previewStreamRef = useRef<MediaStream | null>(null);
     const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
 
+    const isMicOnly = topicSettings?.micOnly ?? false;
+
     const { status, startRecording, stopRecording, pauseRecording, resumeRecording, mediaBlobUrl, clearBlobUrl } =
-        useReactMediaRecorder({ video: true, askPermissionOnMount: false });
+        useReactMediaRecorder({ video: !isMicOnly, askPermissionOnMount: false });
 
     const stopCamera = useCallback(() => {
         previewStreamRef.current?.getTracks().forEach(t => t.stop());
@@ -64,7 +70,7 @@ export default function RecorderModal({
 
     const openPreview = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: !isMicOnly, audio: true });
             previewStreamRef.current = stream;
             setPreviewStream(stream);
             setRecorderState("PREVIEW");
@@ -78,8 +84,7 @@ export default function RecorderModal({
     };
 
     const startActualRecording = () => {
-        // Stop the preview stream - react-media-recorder opens its own
-        stopCamera();
+        // We will keep the preview stream alive so the user can see themselves
         startRecording();
         setRecorderState("RECORDING");
     };
@@ -91,99 +96,141 @@ export default function RecorderModal({
 
     if (!isOpen) return null;
 
-    const showPromptOverlay = recorderState === "IDLE" || recorderState === "PREVIEW" || recorderState === "COUNTDOWN" || recorderState === "REVIEW";
+    const showPromptOverlay = recorderState === "IDLE" || recorderState === "PREVIEW" || recorderState === "COUNTDOWN" || recorderState === "RECORDING" || recorderState === "REVIEW";
+    const isStreamActive = recorderState === "PREVIEW" || recorderState === "COUNTDOWN" || recorderState === "RECORDING";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
             <div className="relative w-full max-w-5xl h-full max-h-[90vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col">
 
                 {/* Header Overlay */}
-                <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-start z-20 pointer-events-none">
-                    {showPromptOverlay && (
+                <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-start z-30 pointer-events-none">
+                    {showPromptOverlay ? (
                         <div className="pointer-events-auto">
                             <div className="bg-[#FFDD00] text-black p-4 rounded-xl shadow-lg rotate-[-2deg] max-w-xs hover:rotate-0 transition-transform duration-300">
                                 <h3 className="font-bold text-xs uppercase tracking-wider mb-1 opacity-60">Prompt</h3>
                                 <p className="font-medium leading-snug text-sm">{promptText}</p>
                             </div>
                         </div>
+                    ) : (
+                        <div />
                     )}
-                    {!showPromptOverlay && <div />}
                     <button
                         onClick={() => { stopCamera(); if (recorderState === "RECORDING") stopRecording(); onClose(); }}
-                        className="pointer-events-auto bg-black/40 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur transition-all"
+                        className="pointer-events-auto bg-black/40 hover:bg-black/60 text-white p-3 rounded-full backdrop-blur transition-all shrink-0"
                     >
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* State Machine */}
-                <div className="flex-1 relative bg-gray-900">
-                    {recorderState === "IDLE" && (
-                        <IdleState onRecord={openPreview} />
+                <div className="flex-1 relative bg-black overflow-hidden mt-20">
+                    {/* Global Video Stream */}
+                    {isMicOnly ? (
+                        <div className={`absolute inset-0 flex flex-col items-center justify-center bg-slate-900 transition-opacity duration-300 ${isStreamActive ? 'opacity-100 z-0' : 'opacity-0 pointer-events-none'}`}>
+                            <div className={`size-32 rounded-full bg-sky-500/20 flex items-center justify-center ${status === "recording" ? "animate-pulse" : ""}`}>
+                                <Mic size={64} className="text-sky-400" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
+                            <StickieOverlay visible={isStreamActive} />
+                        </div>
+                    ) : (
+                        <div className={`absolute inset-0 transition-opacity duration-300 ${isStreamActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                            {previewStream && (
+                                <video
+                                    ref={(el) => {
+                                        if (el && previewStream) el.srcObject = previewStream;
+                                    }}
+                                    autoPlay
+                                    muted
+                                    playsInline
+                                    className="w-full h-full object-cover transform -scale-x-100"
+                                />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
+                            <StickieOverlay visible={isStreamActive} />
+                        </div>
                     )}
 
-                    {recorderState === "PREVIEW" && previewStream && (
-                        <PreviewState
-                            stream={previewStream}
-                            onRecord={beginCountdown}
-                            onCancel={() => { stopCamera(); setRecorderState("IDLE"); }}
-                        />
-                    )}
+                    <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
+                        <div className="flex-1 w-full pointer-events-auto">
+                            {recorderState === "IDLE" && (
+                                <IdleState
+                                    onRecord={openPreview}
+                                    isMicOnly={isMicOnly}
+                                    canUploadClip={topicSettings?.uploadClip ?? false}
+                                />
+                            )}
 
-                    {recorderState === "COUNTDOWN" && previewStream && (
-                        <CountdownState
-                            stream={previewStream}
-                            onComplete={startActualRecording}
-                        />
-                    )}
+                            {recorderState === "PREVIEW" && previewStream && (
+                                <PreviewState
+                                    stream={previewStream}
+                                    onRecord={beginCountdown}
+                                    onCancel={() => { stopCamera(); setRecorderState("IDLE"); }}
+                                />
+                            )}
 
-                    {recorderState === "RECORDING" && (
-                        <RecordingState
-                            status={status}
-                            pauseRecording={pauseRecording}
-                            resumeRecording={resumeRecording}
-                            onFinish={handleFinish}
-                            maxDuration={maxDuration}
-                            promptText={promptText}
-                        />
-                    )}
+                            {recorderState === "COUNTDOWN" && previewStream && (
+                                <CountdownState
+                                    stream={previewStream}
+                                    onComplete={startActualRecording}
+                                />
+                            )}
 
-                    {recorderState === "REVIEW" && (
-                        <ReviewState
-                            videoUrl={mediaBlobUrl || null}
-                            onRetake={() => {
-                                clearBlobUrl();
-                                setRecorderState("IDLE");
-                            }}
-                            onConfirm={() => setRecorderState("SELFIE")}
-                        />
-                    )}
+                            {recorderState === "RECORDING" && previewStream && (
+                                <RecordingState
+                                    status={status}
+                                    stream={previewStream}
+                                    pauseRecording={pauseRecording}
+                                    resumeRecording={resumeRecording}
+                                    onFinish={handleFinish}
+                                    maxDuration={topicSettings?.maxDuration ?? 120}
+                                    promptText={promptText}
+                                    canPauseResume={topicSettings?.pauseResume ?? true}
+                                />
+                            )}
 
-                    {recorderState === "SELFIE" && (
-                        <SelfieState
-                            onConfirm={(blob) => {
-                                setSelfieBlob(blob);
-                                setRecorderState("SUBMIT");
-                            }}
-                            onRetake={() => setRecorderState("REVIEW")}
-                        />
-                    )}
+                            {recorderState === "REVIEW" && mediaBlobUrl && (
+                                <ReviewState
+                                    videoUrl={mediaBlobUrl}
+                                    onRetake={() => {
+                                        clearBlobUrl();
+                                        setRecorderState("IDLE");
+                                    }}
+                                    onConfirm={() => setRecorderState("SELFIE")}
+                                />
+                            )}
 
-                    {recorderState === "SUBMIT" && mediaBlobUrl && selfieBlob && (
-                        <SubmitState
-                            videoBlobUrl={mediaBlobUrl}
-                            selfieBlob={selfieBlob}
-                            topicId={topicId}
-                            topicTitle={topicTitle}
-                            userId={userId}
-                            onSuccess={() => {
-                                onClose();
-                                clearBlobUrl();
-                                setRecorderState("IDLE");
-                                setSelfieBlob(null);
-                            }}
-                        />
-                    )}
+                            {recorderState === "SELFIE" && (
+                                <SelfieState
+                                    onConfirm={(blob) => {
+                                        setSelfieBlob(blob);
+                                        setRecorderState("SUBMIT");
+                                    }}
+                                    onRetake={() => setRecorderState("REVIEW")}
+                                    allowDecorations={topicSettings?.selfieDecorations ?? true}
+                                />
+                            )}
+
+                            {recorderState === "SUBMIT" && mediaBlobUrl && selfieBlob && (
+                                <SubmitState
+                                    videoBlobUrl={mediaBlobUrl}
+                                    selfieBlob={selfieBlob}
+                                    topicId={topicId}
+                                    topicTitle={topicTitle}
+                                    userId={userId}
+                                    moderation={topicSettings?.moderation ?? false}
+                                    replyToId={replyToId}
+                                    onSuccess={() => {
+                                        onClose();
+                                        clearBlobUrl();
+                                        setRecorderState("IDLE");
+                                        setSelfieBlob(null);
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

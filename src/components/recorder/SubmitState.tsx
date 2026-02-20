@@ -13,10 +13,12 @@ interface SubmitStateProps {
     topicId: string;
     topicTitle: string;
     userId: string;
+    moderation?: boolean;
+    replyToId?: string;
     onSuccess: () => void;
 }
 
-export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTitle, userId, onSuccess }: SubmitStateProps) {
+export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTitle, userId, moderation = false, replyToId, onSuccess }: SubmitStateProps) {
     const [displayName, setDisplayName] = useState("");
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState("");
@@ -48,20 +50,24 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
             const selfieDownloadUrl = await getDownloadURL(selfieStorageRef);
 
             setUploadProgress("Saving response...");
+            const initialStatus = moderation ? "hidden" : "active";
+
             await createResponse({
                 topicId,
                 userId,
                 userDisplayName: trimmedName,
                 videoUrl: videoDownloadUrl,
                 thumbnailUrl: selfieDownloadUrl,
-                status: "active",
+                status: initialStatus,
                 views: 0,
                 reactions: [],
+                ...(replyToId && { replyToId }),
                 createdAt: Date.now(),
             });
 
             setDone(true);
-            setTimeout(onSuccess, 1500);
+            // Longer timeout if moderation is on to let them read the message
+            setTimeout(onSuccess, moderation ? 3000 : 1500);
 
         } catch (err: unknown) {
             console.error("Upload error:", err);
@@ -74,11 +80,17 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
 
     if (done) {
         return (
-            <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center">
-                <div className="flex flex-col items-center gap-4 text-center">
+            <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-8">
+                <div className="flex flex-col items-center gap-4 text-center animate-in zoom-in duration-300">
                     <CheckCircle size={72} className="text-emerald-500" />
-                    <h2 className="text-2xl font-black text-white">Submitted!</h2>
-                    <p className="text-white/60">Your response is live on the grid.</p>
+                    <h2 className="text-2xl font-black text-white">
+                        {moderation ? "Received!" : "Submitted!"}
+                    </h2>
+                    <p className="text-white/60 max-w-xs">
+                        {moderation
+                            ? "Your video has been sent to your teacher for approval."
+                            : "Your response is live on the grid."}
+                    </p>
                 </div>
             </div>
         );

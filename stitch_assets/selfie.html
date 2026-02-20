@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Selfie Thumbnail Capture</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "primary-dark": "#0c7ac8",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                        "emerald-custom": "#10b981",
+                        "emerald-custom-hover": "#059669",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col antialiased selection:bg-primary/30">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 sticky top-0 z-50 shadow-sm">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 hover:text-primary">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<!-- Logo Icon -->
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<circle cx="24" cy="24" fill="currentColor" fill-opacity="0.2" r="20"></circle>
+<path d="M24 14C18.4772 14 14 18.4772 14 24C14 29.5228 18.4772 34 24 34C29.5228 34 34 29.5228 34 24C34 18.4772 29.5228 14 24 14ZM24 30C20.6863 30 18 27.3137 18 24C18 20.6863 20.6863 18 24 18C27.3137 18 30 20.6863 30 24C30 27.3137 27.3137 30 24 30Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight hidden sm:block">Flipgrid</h2>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-bold tracking-wide">
+                Step 3 of 3
+            </div>
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 w-full max-w-7xl mx-auto">
+<!-- Header Text -->
+<div class="text-center mb-8 space-y-2">
+<h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Snap a selfie!</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg">This thumbnail is what everyone will see on the grid.</p>
+</div>
+<!-- Viewfinder & Tools Container -->
+<div class="relative w-full max-w-4xl flex flex-col md:flex-row gap-6 items-start">
+<!-- Creative Toolbar (Left Side on Desktop) -->
+<div class="flex flex-row md:flex-col gap-3 justify-center md:justify-start w-full md:w-auto p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 order-2 md:order-1">
+<button class="group p-3 rounded-lg hover:bg-primary/10 transition-all relative flex flex-col items-center gap-1" title="Draw">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary text-2xl">edit</span>
+<span class="text-[10px] font-medium text-slate-500 group-hover:text-primary hidden md:block">Draw</span>
+</button>
+<button class="group p-3 rounded-lg hover:bg-primary/10 transition-all relative flex flex-col items-center gap-1" title="Stickers">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary text-2xl">mood</span>
+<span class="text-[10px] font-medium text-slate-500 group-hover:text-primary hidden md:block">Stickers</span>
+</button>
+<button class="group p-3 rounded-lg hover:bg-primary/10 transition-all relative flex flex-col items-center gap-1" title="Text">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary text-2xl">title</span>
+<span class="text-[10px] font-medium text-slate-500 group-hover:text-primary hidden md:block">Text</span>
+</button>
+<button class="group p-3 rounded-lg hover:bg-primary/10 transition-all relative flex flex-col items-center gap-1" title="Filters">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary text-2xl">auto_fix_high</span>
+<span class="text-[10px] font-medium text-slate-500 group-hover:text-primary hidden md:block">Filters</span>
+</button>
+<div class="w-px h-8 bg-slate-200 dark:bg-slate-700 md:w-full md:h-px mx-1 md:my-1"></div>
+<button class="group p-3 rounded-lg hover:bg-primary/10 transition-all relative flex flex-col items-center gap-1" title="Upload Photo">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary text-2xl">upload_file</span>
+<span class="text-[10px] font-medium text-slate-500 group-hover:text-primary hidden md:block">Upload</span>
+</button>
+</div>
+<!-- Main Viewfinder Area -->
+<div class="flex-1 w-full order-1 md:order-2">
+<div class="relative group rounded-2xl overflow-hidden bg-black aspect-video shadow-lg ring-1 ring-slate-900/5">
+<!-- Live Camera Feed (Placeholder Image) -->
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Smiling student looking at camera for a selfie with a colorful blurred background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCo63CB2o0DZstwI-ck5qxcQzQPmX_B7sup07x3rltorFzC713K8VxwCAArHdxSTvztFkREbI-BVVJvCkoEHkFMfbAYjurmk6pKMGN9MpmZw4Fhb8Vr_vgBBwTQaIqbxtzbPj4N-pRpG_ymQYhdj3vwZT1edOxXsIyj078jZONOPwWV8SrdiUOV3sHQPlSDEd2NtRMJba2jnh3DtpXYhVYSUBQ0UnDR0UDrLLSKe7MgHYu5ZQEFV5ILepOj1MaL76HV8tryp51LSc4');"></div>
+<!-- Overlay Grid/UI inside Viewfinder -->
+<div class="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+<div class="flex justify-between items-start">
+<!-- Top indicators if needed -->
+</div>
+<!-- Floating Stickers Example (Simulated) -->
+<div class="absolute top-1/4 right-1/4 transform rotate-12 opacity-90 filter drop-shadow-md">
+<span class="text-6xl select-none">✨</span>
+</div>
+<div class="absolute bottom-1/3 left-10 transform -rotate-6 opacity-90 filter drop-shadow-md">
+<span class="px-4 py-2 bg-white text-slate-900 font-bold rounded-lg text-lg select-none">Hello! 👋</span>
+</div>
+<!-- Capture Button Area -->
+<div class="w-full flex justify-center items-end pb-2 pointer-events-auto">
+<button class="group relative flex items-center justify-center">
+<div class="absolute inset-0 bg-white/30 rounded-full blur-md group-hover:bg-white/50 transition-all duration-300"></div>
+<div class="relative size-16 md:size-20 rounded-full border-4 border-white bg-transparent flex items-center justify-center hover:scale-105 transition-transform duration-200">
+<div class="size-12 md:size-16 bg-white rounded-full group-hover:bg-primary group-active:scale-90 transition-all duration-150"></div>
+</div>
+<span class="absolute -bottom-8 text-white text-xs font-medium bg-black/50 px-2 py-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">Click to snap</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Helper Text below video -->
+<div class="mt-4 flex justify-between items-center px-2">
+<p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">videocam</span>
+                        Camera active
+                    </p>
+<button class="text-sm font-medium text-primary hover:text-primary-dark hover:underline">
+                        Switch camera
+                    </button>
+</div>
+</div>
+</div>
+<!-- Footer Action Bar -->
+<div class="w-full max-w-4xl mt-8 flex justify-end items-center border-t border-slate-200 dark:border-slate-800 pt-6">
+<div class="flex gap-4">
+<button class="px-6 py-3 rounded-xl text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    Back
+                </button>
+<button class="px-8 py-3 rounded-xl bg-emerald-custom hover:bg-emerald-custom-hover text-white font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all transform active:scale-95 flex items-center gap-2">
+<span>Confirm &amp; Submit</span>
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>
