@@ -101,7 +101,7 @@ function JoinContent() {
                                 projects.map(project => (
                                     <button
                                         key={project.id}
-                                        onClick={() => router.push(`/studios/${studio.processPlusCode}/projects/${project.id}`)}
+                                        onClick={() => router.push(`/studio/${studio.processPlusCode}/projects/${project.id}`)}
                                         className="w-full text-left p-4 hover:bg-slate-50 transition-colors rounded-xl group"
                                     >
                                         <div className="flex items-start justify-between gap-2">

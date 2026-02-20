@@ -31,7 +31,7 @@ function getYouTubeEmbedUrl(url: string) {
 }
 
 export default function ProjectPage() {
-    const params = useParams<{ processPlusCode: string; projectId: string }>();
+    const params = useParams<{ studioCode: string; projectId: string }>();
     const { user } = useAuth();
 
     const [studio, setStudio] = useState<Studio | null>(null);
@@ -61,10 +61,10 @@ export default function ProjectPage() {
 
     // Load studio + project
     useEffect(() => {
-        if (!params.processPlusCode || !params.projectId) return;
-        getStudioByProcessPlusCode(params.processPlusCode).then(setStudio).catch(console.error);
+        if (!params.studioCode || !params.projectId) return;
+        getStudioByProcessPlusCode(params.studioCode).then(setStudio).catch(console.error);
         getProject(params.projectId).then(setProject).catch(console.error);
-    }, [params.processPlusCode, params.projectId]);
+    }, [params.studioCode, params.projectId]);
 
     // Real-time listener: Owner sees ALL, Student/Guest sees ACTIVE only
     useEffect(() => {
@@ -185,7 +185,7 @@ export default function ProjectPage() {
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Project Unavailable</h2>
                 <p className="text-lg mb-8">This project is currently hidden by the educator.</p>
                 {studio && (
-                    <Link href={`/studios/${studio.processPlusCode}`} className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-bold transition-all">
+                    <Link href={`/studio/${studio.processPlusCode}`} className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-bold transition-all">
                         Return to Studio
                     </Link>
                 )}
@@ -206,7 +206,7 @@ export default function ProjectPage() {
                             <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
                                 <Link href="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard</Link>
                                 <span>/</span>
-                                <Link href={`/studios/${studio.processPlusCode}`} className="hover:text-sky-500 transition-colors">{studio.title}</Link>
+                                <Link href={`/studio/${studio.processPlusCode}`} className="hover:text-sky-500 transition-colors">{studio.title}</Link>
                                 <span>/</span>
                                 <span className="text-slate-800">{project.title}</span>
                             </nav>
@@ -296,7 +296,7 @@ export default function ProjectPage() {
                                         onClick={async () => {
                                             if (confirm("Delete this TOPIC? This cannot be undone.")) {
                                                 await deleteProject(params.projectId);
-                                                window.location.href = `/studios/${params.processPlusCode}`;
+                                                window.location.href = `/studio/${params.studioCode}`;
                                             }
                                         }}
                                         className="p-2.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"

@@ -15,7 +15,7 @@ import { Settings } from "lucide-react";
 import { getDocs, updateDoc, doc as firestoreDoc } from "firebase/firestore";
 
 export default function StudioPage() {
-    const params = useParams<{ processPlusCode: string }>();
+    const params = useParams<{ studioCode: string }>();
     const router = useRouter();
     const { user } = useAuth();
     const [studio, setStudio] = useState<Studio | null>(null);
@@ -39,8 +39,8 @@ export default function StudioPage() {
 
     // Fetch Studio
     useEffect(() => {
-        if (!params.processPlusCode) return;
-        getStudioByProcessPlusCode(params.processPlusCode)
+        if (!params.studioCode) return;
+        getStudioByProcessPlusCode(params.studioCode)
             .then(g => {
                 setStudio(g);
                 setIsLoading(false);
@@ -49,7 +49,7 @@ export default function StudioPage() {
                 console.error("Failed to fetch studio:", err);
                 setIsLoading(false);
             });
-    }, [params.processPlusCode]);
+    }, [params.studioCode]);
 
     const isOwner = user && studio ? user.uid === studio.ownerId : false;
 
@@ -354,7 +354,7 @@ export default function StudioPage() {
                         {filteredAndSortedProjects.map((project) => (
                             <div key={project.id} className="group bg-white rounded-2xl p-1 border border-brand-amber/10 hover:border-brand-amber hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center gap-4 p-5">
-                                    <Link href={`/studios/${studio.processPlusCode}/projects/${project.id}`} className="flex-1 flex items-start gap-5">
+                                    <Link href={`/studio/${studio.processPlusCode}/projects/${project.id}`} className="flex-1 flex items-start gap-5">
                                         <div className="size-16 rounded-xl bg-brand-cream text-brand-amber flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
                                             {project.icon ? (
                                                 <span className="text-3xl">{project.icon}</span>
@@ -389,7 +389,7 @@ export default function StudioPage() {
 
                                     <div className="flex items-center gap-2 shrink-0">
                                         <Link
-                                            href={`/studios/${studio.processPlusCode}/projects/${project.id}`}
+                                            href={`/studio/${studio.processPlusCode}/projects/${project.id}`}
                                             className="px-6 py-3 bg-brand-amber/10 text-brand-amber font-bold rounded-lg hover:bg-brand-amber/20 transition-colors hidden sm:block"
                                         >
                                             View
@@ -434,8 +434,8 @@ export default function StudioPage() {
                         const updated = await getStudioByProcessPlusCode(updates.processPlusCode || studio.processPlusCode);
                         if (updated) {
                             // If processPlus code changed, we need to redirect
-                            if (updates.processPlusCode && updates.processPlusCode !== params.processPlusCode) {
-                                router.push(`/studios/${updates.processPlusCode}`);
+                            if (updates.processPlusCode && updates.processPlusCode !== params.studioCode) {
+                                router.push(`/studio/${updates.processPlusCode}`);
                             } else {
                                 setStudio(updated);
                             }

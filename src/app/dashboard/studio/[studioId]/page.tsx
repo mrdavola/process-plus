@@ -88,11 +88,10 @@ export default function StudioDetailPage() {
                                 <div className="p-5">
                                     <div className="flex items-start justify-between gap-2 mb-3">
                                         <h3 className="font-bold text-slate-900 leading-tight">{project.title}</h3>
-                                        <span className={`shrink-0 text-xs font-bold px-2 py-1 rounded-full ${
-                                            project.status === "active"
+                                        <span className={`shrink-0 text-xs font-bold px-2 py-1 rounded-full ${project.status === "active"
                                                 ? "bg-emerald-100 text-emerald-700"
                                                 : "bg-slate-100 text-slate-500"
-                                        }`}>
+                                            }`}>
                                             {project.status}
                                         </span>
                                     </div>
@@ -106,7 +105,7 @@ export default function StudioDetailPage() {
                                         )}
                                     </div>
                                     <Link
-                                        href={`/studios/${studio.processPlusCode}/projects/${project.id}`}
+                                        href={`/studio/${studio.processPlusCode}/projects/${project.id}`}
                                         className="flex items-center gap-1 text-sky-500 text-sm font-bold hover:text-sky-600 transition-colors"
                                     >
                                         <ExternalLink size={14} />

@@ -99,7 +99,7 @@ export default function NotificationBell() {
                                 {notifications.map(notif => (
                                     <li key={notif.id} className={`transition-colors hover:bg-slate-50 ${notif.read ? 'opacity-70' : 'bg-sky-50/30'}`}>
                                         <Link
-                                            href={`/studios/${notif.studioId}${notif.projectId ? `/projects/${notif.projectId}` : ''}`}
+                                            href={`/studio/${notif.studioId}${notif.projectId ? `/projects/${notif.projectId}` : ''}`}
                                             onClick={() => handleNotificationClick(notif)}
                                             className="px-4 py-3 flex gap-3 text-left w-full items-start group"
                                         >
