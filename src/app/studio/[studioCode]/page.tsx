@@ -351,7 +351,7 @@ export default function StudioPage() {
                         </div>
                     </div>
 
-                    <div className="studio gap-4">
+                    <div className="flex flex-col gap-3">
                         {filteredAndSortedProjects.map((project) => (
                             <div key={project.id} className="group bg-white rounded-2xl p-1 border border-brand-amber/10 hover:border-brand-amber hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center gap-4 p-5">

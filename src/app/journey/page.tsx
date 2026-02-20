@@ -59,6 +59,7 @@ function JourneyContent() {
     });
     const [sharing, setSharing] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [shareError, setShareError] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -103,19 +104,27 @@ function JourneyContent() {
     const handleShare = async () => {
         if (!user || !viewingUserId) return;
         setSharing(true);
+        setShareError(false);
         try {
             const displayName = student?.displayName || user.displayName || "Student";
             const token = await getOrCreateJourneyToken(viewingUserId, displayName);
             const url = `${window.location.origin}/j/${token}`;
-            await navigator.clipboard.writeText(url);
+            // Try clipboard API, fall back to prompt
+            try {
+                await navigator.clipboard.writeText(url);
+            } catch {
+                window.prompt("Copy this link:", url);
+            }
             setCopied(true);
             setTimeout(() => setCopied(false), 3000);
         } catch (e) {
             console.error("Share error:", e);
+            setShareError(true);
+            setTimeout(() => setShareError(false), 4000);
         } finally {
             setSharing(false);
         }
-    };
+    };;
 
     if (authLoading || (isLoading && !moments.length)) {
         return (
@@ -159,16 +168,21 @@ function JourneyContent() {
                             <button
                                 onClick={handleShare}
                                 disabled={sharing}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-sm"
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border transition-all shadow-sm ${shareError
+                                        ? 'border-red-300 bg-red-50 text-red-600'
+                                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                                    }`}
                             >
                                 {sharing ? (
                                     <Loader2 size={16} className="animate-spin" />
+                                ) : shareError ? (
+                                    <span className="text-red-500">✕</span>
                                 ) : copied ? (
                                     <Check size={16} className="text-green-600" />
                                 ) : (
                                     <Share2 size={16} />
                                 )}
-                                {copied ? "Link copied!" : "Share Journey"}
+                                {shareError ? 'Failed — try again' : copied ? 'Link copied!' : 'Share Journey'}
                             </button>
                         </div>
                     </div>
