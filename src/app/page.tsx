@@ -45,7 +45,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-amber/10 text-brand-amber text-sm font-bold mb-8 border border-brand-amber/20 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <Sparkles size={16} />
-            <span>The classic experience is back</span>
+            <span>Process over product</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-display tracking-tight text-brand-warm mb-8 max-w-4xl mx-auto leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
@@ -69,7 +69,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isJoining || !joinCode.trim()}
-                className="w-full sm:w-auto px-8 py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:bg-brand-amber/50 text-white text-lg font-bold rounded-xl shadow-xl shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all hover:-translate-y-1"
+                className="w-full sm:w-auto px-8 py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:bg-brand-amber/50 text-brand-warm text-lg font-bold rounded-xl shadow-xl shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all hover:-translate-y-1"
               >
                 {isJoining ? "Joining..." : "Join"}
                 {!isJoining && <ArrowRight size={20} strokeWidth={3} />}
@@ -79,7 +79,7 @@ export default function Home() {
 
             {user && (
               <div className="mt-8">
-                <Link href="/dashboard" className="px-8 py-4 bg-white border-2 border-brand-amber/20 text-brand-amber hover:bg-brand-amber/5 text-lg font-bold rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all hover:-translate-y-1">
+                <Link href="/dashboard" className="px-8 py-4 bg-white border-2 border-brand-amber/20 text-brand-warm hover:bg-brand-amber/5 text-lg font-bold rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all hover:-translate-y-1">
                   Go to Dashboard <ArrowRight size={20} strokeWidth={3} />
                 </Link>
               </div>
