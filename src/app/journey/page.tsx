@@ -174,6 +174,21 @@ function JourneyContent() {
                     </div>
                 </header>
 
+                {/* What is a Journey? — soft explanation */}
+                {isOwnJourney && (
+                    <div className="mb-8 p-5 rounded-2xl border border-orange-100 bg-white/60 flex gap-4 items-start">
+                        <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-base" style={{ backgroundColor: '#fff8f2' }}>
+                            🗺️
+                        </div>
+                        <div>
+                            <p className="font-bold text-slate-800 text-sm mb-1">What is My Journey?</p>
+                            <p className="text-sm text-slate-500 leading-relaxed">
+                                Your Journey is your <strong className="text-slate-700">personal learning timeline</strong> — every video Moment you&apos;ve posted across all your Studios, collected in one place in the order you made them. It builds itself automatically as you post. You can share a private link with a parent, teacher, or portfolio reviewer so they can see your growth over time.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Filter */}
                 <JourneyFilter
                     moments={moments}

@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
-    if (!process.env.ANTHROPIC_API_KEY) {
-        return NextResponse.json({ error: "Anthropic API Key not configured" }, { status: 500 });
+    if (!process.env.GEMINI_API_KEY) {
+        return NextResponse.json({ error: "Gemini API Key not configured" }, { status: 500 });
     }
 
     try {
@@ -17,13 +13,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing required reflections" }, { status: 400 });
         }
 
-        const prompt = `
-You are a warm, curious, and non-evaluative "Process Coach" for a student learning community.
+        const prompt = `You are a warm, curious, and non-evaluative "Process Coach" for a student learning community.
 A student has provided the following reflections on their recent learning process/video entry:
 
 ${reflections.map((r: string, i: number) => `Reflection ${i + 1}: ${r}`).join('\n')}
 
-Provide encouraging, Socratic feedback directly to the student. 
+Provide encouraging, Socratic feedback directly to the student.
 Your goals:
 1. Validate their effort and process.
 2. Highlight one interesting insight they shared.
@@ -32,23 +27,14 @@ Your goals:
 Rules:
 - Keep it concise (3-4 sentences maximum).
 - Do NOT grade or evaluate them.
-- Speak directly to the student in the second person ("You mentioned...").
-- Do not use markdown headers, just return plain text.
-`;
+- Speak directly to the student in second person ("You mentioned...").
+- Return plain text only — no markdown headers or bullet points.`;
 
-        const response = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-20241022",
-            max_tokens: 300,
-            temperature: 0.6,
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
-        });
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-        const feedbackText = response.content[0].type === 'text' ? response.content[0].text : '';
+        const result = await model.generateContent(prompt);
+        const feedbackText = result.response.text().trim();
 
         return NextResponse.json({ feedback: feedbackText });
 

@@ -288,7 +288,8 @@ export default function StudioPage() {
                                 <button
                                     type="submit"
                                     disabled={isCreatingProject || !newProjectTitle.trim()}
-                                    className="px-8 py-4 bg-brand-amber hover:bg-brand-amber/90 text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2 text-lg"
+                                    className="px-8 py-4 text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2 text-lg"
+                                    style={{ backgroundColor: '#c2410c' }}
                                 >
                                     {isCreatingProject ? (
                                         <>

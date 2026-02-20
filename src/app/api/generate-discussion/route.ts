@@ -1,28 +1,22 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
-    if (!process.env.ANTHROPIC_API_KEY) {
-        return NextResponse.json({ error: "Anthropic API Key not configured" }, { status: 500 });
+    if (!process.env.GEMINI_API_KEY) {
+        return NextResponse.json({ error: "Gemini API Key not configured" }, { status: 500 });
     }
 
     try {
         const { title, description, reflections } = await req.json();
 
-        // Basic validation
         if (!title && !reflections) {
             return NextResponse.json({ error: "Missing required content" }, { status: 400 });
         }
 
-        const prompt = `
-You are an expert facilitator for a student learning community called Process Plus. 
+        const prompt = `You are an expert facilitator for a student learning community called Process Plus.
 Your goal is to foster deep, process-oriented discussion rather than simple praise.
 
-A student has just submitted a learning entry. 
+A student has just submitted a learning entry.
 Title/Topic: ${title || "A Learning Process"}
 Description: ${description || "No description provided."}
 ${reflections && reflections.length > 0 ? `Student's Reflections on their process:\n${reflections.map((r: string, i: number) => `${i + 1}. ${r}`).join('\n')}` : ""}
@@ -32,38 +26,27 @@ Based on this entry, generate exactly 3 open-ended, curious discussion questions
 The questions should be:
 1. Warm and encouraging, but intellectually rigorous.
 2. Centered on *how* they learned or *what* they struggled with, not just congratulating the final product.
-3. Formatted as a simple JSON array of strings. Do not include any other markdown, conversational text, or wrapper objects. Just the array.
+3. Formatted as a valid JSON array of 3 strings with no other text, markdown, or wrapper objects.
 
 Example output:
-[
-  "What was the most surprising thing you discovered when trying this approach?",
-  "You mentioned struggling with the second step—how did you eventually decide to move forward?",
-  "If you were to teach this concept to someone else tomorrow, what's the first thing you'd emphasize?"
-]
-`;
+["What was the most surprising thing you discovered?", "How did you decide to move forward?", "What would you teach someone else first?"]`;
 
-        const response = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-20241022",
-            max_tokens: 300,
-            temperature: 0.7,
-            system: "You output only valid JSON arrays of strings.",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.0-flash",
+            generationConfig: { responseMimeType: "application/json" },
         });
 
-        const resultText = response.content[0].type === 'text' ? response.content[0].text : '[]';
-        let questions: string[] = [];
+        const result = await model.generateContent(prompt);
+        const resultText = result.response.text().trim();
 
+        let questions: string[] = [];
         try {
             questions = JSON.parse(resultText);
-        } catch (e) {
-            // Fallback parsing if Claude returned it with some markdown despite instructions
-            const cleanedText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
-            questions = JSON.parse(cleanedText);
+        } catch {
+            // Fallback: strip any markdown fences
+            const cleaned = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+            questions = JSON.parse(cleaned);
         }
 
         if (!Array.isArray(questions) || questions.length === 0) {
