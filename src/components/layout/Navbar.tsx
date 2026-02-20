@@ -31,7 +31,7 @@ export default function Navbar() {
                             {user ? (
                                 <div className="flex items-center gap-4">
                                     {!pathname.includes("/dashboard") && (
-                                        <Link href="/dashboard" className="text-sm font-bold text-sky-500 hover:text-sky-600 transition-colors hidden sm:block">
+                                        <Link href="/dashboard" className="text-sm font-bold text-sky-500 bg-sky-50 px-3 py-1.5 rounded-lg hover:bg-sky-100 hover:text-sky-600 transition-colors">
                                             My Dashboard
                                         </Link>
                                     )}

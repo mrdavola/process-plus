@@ -7,12 +7,14 @@ import Navbar from "@/components/layout/Navbar";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { findDestinationByCode } from "@/lib/firestore";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
   const [joinCode, setJoinCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState("");
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +76,14 @@ export default function Home() {
               </button>
             </form>
             {joinError && <p className="text-red-500 font-bold mt-2 animate-in fade-in">{joinError}</p>}
+
+            {user && (
+              <div className="mt-8">
+                <Link href="/dashboard" className="px-8 py-4 bg-white border-2 border-sky-200 text-sky-600 hover:bg-sky-50 text-lg font-bold rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all hover:-translate-y-1">
+                  Go to Dashboard <ArrowRight size={20} strokeWidth={3} />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
