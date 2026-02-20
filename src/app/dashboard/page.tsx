@@ -101,7 +101,8 @@ export default function DashboardPage() {
                         <button
                             type="submit"
                             disabled={isCreating || !newStudioTitle.trim()}
-                            className="px-6 py-3 bg-brand-amber hover:bg-brand-amber/90 text-brand-warm font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="px-6 py-3 text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            style={{ backgroundColor: '#c2410c' }}
                         >
                             {isCreating ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
                             Create Studio
