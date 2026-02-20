@@ -162,20 +162,20 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                                     value={feedbackText}
                                     onChange={(e) => setfeedbackText(e.target.value)}
                                     placeholder="Leave private feedback..."
-                                    className="w-full bg-black/40 text-white p-3 rounded-lg border border-white/10 focus:border-sky-500 outline-none text-sm resize-none mb-3"
+                                    className="w-full bg-black/40 text-white p-3 rounded-lg border border-white/10 focus:border-brand-amber outline-none text-sm resize-none mb-3"
                                     rows={4}
                                 />
                                 <button
                                     onClick={handlefeedbackSubmit}
                                     disabled={isSubmittingfeedback || !feedbackText.trim() || feedbackText === response.feedback?.text}
-                                    className="w-full py-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:hover:bg-sky-500 text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+                                    className="w-full py-2 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 disabled:hover:bg-brand-amber text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors"
                                 >
                                     {isSubmittingfeedback ? "Saving..." : "Save feedback"}
                                 </button>
                             </div>
                         ) : response.feedback?.text ? (
-                            <div className="bg-sky-500/10 p-4 rounded-xl border border-sky-500/20">
-                                <h4 className="text-sky-400 text-sm font-bold mb-2 flex items-center gap-2">
+                            <div className="bg-brand-amber/10 p-4 rounded-xl border border-brand-amber/20">
+                                <h4 className="text-brand-amber/80 text-sm font-bold mb-2 flex items-center gap-2">
                                     <MessageSquare size={16} /> Teacher feedback
                                 </h4>
                                 <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">

@@ -139,8 +139,8 @@ export default function RecorderModal({
                     {/* Global Video Stream */}
                     {isMicOnly ? (
                         <div className={`absolute inset-0 flex flex-col items-center justify-center bg-slate-900 transition-opacity duration-300 ${isStreamActive ? 'opacity-100 z-0' : 'opacity-0 pointer-events-none'}`}>
-                            <div className={`size-32 rounded-full bg-sky-500/20 flex items-center justify-center ${status === "recording" ? "animate-pulse" : ""}`}>
-                                <Mic size={64} className="text-sky-400" />
+                            <div className={`size-32 rounded-full bg-brand-amber/20 flex items-center justify-center ${status === "recording" ? "animate-pulse" : ""}`}>
+                                <Mic size={64} className="text-brand-amber/80" />
                             </div>
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
                             <StickieOverlay visible={isStreamActive} />

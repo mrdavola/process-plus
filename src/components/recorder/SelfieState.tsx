@@ -218,7 +218,7 @@ export default function SelfieState({ onConfirm, onRetake, allowDecorations }: S
                         <div className="absolute top-4 right-4 z-50 flex flex-col gap-3">
                             <button
                                 onClick={() => setDecoMode(decoMode === "draw" ? null : "draw")}
-                                className={`p-4 rounded-full shadow-lg transition-transform ${decoMode === "draw" ? "bg-sky-500 text-white scale-110" : "bg-white text-slate-800 hover:bg-slate-100 hover:scale-105"}`}
+                                className={`p-4 rounded-full shadow-lg transition-transform ${decoMode === "draw" ? "bg-brand-amber text-white scale-110" : "bg-white text-slate-800 hover:bg-slate-100 hover:scale-105"}`}
                             >
                                 <Pencil size={24} />
                             </button>

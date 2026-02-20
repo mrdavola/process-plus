@@ -33,7 +33,7 @@ export default function PreviewState({ stream, onRecord, onCancel }: PreviewStat
 
                 <button
                     onClick={onRecord}
-                    className="flex items-center gap-3 px-8 py-4 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-2xl shadow-xl shadow-sky-500/30 transform hover:scale-105 transition-all duration-200"
+                    className="flex items-center gap-3 px-8 py-4 bg-brand-amber hover:bg-brand-amber/80 text-white font-bold rounded-2xl shadow-xl shadow-brand-amber/30 transform hover:scale-105 transition-all duration-200"
                 >
                     <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
                         <div className="w-3 h-3 bg-red-500 rounded-full" />

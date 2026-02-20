@@ -63,7 +63,7 @@ export default function NotificationBell() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 text-slate-500 hover:text-sky-600 transition-colors rounded-full hover:bg-slate-100"
+                className="relative p-2 text-slate-500 hover:text-brand-amber/90 transition-colors rounded-full hover:bg-slate-100"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
@@ -80,7 +80,7 @@ export default function NotificationBell() {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
-                                className="text-xs font-medium text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors"
+                                className="text-xs font-medium text-brand-amber/90 hover:text-brand-amber/90 flex items-center gap-1 transition-colors"
                             >
                                 <Check size={14} />
                                 Mark all as read
@@ -97,7 +97,7 @@ export default function NotificationBell() {
                         ) : (
                             <ul className="divide-y divide-slate-100">
                                 {notifications.map(notif => (
-                                    <li key={notif.id} className={`transition-colors hover:bg-slate-50 ${notif.read ? 'opacity-70' : 'bg-sky-50/30'}`}>
+                                    <li key={notif.id} className={`transition-colors hover:bg-slate-50 ${notif.read ? 'opacity-70' : 'bg-brand-amber/5/30'}`}>
                                         <Link
                                             href={`/studio/${notif.studioId}${notif.projectId ? `/projects/${notif.projectId}` : ''}`}
                                             onClick={() => handleNotificationClick(notif)}
@@ -109,7 +109,7 @@ export default function NotificationBell() {
                                                         <Check size={16} />
                                                     </div>
                                                 ) : (
-                                                    <div className="size-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center">
+                                                    <div className="size-8 rounded-full bg-brand-amber/10 text-brand-amber/90 flex items-center justify-center">
                                                         <Bell size={16} />
                                                     </div>
                                                 )}

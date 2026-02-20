@@ -29,7 +29,7 @@ export default function ReflectionState({ prompts, onComplete }: ReflectionState
     return (
         <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-6 overflow-y-auto">
             <div className="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl my-auto">
-                <div className="w-16 h-16 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-brand-amber/10 text-brand-amber/90 rounded-full flex items-center justify-center mx-auto mb-6">
                     <MessageCircle size={32} />
                 </div>
 
@@ -46,7 +46,7 @@ export default function ReflectionState({ prompts, onComplete }: ReflectionState
                                 value={responses[index]}
                                 onChange={(e) => handleResponseChange(index, e.target.value)}
                                 placeholder="Your reflection..."
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all text-gray-900 font-medium min-h-[100px] resize-y"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber transition-all text-gray-900 font-medium min-h-[100px] resize-y"
                                 required
                             />
                         </div>
@@ -55,7 +55,7 @@ export default function ReflectionState({ prompts, onComplete }: ReflectionState
                     <button
                         type="submit"
                         disabled={!isComplete}
-                        className="w-full py-4 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition-all mt-8"
+                        className="w-full py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all mt-8"
                     >
                         Review & Submit <ArrowRight size={20} />
                     </button>

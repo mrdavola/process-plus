@@ -73,7 +73,7 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                             onChange={e => setTitle(e.target.value)}
                             placeholder="Show & Tell: Your Favorite Hobby"
                             required
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-slate-900"
                         />
                     </div>
 
@@ -85,7 +85,7 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                             placeholder="What should students talk about in their video?"
                             required
                             rows={4}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 resize-none"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-slate-900 resize-none"
                         />
                     </div>
 
@@ -98,7 +98,7 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                                     type="button"
                                     onClick={() => setMaxDuration(d)}
                                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${maxDuration === d
-                                        ? "bg-sky-500 text-white"
+                                        ? "bg-brand-amber text-white"
                                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                         }`}
                                 >
@@ -114,7 +114,7 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                             role="switch"
                             aria-checked={moderation}
                             onClick={() => setModeration(!moderation)}
-                            className={`w-12 h-6 rounded-full transition-colors relative ${moderation ? "bg-sky-500" : "bg-slate-200"}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${moderation ? "bg-brand-amber" : "bg-slate-200"}`}
                         >
                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${moderation ? "translate-x-7" : "translate-x-1"}`} />
                         </button>
@@ -129,7 +129,7 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                     <button
                         type="submit"
                         disabled={busy || !title.trim() || !promptText.trim()}
-                        className="w-full py-3 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        className="w-full py-3 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
                     >
                         {busy ? "Creating..." : "Post Project"}
                     </button>

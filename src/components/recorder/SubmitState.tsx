@@ -101,7 +101,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, reflections, pro
     return (
         <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-6">
             <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center">
-                <div className="w-16 h-16 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-brand-amber/10 text-brand-amber/90 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Upload size={32} />
                 </div>
 
@@ -117,7 +117,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, reflections, pro
                             onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="First Name Last Initial"
                             maxLength={60}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all text-gray-900 font-medium"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber transition-all text-gray-900 font-medium"
                             required
                         />
                     </div>
@@ -130,13 +130,13 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, reflections, pro
                     )}
 
                     {isUploading && uploadProgress && (
-                        <p className="text-sm text-sky-500 font-medium">{uploadProgress}</p>
+                        <p className="text-sm text-brand-amber font-medium">{uploadProgress}</p>
                     )}
 
                     <button
                         type="submit"
                         disabled={isUploading || !displayName.trim()}
-                        className="w-full py-4 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition-all"
+                        className="w-full py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all"
                     >
                         {isUploading ? "Uploading..." : "Submit Video"}
                     </button>

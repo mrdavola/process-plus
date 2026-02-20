@@ -84,7 +84,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                                 onChange={(e) => setIcon(e.target.value)}
                                 placeholder="Pick an emoji 📚"
                                 maxLength={2}
-                                className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold"
+                                className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-bold"
                             />
                             {showEmojiPicker && (
                                 <div className="absolute top-14 left-0 z-50">
@@ -105,7 +105,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-bold"
                             required
                         />
                     </div>
@@ -117,7 +117,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                                 type="text"
                                 value={processPlusCode}
                                 onChange={(e) => setProcessPlusCode(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-sky-600 focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-mono font-bold lowercase"
+                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-brand-amber/90 focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-mono font-bold lowercase"
                                 required
                             />
                             <p className="text-xs text-slate-500 mt-2 ml-1">
@@ -138,7 +138,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                                     value={allowedEmailDomains}
                                     onChange={(e) => setAllowedEmailDomains(e.target.value)}
                                     placeholder="e.g. schools.edu, district.org"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-black focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium placeholder:text-slate-400"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-black focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-medium placeholder:text-slate-400"
                                 />
                                 <p className="text-xs text-slate-500 mt-2 ml-1">
                                     Separate multiple domains with commas. Leave blank to allow anyone with the code.
@@ -152,7 +152,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Set a secret password"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-black focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium placeholder:text-slate-400"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-black focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-medium placeholder:text-slate-400"
                                 />
                             </div>
 
@@ -163,7 +163,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                                     <h4 className="font-bold text-slate-900">Guest Access</h4>
                                     <p className="text-sm text-slate-500">Allow parents or guests to view/record without an account.</p>
                                 </div>
-                                <div className={`w-12 h-6 rounded-full transition-colors relative ${allowGuestAccess ? 'bg-sky-500' : 'bg-slate-300'}`}>
+                                <div className={`w-12 h-6 rounded-full transition-colors relative ${allowGuestAccess ? 'bg-brand-amber' : 'bg-slate-300'}`}>
                                     <input
                                         type="checkbox"
                                         checked={allowGuestAccess}
@@ -187,7 +187,7 @@ export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }:
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className="px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                            className="px-8 py-3 bg-brand-amber hover:bg-brand-amber/90 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
                         >
                             {isSaving ? "Saving..." : "Save Settings"}
                         </button>

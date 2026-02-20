@@ -18,7 +18,7 @@ const Toggle = ({ checked, onChange, title, description }: { checked: boolean; o
             <h4 className="font-bold text-slate-900">{title}</h4>
             {description && <p className="text-sm text-slate-500">{description}</p>}
         </div>
-        <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ml-4 ${checked ? 'bg-sky-500' : 'bg-slate-300'}`}>
+        <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ml-4 ${checked ? 'bg-brand-amber' : 'bg-slate-300'}`}>
             <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
             <div className={`absolute top-1 left-1 bg-white size-4 rounded-full transition-transform ${checked ? 'translate-x-6' : ''}`} />
         </div>
@@ -129,7 +129,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                         onChange={(e) => setIcon(e.target.value)}
                                         placeholder="Optional emoji or small icon 🚀"
                                         maxLength={2}
-                                        className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold"
+                                        className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-bold"
                                     />
                                     {showEmojiPicker && (
                                         <div className="absolute top-14 left-0 z-50 shadow-xl rounded-xl">
@@ -145,7 +145,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     type="text"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-bold"
                                     required
                                 />
                             </div>
@@ -156,7 +156,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     value={promptText}
                                     onChange={(e) => setPromptText(e.target.value)}
                                     placeholder="Full description of the assignment..."
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all min-h-[100px]"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all min-h-[100px]"
                                 />
                             </div>
 
@@ -167,7 +167,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     value={projectTip}
                                     onChange={(e) => setProjectTip(e.target.value)}
                                     placeholder="e.g., Use 2 pieces of evidence"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-medium"
                                 />
                             </div>
 
@@ -178,7 +178,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     value={mediaUrl}
                                     onChange={(e) => setMediaUrl(e.target.value)}
                                     placeholder="Paste a YouTube, Image, or GIF link here"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-medium"
                                 />
                                 <p className="text-xs text-slate-500 ml-1 mt-1">Teachers can embed a YouTube link, an image, or a GIF as the prompt stimulus.</p>
                             </div>
@@ -193,13 +193,13 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                         <div className="space-y-3 bg-slate-50 rounded-2xl p-5 border border-slate-100">
                             <div className="flex items-center justify-between py-2 border-b border-slate-200">
                                 <div>
-                                    <h4 className="font-bold text-slate-900 flex items-center gap-2"><Clock size={16} className="text-sky-500" /> Max Recording Duration</h4>
+                                    <h4 className="font-bold text-slate-900 flex items-center gap-2"><Clock size={16} className="text-brand-amber" /> Max Recording Duration</h4>
                                     <p className="text-sm text-slate-500">Applies only to future recordings.</p>
                                 </div>
                                 <select
                                     value={maxDuration}
                                     onChange={(e) => setMaxDuration(Number(e.target.value))}
-                                    className="px-4 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
+                                    className="px-4 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-amber shadow-sm"
                                 >
                                     <option value={15}>15 seconds</option>
                                     <option value={30}>30 seconds</option>
@@ -223,17 +223,17 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
 
                         <div className="space-y-5 bg-slate-50 rounded-2xl p-5 border border-slate-100">
                             <div className="studio studio-cols-1 md:studio-cols-3 gap-3">
-                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "active" ? "border-sky-500 bg-sky-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "active" ? "border-brand-amber bg-brand-amber/5" : "border-slate-200 bg-white hover:border-slate-300"}`}>
                                     <input type="radio" value="active" checked={status === "active"} onChange={() => setStatus("active")} className="sr-only" />
                                     <span className="font-bold text-slate-900 mb-1">Active</span>
                                     <span className="text-xs text-slate-500 text-center">Can view & record</span>
                                 </label>
-                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "frozen" ? "border-sky-500 bg-sky-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "frozen" ? "border-brand-amber bg-brand-amber/5" : "border-slate-200 bg-white hover:border-slate-300"}`}>
                                     <input type="radio" value="frozen" checked={status === "frozen"} onChange={() => setStatus("frozen")} className="sr-only" />
                                     <span className="font-bold text-slate-900 mb-1">Frozen</span>
                                     <span className="text-xs text-slate-500 text-center">View only</span>
                                 </label>
-                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "hidden" ? "border-sky-500 bg-sky-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+                                <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "hidden" ? "border-brand-amber bg-brand-amber/5" : "border-slate-200 bg-white hover:border-slate-300"}`}>
                                     <input type="radio" value="hidden" checked={status === "hidden"} onChange={() => setStatus("hidden")} className="sr-only" />
                                     <span className="font-bold text-slate-900 mb-1">Hidden</span>
                                     <span className="text-xs text-slate-500 text-center">Invisible to students</span>
@@ -243,11 +243,11 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                             <div className="studio studio-cols-1 md:studio-cols-2 gap-4 pt-2">
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 mb-1 ml-1 flex items-center gap-2"><CalendarIcon size={14} className="text-slate-400" /> Scheduled Release</label>
-                                    <input type="date" value={scheduledRelease} onChange={(e) => setScheduledRelease(e.target.value)} className="w-full px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-slate-700 focus:border-sky-500 outline-none" />
+                                    <input type="date" value={scheduledRelease} onChange={(e) => setScheduledRelease(e.target.value)} className="w-full px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-slate-700 focus:border-brand-amber outline-none" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 mb-1 ml-1 flex items-center gap-2"><CalendarIcon size={14} className="text-slate-400" /> Close Date</label>
-                                    <input type="date" value={closeDate} onChange={(e) => setCloseDate(e.target.value)} className="w-full px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-slate-700 focus:border-sky-500 outline-none" />
+                                    <input type="date" value={closeDate} onChange={(e) => setCloseDate(e.target.value)} className="w-full px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-slate-700 focus:border-brand-amber outline-none" />
                                 </div>
                             </div>
                         </div>
@@ -276,7 +276,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                         value={guestCode}
                                         onChange={(e) => setGuestCode(e.target.value)}
                                         placeholder="Optional Guest Code"
-                                        className="flex-1 px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-black focus:border-sky-500 outline-none font-mono"
+                                        className="flex-1 px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-black focus:border-brand-amber outline-none font-mono"
                                     />
                                     <button
                                         type="button"
@@ -296,12 +296,12 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                         <div className="space-y-4 bg-slate-50 rounded-2xl p-5 border border-slate-100">
                             <div className="flex items-center justify-between py-2 border-b border-slate-200">
                                 <div>
-                                    <h4 className="font-bold text-slate-900 flex items-center gap-2"><MessageSquare size={16} className="text-sky-500" /> feedbackback Type</h4>
+                                    <h4 className="font-bold text-slate-900 flex items-center gap-2"><MessageSquare size={16} className="text-brand-amber" /> feedbackback Type</h4>
                                 </div>
                                 <select
                                     value={feedbackbackType}
                                     onChange={(e) => setfeedbackbackType(e.target.value as "basic" | "rubric" | "none")}
-                                    className="px-4 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
+                                    className="px-4 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-amber shadow-sm"
                                 >
                                     <option value="none">None</option>
                                     <option value="basic">Basic (Ideas / Performance)</option>
@@ -326,7 +326,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className="px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                            className="px-8 py-3 bg-brand-amber hover:bg-brand-amber/90 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
                         >
                             {isSaving ? "Saving..." : "Save Settings"}
                         </button>

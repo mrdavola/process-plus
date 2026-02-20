@@ -12,8 +12,8 @@ const config: Config = {
                 background: "#FDF6EC", // brand.cream
                 foreground: "#1C1917", // brand.warm
                 primary: {
-                    DEFAULT: "#F59E0B", // brand.amber
-                    hover: "#D97706",
+                    DEFAULT: "#ea580c", // brand.amber (updated to darker orange)
+                    hover: "#c2410c",
                 },
                 surface: {
                     light: "#ffffff",
@@ -24,7 +24,7 @@ const config: Config = {
                     sub: "#475569", // brand.slate
                 },
                 brand: {
-                    amber: '#F59E0B',
+                    amber: '#ea580c',
                     sage: '#6B7F6E',
                     slate: '#475569',
                     cream: '#FDF6EC',

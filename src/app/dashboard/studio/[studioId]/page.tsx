@@ -54,15 +54,15 @@ export default function StudioDetailPage() {
                         <h1 className="font-black text-slate-900 text-lg truncate">{studio.title}</h1>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-slate-400">Join Code:</span>
-                            <span className="text-xs font-bold text-sky-500 font-mono">{studio.processPlusCode}</span>
-                            <button onClick={copyJoinLink} className="text-slate-400 hover:text-sky-500 transition-colors" aria-label="Copy join link">
+                            <span className="text-xs font-bold text-brand-amber font-mono">{studio.processPlusCode}</span>
+                            <button onClick={copyJoinLink} className="text-slate-400 hover:text-brand-amber transition-colors" aria-label="Copy join link">
                                 <Copy size={12} />
                             </button>
                         </div>
                     </div>
                     <button
                         onClick={() => setShowCreateProject(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold rounded-xl transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-amber hover:bg-brand-amber/90 text-white text-sm font-bold rounded-xl transition-colors"
                     >
                         <Plus size={16} />
                         New Project
@@ -76,7 +76,7 @@ export default function StudioDetailPage() {
                         <p className="text-slate-400 mb-4">No projects yet</p>
                         <button
                             onClick={() => setShowCreateProject(true)}
-                            className="px-6 py-3 bg-sky-500 text-white font-bold rounded-xl hover:bg-sky-600 transition-colors"
+                            className="px-6 py-3 bg-brand-amber text-white font-bold rounded-xl hover:bg-brand-amber/90 transition-colors"
                         >
                             Create First Project
                         </button>
@@ -106,7 +106,7 @@ export default function StudioDetailPage() {
                                     </div>
                                     <Link
                                         href={`/studio/${studio.processPlusCode}/projects/${project.id}`}
-                                        className="flex items-center gap-1 text-sky-500 text-sm font-bold hover:text-sky-600 transition-colors"
+                                        className="flex items-center gap-1 text-brand-amber text-sm font-bold hover:text-brand-amber/90 transition-colors"
                                     >
                                         <ExternalLink size={14} />
                                         View Project Page

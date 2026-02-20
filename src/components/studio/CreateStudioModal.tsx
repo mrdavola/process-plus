@@ -67,7 +67,7 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                             onChange={e => setTitle(e.target.value)}
                             placeholder="Mr. Davola's History Class"
                             required
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-slate-900"
                         />
                     </div>
 
@@ -79,7 +79,7 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                             onChange={e => setProcessPlusCode(e.target.value.replace(/\s/g, ""))}
                             placeholder="davola2025"
                             required
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 font-mono"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-slate-900 font-mono"
                         />
                         <p className="text-xs text-slate-400 mt-1">Students will use this to join. Lowercase, no spaces.</p>
                     </div>
@@ -93,7 +93,7 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                                     type="button"
                                     onClick={() => setAccessType(type)}
                                     className={`p-3 rounded-xl border-2 text-sm font-bold transition-colors ${accessType === type
-                                            ? "border-sky-500 bg-sky-50 text-sky-600"
+                                            ? "border-brand-amber bg-brand-amber/5 text-brand-amber/90"
                                             : "border-slate-200 text-slate-600 hover:border-slate-300"
                                         }`}
                                 >
@@ -111,7 +111,7 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                                 value={domain}
                                 onChange={e => setDomain(e.target.value)}
                                 placeholder="@schools.org"
-                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900"
+                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-slate-900"
                             />
                         </div>
                     )}
@@ -121,7 +121,7 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                     <button
                         type="submit"
                         disabled={busy || !title.trim() || !processPlusCode.trim()}
-                        className="w-full py-3 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        className="w-full py-3 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
                     >
                         {busy ? "Creating..." : "Create Studio"}
                     </button>

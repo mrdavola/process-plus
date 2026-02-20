@@ -185,7 +185,7 @@ export default function ProjectPage() {
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">Project Unavailable</h2>
                 <p className="text-lg mb-8">This project is currently hidden by the educator.</p>
                 {studio && (
-                    <Link href={`/studio/${studio.processPlusCode}`} className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-bold transition-all">
+                    <Link href={`/studio/${studio.processPlusCode}`} className="bg-brand-amber hover:bg-brand-amber/90 text-white px-6 py-3 rounded-full font-bold transition-all">
                         Return to Studio
                     </Link>
                 )}
@@ -204,9 +204,9 @@ export default function ProjectPage() {
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
                         {isOwner && studio && (
                             <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
-                                <Link href="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard</Link>
+                                <Link href="/dashboard" className="hover:text-brand-amber transition-colors">Dashboard</Link>
                                 <span>/</span>
-                                <Link href={`/studio/${studio.processPlusCode}`} className="hover:text-sky-500 transition-colors">{studio.title}</Link>
+                                <Link href={`/studio/${studio.processPlusCode}`} className="hover:text-brand-amber transition-colors">{studio.title}</Link>
                                 <span>/</span>
                                 <span className="text-slate-800">{project.title}</span>
                             </nav>
@@ -222,11 +222,11 @@ export default function ProjectPage() {
                         </p>
 
                         {project.projectTip && (
-                            <div className="bg-sky-50 border border-sky-100 rounded-xl p-4 flex items-start gap-3 max-w-2xl">
+                            <div className="bg-brand-amber/5 border border-brand-amber/20 rounded-xl p-4 flex items-start gap-3 max-w-2xl">
                                 <span className="text-xl">💡</span>
                                 <div>
-                                    <h4 className="font-bold text-sky-900 text-sm uppercase tracking-wide mb-1">Project Tip</h4>
-                                    <p className="text-sky-800 text-sm leading-relaxed">{project.projectTip}</p>
+                                    <h4 className="font-bold text-brand-warm text-sm uppercase tracking-wide mb-1">Project Tip</h4>
+                                    <p className="text-brand-warm text-sm leading-relaxed">{project.projectTip}</p>
                                 </div>
                             </div>
                         )}
@@ -238,7 +238,7 @@ export default function ProjectPage() {
                                     onClick={() => handleCopy(project.joinCode, setCopiedProject)}
                                     className={`flex items-center gap-2 border rounded-full px-5 py-2.5 shadow-sm transition-all group ${copiedProject
                                         ? "bg-emerald-50 border-emerald-200"
-                                        : "bg-white border-slate-200 hover:border-sky-300"
+                                        : "bg-white border-slate-200 hover:border-brand-amber/50"
                                         }`}
                                     aria-label="Copy project join code"
                                 >
@@ -247,8 +247,8 @@ export default function ProjectPage() {
                                         <span className="text-sm font-bold text-emerald-600 ml-1">Copied!</span>
                                     ) : (
                                         <>
-                                            <span className="text-lg font-bold text-sky-500 font-mono ml-1">{project.joinCode}</span>
-                                            <Copy size={16} className="text-slate-400 group-hover:text-sky-500 transition-colors ml-1" />
+                                            <span className="text-lg font-bold text-brand-amber font-mono ml-1">{project.joinCode}</span>
+                                            <Copy size={16} className="text-slate-400 group-hover:text-brand-amber transition-colors ml-1" />
                                         </>
                                     )}
                                 </button>
@@ -287,7 +287,7 @@ export default function ProjectPage() {
                                 <>
                                     <button
                                         onClick={() => setIsSettingsOpen(true)}
-                                        className="p-2.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-full transition-colors ml-2"
+                                        className="p-2.5 text-slate-400 hover:text-brand-amber hover:bg-brand-amber/10 rounded-full transition-colors ml-2"
                                         title="Project Settings"
                                     >
                                         <Settings size={20} />
@@ -361,7 +361,7 @@ export default function ProjectPage() {
                                     <select
                                         value={filterOption}
                                         onChange={(e) => setFilterOption(e.target.value as FilterOption)}
-                                        className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-sky-500/50 outline-none"
+                                        className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
                                         style={{
                                             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                             backgroundPosition: `right 0.5rem center`,
@@ -380,7 +380,7 @@ export default function ProjectPage() {
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value as SortOption)}
-                                    className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-sky-500/50 outline-none"
+                                    className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
                                     style={{
                                         backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                         backgroundPosition: `right 0.5rem center`,
@@ -398,7 +398,7 @@ export default function ProjectPage() {
 
                             <div className="relative w-full sm:w-auto sm:flex-1 md:flex-none md:w-64">
                                 <input
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all text-sm"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-brand-amber focus:border-transparent outline-none transition-all text-sm"
                                     placeholder="Search by name..."
                                     type="text"
                                     value={searchQuery}
@@ -450,7 +450,7 @@ export default function ProjectPage() {
                     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
                         <button
                             onClick={() => setIsRecorderOpen(true)}
-                            className="flex items-center gap-3 bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 rounded-full shadow-xl shadow-sky-500/40 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 group"
+                            className="flex items-center gap-3 bg-brand-amber hover:bg-brand-amber/90 text-white px-8 py-4 rounded-full shadow-xl shadow-brand-amber/40 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 group"
                         >
                             <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-colors">
                                 <Video size={24} className="fill-current" />
