@@ -12,17 +12,18 @@ import ReviewState from "./ReviewState";
 import SelfieState from "./SelfieState";
 import SubmitState from "./SubmitState";
 import StickieOverlay from "./StickieOverlay";
-import { TopicSettings } from "@/lib/types";
+import ReflectionState from "./ReflectionState";
+import { ProjectSettings } from "@/lib/types";
 
-type RecorderState = "IDLE" | "PREVIEW" | "COUNTDOWN" | "RECORDING" | "REVIEW" | "SELFIE" | "SUBMIT";
+type RecorderState = "IDLE" | "PREVIEW" | "COUNTDOWN" | "RECORDING" | "REVIEW" | "REFLECTION" | "SELFIE" | "SUBMIT";
 
 interface RecorderModalProps {
     isOpen: boolean;
     onClose: () => void;
-    topicId: string;
-    topicTitle: string;
+    projectId: string;
+    projectTitle: string;
     promptText: string;
-    topicSettings?: TopicSettings;
+    projectSettings?: ProjectSettings;
     userId: string;
     replyToId?: string;
 }
@@ -30,19 +31,26 @@ interface RecorderModalProps {
 export default function RecorderModal({
     isOpen,
     onClose,
-    topicId,
-    topicTitle,
+    projectId,
+    projectTitle,
     promptText,
-    topicSettings,
+    projectSettings,
     userId,
     replyToId,
 }: RecorderModalProps) {
     const [recorderState, setRecorderState] = useState<RecorderState>("IDLE");
     const [selfieBlob, setSelfieBlob] = useState<Blob | null>(null);
+    const [reflections, setReflections] = useState<string[]>([]);
     const previewStreamRef = useRef<MediaStream | null>(null);
     const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
 
-    const isMicOnly = topicSettings?.micOnly ?? false;
+    const defaultPrompts = [
+        "What were you thinking when you started this?",
+        "What changed as you worked through it?",
+        "What would you do differently next time?"
+    ];
+
+    const isMicOnly = projectSettings?.micOnly ?? false;
 
     const { status, startRecording, stopRecording, pauseRecording, resumeRecording, mediaBlobUrl, clearBlobUrl } =
         useReactMediaRecorder({ video: !isMicOnly, askPermissionOnMount: false });
@@ -56,9 +64,12 @@ export default function RecorderModal({
     // Clean up on close or unmount
     useEffect(() => {
         if (!isOpen) {
-            stopCamera();
-            setRecorderState("IDLE");
-            setSelfieBlob(null);
+            setTimeout(() => {
+                stopCamera();
+                setRecorderState("IDLE");
+                setSelfieBlob(null);
+                setReflections([]);
+            }, 0);
         }
     }, [isOpen, stopCamera]);
 
@@ -158,7 +169,7 @@ export default function RecorderModal({
                                 <IdleState
                                     onRecord={openPreview}
                                     isMicOnly={isMicOnly}
-                                    canUploadClip={topicSettings?.uploadClip ?? false}
+                                    canUploadClip={projectSettings?.uploadClip ?? false}
                                 />
                             )}
 
@@ -184,9 +195,9 @@ export default function RecorderModal({
                                     pauseRecording={pauseRecording}
                                     resumeRecording={resumeRecording}
                                     onFinish={handleFinish}
-                                    maxDuration={topicSettings?.maxDuration ?? 120}
+                                    maxDuration={projectSettings?.maxDuration ?? 120}
                                     promptText={promptText}
-                                    canPauseResume={topicSettings?.pauseResume ?? true}
+                                    canPauseResume={projectSettings?.pauseResume ?? true}
                                 />
                             )}
 
@@ -197,7 +208,17 @@ export default function RecorderModal({
                                         clearBlobUrl();
                                         setRecorderState("IDLE");
                                     }}
-                                    onConfirm={() => setRecorderState("SELFIE")}
+                                    onConfirm={() => setRecorderState("REFLECTION")}
+                                />
+                            )}
+
+                            {recorderState === "REFLECTION" && (
+                                <ReflectionState
+                                    prompts={defaultPrompts}
+                                    onComplete={(resps) => {
+                                        setReflections(resps);
+                                        setRecorderState("SELFIE");
+                                    }}
                                 />
                             )}
 
@@ -208,7 +229,7 @@ export default function RecorderModal({
                                         setRecorderState("SUBMIT");
                                     }}
                                     onRetake={() => setRecorderState("REVIEW")}
-                                    allowDecorations={topicSettings?.selfieDecorations ?? true}
+                                    allowDecorations={projectSettings?.selfieDecorations ?? true}
                                 />
                             )}
 
@@ -216,16 +237,18 @@ export default function RecorderModal({
                                 <SubmitState
                                     videoBlobUrl={mediaBlobUrl}
                                     selfieBlob={selfieBlob}
-                                    topicId={topicId}
-                                    topicTitle={topicTitle}
+                                    reflections={reflections}
+                                    projectId={projectId}
+                                    projectTitle={projectTitle}
                                     userId={userId}
-                                    moderation={topicSettings?.moderation ?? false}
+                                    moderation={projectSettings?.moderation ?? false}
                                     replyToId={replyToId}
                                     onSuccess={() => {
                                         onClose();
                                         clearBlobUrl();
                                         setRecorderState("IDLE");
                                         setSelfieBlob(null);
+                                        setReflections([]);
                                     }}
                                 />
                             )}

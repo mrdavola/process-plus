@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,34 +9,37 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "var(--background)",
-                foreground: "var(--foreground)",
+                background: "#FDF6EC", // brand.cream
+                foreground: "#1C1917", // brand.warm
                 primary: {
-                    DEFAULT: "#1392ec",
-                    hover: "#0e7ac7",
+                    DEFAULT: "#F59E0B", // brand.amber
+                    hover: "#D97706",
                 },
                 surface: {
                     light: "#ffffff",
-                    dark: "#1c2b36",
+                    dark: "#f2efe9",
                 },
                 text: {
-                    main: "#0f172a",
-                    sub: "#64748b",
+                    main: "#1C1917",
+                    sub: "#475569", // brand.slate
+                },
+                brand: {
+                    amber: '#F59E0B',
+                    sage: '#6B7F6E',
+                    slate: '#475569',
+                    cream: '#FDF6EC',
+                    warm: '#1C1917',
                 }
             },
             fontFamily: {
-                display: ["var(--font-lexend)", "sans-serif"],
-                body: ["var(--font-noto)", "sans-serif"],
+                display: ["var(--font-dm-serif)", "serif"],
+                body: ["var(--font-inter)", "sans-serif"],
             },
             boxShadow: {
                 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                'float': '0 10px 40px -10px rgba(19, 146, 236, 0.4)',
-            },
-            backgroundImage: {
-                'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-                'gradient-conic':
-                    'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-            },
+                // Replacing 'float' cyan shadow with a neutral one to match flat design
+                'float': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
+            }
         },
     },
     plugins: [],

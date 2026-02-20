@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { createGrid } from "@/lib/firestore";
-import { Grid } from "@/lib/types";
+import { createStudio } from "@/lib/firestore";
+import { Studio } from "@/lib/types";
 
-interface CreateGridModalProps {
+interface CreateStudioModalProps {
     ownerId: string;
     onClose: () => void;
-    onCreated: (grid: Grid) => void;
+    onCreated: (studio: Studio) => void;
 }
 
-export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateGridModalProps) {
+export default function CreateStudioModal({ ownerId, onClose, onCreated }: CreateStudioModalProps) {
     const [title, setTitle] = useState("");
-    const [flipCode, setFlipCode] = useState("");
+    const [processPlusCode, setProcessPlusCode] = useState("");
     const [accessType, setAccessType] = useState<"domain" | "public">("public");
     const [domain, setDomain] = useState("");
     const [busy, setBusy] = useState(false);
@@ -21,14 +21,14 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title.trim() || !flipCode.trim()) return;
+        if (!title.trim() || !processPlusCode.trim()) return;
         setBusy(true);
         setError(null);
         try {
-            const gridData: Omit<Grid, "id"> = {
+            const studioData: Omit<Studio, "id"> = {
                 ownerId,
                 title: title.trim(),
-                flipCode: flipCode.trim().toLowerCase(),
+                processPlusCode: processPlusCode.trim().toLowerCase(),
                 allowedEmailDomains: accessType === "domain" && domain.trim() ? [domain.trim()] : [],
                 theme: "default",
                 coPilots: [],
@@ -39,10 +39,10 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
                 },
                 createdAt: Date.now(),
             };
-            const id = await createGrid(gridData);
-            onCreated({ id, ...gridData });
+            const id = await createStudio(studioData);
+            onCreated({ id, ...studioData });
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to create grid");
+            setError(e instanceof Error ? e.message : "Failed to create studio");
         } finally {
             setBusy(false);
         }
@@ -52,7 +52,7 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-black text-slate-900">New Grid</h2>
+                    <h2 className="text-2xl font-black text-slate-900">New Studio</h2>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                         <X size={20} />
                     </button>
@@ -60,7 +60,7 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Grid Name</label>
+                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Studio Name</label>
                         <input
                             type="text"
                             value={title}
@@ -72,11 +72,11 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Flip Code (Join Code)</label>
+                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">ProcessPlus Code (Join Code)</label>
                         <input
                             type="text"
-                            value={flipCode}
-                            onChange={e => setFlipCode(e.target.value.replace(/\s/g, ""))}
+                            value={processPlusCode}
+                            onChange={e => setProcessPlusCode(e.target.value.replace(/\s/g, ""))}
                             placeholder="davola2025"
                             required
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 font-mono"
@@ -86,7 +86,7 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
 
                     <div>
                         <label className="block text-xs font-bold uppercase text-slate-400 mb-2">Access Type</label>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="studio studio-cols-2 gap-3">
                             {(["public", "domain"] as const).map(type => (
                                 <button
                                     key={type}
@@ -120,10 +120,10 @@ export default function CreateGridModal({ ownerId, onClose, onCreated }: CreateG
 
                     <button
                         type="submit"
-                        disabled={busy || !title.trim() || !flipCode.trim()}
+                        disabled={busy || !title.trim() || !processPlusCode.trim()}
                         className="w-full py-3 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
                     >
-                        {busy ? "Creating..." : "Create Grid"}
+                        {busy ? "Creating..." : "Create Studio"}
                     </button>
                 </form>
             </div>

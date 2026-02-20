@@ -8,8 +8,8 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Grids: owner or coPilots can write; authenticated users can read
-    match /grids/{gridId} {
+    // Studios: owner or coPilots can write; authenticated users can read
+    match /studios/{studioId} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null &&
@@ -17,13 +17,15 @@ service cloud.firestore {
          request.auth.uid in resource.data.coPilots);
     }
 
-    // Topics: anyone authenticated can read active topics; educators write
-    match /topics/{topicId} {
+    // Projects: anyone can read; educators create/delete; anyone can update
+    // (update is open to allow guest response submissions to increment responseCount)
+    match /projects/{projectId} {
       allow read: if true;
       allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && (
-        get(/databases/$(database)/documents/grids/$(resource.data.gridId)).data.ownerId == request.auth.uid ||
-        request.auth.uid in get(/databases/$(database)/documents/grids/$(resource.data.gridId)).data.coPilots
+      allow update: if true; // Guests need to increment responseCount when submitting
+      allow delete: if request.auth != null && (
+        get(/databases/$(database)/documents/studios/$(resource.data.studioId)).data.ownerId == request.auth.uid ||
+        request.auth.uid in get(/databases/$(database)/documents/studios/$(resource.data.studioId)).data.coPilots
       );
     }
 
@@ -33,7 +35,7 @@ service cloud.firestore {
       allow create: if true; 
       allow update: if request.auth != null && (
         resource.data.userId == request.auth.uid ||
-        get(/databases/$(database)/documents/topics/$(resource.data.topicId)).data != null
+        get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data != null
       );
       allow delete: if request.auth != null;
     }

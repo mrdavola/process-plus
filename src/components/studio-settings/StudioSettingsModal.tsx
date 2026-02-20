@@ -2,26 +2,26 @@
 
 import { useState } from "react";
 import { X, Image as ImageIcon } from "lucide-react";
-import { Grid } from "@/lib/types";
+import { Studio } from "@/lib/types";
 import EmojiPicker from "emoji-picker-react";
 
-interface GridSettingsModalProps {
+interface StudioSettingsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    grid: Grid;
-    onSave: (id: string, updates: Partial<Grid>) => Promise<void>;
+    studio: Studio;
+    onSave: (id: string, updates: Partial<Studio>) => Promise<void>;
 }
 
-export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: GridSettingsModalProps) {
-    const [title, setTitle] = useState(grid.title);
-    const [icon, setIcon] = useState(grid.icon || "");
+export default function StudioSettingsModal({ isOpen, onClose, studio, onSave }: StudioSettingsModalProps) {
+    const [title, setTitle] = useState(studio.title);
+    const [icon, setIcon] = useState(studio.icon || "");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [flipCode, setFlipCode] = useState(grid.flipCode);
+    const [processPlusCode, setProcessPlusCode] = useState(studio.processPlusCode);
 
     // Access Controls
-    const [password, setPassword] = useState(grid.password || "");
-    const [allowedEmailDomains, setAllowedEmailDomains] = useState(grid.allowedEmailDomains?.join(", ") || "");
-    const [allowGuestAccess, setAllowGuestAccess] = useState(grid.settings?.allowGuestAccess ?? true);
+    const [password, setPassword] = useState(studio.password || "");
+    const [allowedEmailDomains, setAllowedEmailDomains] = useState(studio.allowedEmailDomains?.join(", ") || "");
+    const [allowGuestAccess, setAllowGuestAccess] = useState(studio.settings?.allowGuestAccess ?? true);
 
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -32,20 +32,20 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
         e.preventDefault();
         setIsSaving(true);
         try {
-            await onSave(grid.id, {
+            await onSave(studio.id, {
                 title,
                 icon,
-                flipCode: flipCode.toLowerCase().replace(/[^a-z0-9]/g, ""), // Sanitize code
+                processPlusCode: processPlusCode.toLowerCase().replace(/[^a-z0-9]/g, ""), // Sanitize code
                 password: password.trim() || undefined,
                 allowedEmailDomains: allowedEmailDomains.split(",").map(d => d.trim()).filter(Boolean),
                 settings: {
-                    ...grid.settings,
+                    ...studio.settings,
                     allowGuestAccess
                 }
             });
             onClose();
         } catch (error: any) {
-            console.error("Failed to save grid settings", error);
+            console.error("Failed to save studio settings", error);
             setError(error.message || "Failed to save settings. Please try again.");
         } finally {
             setIsSaving(false);
@@ -56,7 +56,7 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
             <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden">
                 <div className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-100">
-                    <h2 className="text-xl font-black text-slate-900">Edit Grid Settings</h2>
+                    <h2 className="text-xl font-black text-slate-900">Edit Studio Settings</h2>
                     <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
                         <X size={20} />
                     </button>
@@ -69,7 +69,7 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
                         </div>
                     )}
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Grid Icon (Emoji)</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Studio Icon (Emoji)</label>
                         <div className="flex gap-2 relative">
                             <button
                                 type="button"
@@ -100,7 +100,7 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Grid Title</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Studio Title</label>
                         <input
                             type="text"
                             value={title}
@@ -111,17 +111,17 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Flip Code (Join Code)</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">ProcessPlus Code (Join Code)</label>
                         <div className="relative">
                             <input
                                 type="text"
-                                value={flipCode}
-                                onChange={(e) => setFlipCode(e.target.value)}
+                                value={processPlusCode}
+                                onChange={(e) => setProcessPlusCode(e.target.value)}
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-sky-600 focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-mono font-bold lowercase"
                                 required
                             />
                             <p className="text-xs text-slate-500 mt-2 ml-1">
-                                Students will use this code to join your grid. Only letters and numbers.
+                                Students will use this code to join your studio. Only letters and numbers.
                             </p>
                         </div>
                     </div>
@@ -146,7 +146,7 @@ export default function GridSettingsModal({ isOpen, onClose, grid, onSave }: Gri
                             </div>
 
                             <div className="pt-2">
-                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Grid Password (Optional)</label>
+                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Studio Password (Optional)</label>
                                 <input
                                     type="text"
                                     value={password}

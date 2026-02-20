@@ -1,9 +1,12 @@
 "use client";
 
-import { X, Heart, ChevronLeft, ChevronRight, MessageSquare, Send, Play } from "lucide-react";
-import { Response, Topic } from "@/lib/types";
-import { useEffect, useState } from "react";
-import { toggleResponseReaction, addResponseFeedback } from "@/lib/firestore";
+import { X, Heart, ChevronLeft, ChevronRight, MessageSquare, Send, Play, Star } from "lucide-react";
+import { Response, Project } from "@/lib/types";
+import { useEffect, useState, useRef } from "react";
+import { addResponsefeedback, incrementResponseViews, addObservation, toggleSpotlight } from "@/lib/firestore";
+import DiscussionThreads from "@/components/discussion/DiscussionThreads";
+import FeedbackCoach from "@/components/feedback/FeedbackCoach";
+import INoticedInput from "@/components/interactions/INoticedInput";
 
 interface TheaterModalProps {
     responses: Response[];
@@ -11,17 +14,17 @@ interface TheaterModalProps {
     currentIndex: number | null;
     onClose: () => void;
     onNavigate: (index: number) => void;
-    topic: Topic;
+    project: Project;
     currentUserId?: string;
     isOwner: boolean;
     onReply?: (id: string) => void;
     onViewReply?: (id: string) => void;
 }
 
-export default function TheaterModal({ responses, allResponses, currentIndex, onClose, onNavigate, topic, currentUserId, isOwner, onReply, onViewReply }: TheaterModalProps) {
+export default function TheaterModal({ responses, allResponses, currentIndex, onClose, onNavigate, project, currentUserId, isOwner, onReply, onViewReply }: TheaterModalProps) {
     const response = currentIndex !== null ? responses[currentIndex] : null;
-    const [feedbackText, setFeedbackText] = useState("");
-    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    const [feedbackText, setfeedbackText] = useState("");
+    const [isSubmittingfeedback, setIsSubmittingfeedback] = useState(false);
 
     useEffect(() => {
         if (currentIndex === null) return;
@@ -40,42 +43,37 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
 
     useEffect(() => {
         if (response) {
-            setFeedbackText(response.feedback?.text || "");
+            setfeedbackText(response.feedback?.text || "");
         }
     }, [response?.id]);
+
+    const viewedIds = useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+        if (response && !viewedIds.current.has(response.id)) {
+            viewedIds.current.add(response.id);
+            incrementResponseViews(response.id).catch(e => console.error("Failed to increment view", e));
+        }
+    }, [response]);
 
     if (!response || currentIndex === null) return null;
 
     const hasPrev = currentIndex > 0;
     const hasNext = currentIndex < responses.length - 1;
 
-    const hasLiked = currentUserId ? (response.reactions || []).includes(currentUserId) : false;
     const replies = (allResponses || responses).filter(r => r.replyToId === response.id);
 
-    const handleLike = async () => {
-        if (!currentUserId) {
-            alert("You must be signed in to like a response!");
-            return;
-        }
-        try {
-            await toggleResponseReaction(response.id, currentUserId, hasLiked);
-        } catch (error) {
-            console.error("Failed to toggle reaction:", error);
-            alert("Failed to update reaction.");
-        }
-    };
-
-    const handleFeedbackSubmit = async () => {
+    const handlefeedbackSubmit = async () => {
         if (!isOwner || !feedbackText.trim()) return;
-        setIsSubmittingFeedback(true);
+        setIsSubmittingfeedback(true);
         try {
-            await addResponseFeedback(response.id, feedbackText.trim());
-            alert("Feedback saved!");
+            await addResponsefeedback(response.id, feedbackText.trim());
+            alert("feedback saved!");
         } catch (error) {
             console.error("Failed to save feedback", error);
             alert("Failed to save feedback.");
         } finally {
-            setIsSubmittingFeedback(false);
+            setIsSubmittingfeedback(false);
         }
     };
 
@@ -130,48 +128,91 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                         />
                         <div>
                             <h3 className="text-white font-bold">{response.userDisplayName}</h3>
-                            <p className="text-white/50 text-xs">{response.views} views</p>
                         </div>
                     </div>
 
                     <p className="text-white/30 text-sm mb-4 shrink-0">{currentIndex + 1} of {responses.length}</p>
 
+                    {response.reflections && response.reflections.length > 0 && (
+                        <div className="mb-6">
+                            <h4 className="text-white/70 text-sm font-bold mb-2">Reflections</h4>
+                            <div className="space-y-2">
+                                {response.reflections.map((r, i) => (
+                                    <p key={i} className="text-white text-sm bg-white/5 p-3 rounded-lg border border-white/5">
+                                        {r}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* Only show coach for the author of the response */}
+                            {currentUserId === response.userId && (
+                                <FeedbackCoach reflections={response.reflections} />
+                            )}
+                        </div>
+                    )}
+
                     <div className="flex-1 space-y-6">
-                        {/* Teacher Feedback Display (visible to everyone if exists, but only editable by owner) */}
+                        {/* Teacher feedback Display (visible to everyone if exists, but only editable by owner) */}
                         {isOwner ? (
                             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
                                 <h4 className="text-white/70 text-sm font-bold mb-3 flex items-center gap-2">
-                                    <MessageSquare size={16} /> Edit Teacher Feedback
+                                    <MessageSquare size={16} /> Edit Teacher feedback
                                 </h4>
                                 <textarea
                                     value={feedbackText}
-                                    onChange={(e) => setFeedbackText(e.target.value)}
+                                    onChange={(e) => setfeedbackText(e.target.value)}
                                     placeholder="Leave private feedback..."
                                     className="w-full bg-black/40 text-white p-3 rounded-lg border border-white/10 focus:border-sky-500 outline-none text-sm resize-none mb-3"
                                     rows={4}
                                 />
                                 <button
-                                    onClick={handleFeedbackSubmit}
-                                    disabled={isSubmittingFeedback || !feedbackText.trim() || feedbackText === response.feedback?.text}
+                                    onClick={handlefeedbackSubmit}
+                                    disabled={isSubmittingfeedback || !feedbackText.trim() || feedbackText === response.feedback?.text}
                                     className="w-full py-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:hover:bg-sky-500 text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors"
                                 >
-                                    {isSubmittingFeedback ? "Saving..." : "Save Feedback"}
+                                    {isSubmittingfeedback ? "Saving..." : "Save feedback"}
                                 </button>
                             </div>
                         ) : response.feedback?.text ? (
                             <div className="bg-sky-500/10 p-4 rounded-xl border border-sky-500/20">
                                 <h4 className="text-sky-400 text-sm font-bold mb-2 flex items-center gap-2">
-                                    <MessageSquare size={16} /> Teacher Feedback
+                                    <MessageSquare size={16} /> Teacher feedback
                                 </h4>
                                 <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
                                     {response.feedback.text}
                                 </p>
                             </div>
                         ) : null}
+
+                        {/* Admin Controls */}
+                        {isOwner && (
+                            <div className="mt-6 pt-6 border-t border-white/10 space-y-4">
+                                <button
+                                    onClick={async () => {
+                                        if (response.id) {
+                                            await toggleSpotlight(response.id, !!response.isSpotlighted);
+                                        }
+                                    }}
+                                    className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors ${response.isSpotlighted
+                                        ? "bg-amber-500 text-white"
+                                        : "bg-white/10 text-white hover:bg-white/20"
+                                        }`}
+                                >
+                                    <Star size={18} className={response.isSpotlighted ? "fill-white" : ""} />
+                                    {response.isSpotlighted ? "Remove from Spotlight" : "Feature this Entry"}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
+                    <DiscussionThreads
+                        title="Student Learning Entry"
+                        description="Uploaded via Process Plus"
+                        reflections={response.reflections}
+                    />
+
                     <div className="pt-6 border-t border-white/10 shrink-0 space-y-3 mt-6">
-                        {topic.settings.studentReplies && onReply && (
+                        {project.settings.studentReplies && onReply && (
                             <button
                                 onClick={() => onReply(response.id)}
                                 className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
@@ -180,17 +221,16 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                                 Add Reply
                             </button>
                         )}
-                        {topic.settings.videoReactions && (
-                            <button
-                                onClick={handleLike}
-                                className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors ${hasLiked
-                                    ? "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 border border-rose-500/50"
-                                    : "bg-white/10 text-white hover:bg-white/20 border border-transparent"
-                                    }`}
-                            >
-                                <Heart size={20} className={hasLiked ? "fill-current" : ""} />
-                                {response.reactions?.length || 0} Likes
-                            </button>
+                        {project.settings.videoReactions && (
+                            <INoticedInput
+                                responseId={response.id}
+                                currentUserId={currentUserId}
+                                onSubmit={async (observation) => {
+                                    if (currentUserId) {
+                                        await addObservation(response.id, currentUserId, observation);
+                                    }
+                                }}
+                            />
                         )}
                     </div>
 
@@ -211,7 +251,6 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                                         <img src={reply.thumbnailUrl} alt={reply.userDisplayName} className="w-10 h-10 rounded-full object-cover" />
                                         <div>
                                             <p className="text-white text-sm font-bold">{reply.userDisplayName}</p>
-                                            <p className="text-white/50 text-xs">{reply.views} views</p>
                                         </div>
                                         <div className="ml-auto">
                                             <Play size={16} className="text-white/50" />
@@ -223,6 +262,6 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

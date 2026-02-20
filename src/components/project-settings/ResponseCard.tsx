@@ -56,11 +56,6 @@ export default function ResponseCard({ response, onClick, isOwner, onApprove, on
                             {/* Time ago could go here */}
                             just now
                         </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                            <Eye size={14} />
-                            {response.views}
-                        </span>
                     </div>
                 </div>
             </div>

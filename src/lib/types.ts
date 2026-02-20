@@ -9,11 +9,11 @@ export interface UserProfile {
     createdAt?: number;
 }
 
-export interface Grid {
+export interface Studio {
     id: string;                 // Firestore Auto-ID
     ownerId: string;            // educator userId
     title: string;              // "Mr. Davola's History Class"
-    flipCode: string;           // unique join slug, "davola2025"
+    processPlusCode: string;           // unique join slug, "davola2025"
     password?: string;          // optional guest password
     allowedEmailDomains: string[]; // ["@schools.org"]
     theme: string;              // banner image URL
@@ -35,7 +35,7 @@ export interface MediaResource {
     url: string;
 }
 
-export interface TopicSettings {
+export interface ProjectSettings {
     maxDuration: number;      // seconds: 15,30,60,90,180,300
     micOnly: boolean;         // true = audio only, false = camera required
     uploadClip: boolean;      // true = can import videos
@@ -45,22 +45,22 @@ export interface TopicSettings {
     studentReplies: boolean;  // true = student video replies
     videoReactions: boolean;  // true = likes
     guestCode?: string;       // bypass domain restrictions
-    feedbackType: "basic" | "rubric" | "none";
-    privateFeedback: boolean; // teacher-only comments
+    feedbackbackType: "basic" | "rubric" | "none";
+    privatefeedbackback: boolean; // teacher-only Responses
 }
 
-export type TopicStatus = "active" | "frozen" | "hidden";
+export type ProjectStatus = "active" | "frozen" | "hidden";
 
-export interface Topic {
+export interface Project {
     id: string;               // Firestore Auto-ID
-    gridId: string;           // parent Grid
+    studioId: string;           // parent Studio
     joinCode: string;         // unique code to join directly
     title: string;
     promptText: string;       // treat as rich text
-    topicTip?: string;        // short hint
+    projectTip?: string;        // short hint
     mediaResource?: MediaResource;
-    settings: TopicSettings;
-    status: TopicStatus;
+    settings: ProjectSettings;
+    status: ProjectStatus;
     scheduledRelease?: number; // timestamp
     closeDate?: number;       // timestamp
     createdAt?: number;
@@ -75,7 +75,7 @@ export type ResponseStatus = "active" | "hidden";
 
 export interface Response {
     id: string;               // Firestore Auto-ID
-    topicId: string;
+    projectId: string;
     userId: string;           // student auth UID OR guest session id
     userDisplayName: string;  // captured at submit time
     videoUrl: string;         // Firebase Storage download URL
@@ -83,14 +83,16 @@ export interface Response {
     status: ResponseStatus;
     views: number;
     reactions: string[];      // array of userIds who liked
-    sparkedFromId?: string;   // if turned into a new topic
+    reflections?: string[];
+    sparkedFromId?: string;   // if turned into a new project
     replyToId?: string;       // if this is a reply to another response
     feedback?: {              // teacher feedback
         text: string;
         rubricScore?: Record<string, number>;
     };
     createdAt?: number;
-    reactionsCount?: number;
+    isSpotlighted?: boolean;
+    observationsCount?: number;
 }
 
 export interface Playlist {
@@ -105,7 +107,7 @@ export interface Playlist {
 
 export interface GuestCode {
     id: string;
-    topicId: string;
+    projectId: string;
     code: string;           // "GUEST-123"
     expiresAt?: number;
     maxUses?: number;
@@ -113,13 +115,13 @@ export interface GuestCode {
     createdBy: string;      // educator userId
 }
 
-export type NotificationType = "new_response" | "pending_approval" | "topic_sparked";
+export type NotificationType = "new_response" | "pending_approval" | "project_sparked";
 
 export interface Notification {
     id: string;
     recipientId: string;
-    gridId: string;
-    topicId?: string;
+    studioId: string;
+    projectId?: string;
     responseId?: string;
     type: NotificationType;
     title: string;

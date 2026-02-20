@@ -12,7 +12,10 @@ export default function CountdownState({ stream, onComplete }: CountdownStatePro
     const [count, setCount] = useState(3);
     const onCompleteRef = useRef(onComplete);
     const mountedRef = useRef(true);
-    onCompleteRef.current = onComplete;
+
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
 
     useEffect(() => {
         mountedRef.current = true;

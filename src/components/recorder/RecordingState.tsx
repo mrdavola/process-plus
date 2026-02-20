@@ -24,12 +24,13 @@ export default function RecordingState({
 }: RecordingStateProps) {
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const onFinishRef = useRef(onFinish);
-    onFinishRef.current = onFinish;
+    useEffect(() => {
+        onFinishRef.current = onFinish;
+    }, [onFinish]);
 
     // Fixed: start elapsed time at 0 and countdown based on maxDuration
     const [elapsed, setElapsed] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
-    onFinishRef.current = onFinish;
 
     // Timer: only counts while actively recording (not paused)
     useEffect(() => {

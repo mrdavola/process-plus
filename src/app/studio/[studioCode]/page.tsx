@@ -2,25 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Grid, Topic } from "@/lib/types";
-import { getGridByFlipCode, deleteGrid, deleteTopic, updateGrid } from "@/lib/firestore";
+import { Studio, Project } from "@/lib/types";
+import { getStudioByProcessPlusCode, deleteStudio, deleteProject, updateStudio } from "@/lib/firestore";
 import { useAuth } from "@/lib/auth-context";
 import { Loader2, Plus, ArrowLeft, Trash2, Calendar, Share, MoreVertical, Search, ArrowDownUp } from "lucide-react";
 import Link from "next/link";
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Navbar from "@/components/layout/Navbar";
-import GridSettingsModal from "@/components/grid/GridSettingsModal";
+import StudioSettingsModal from "@/components/studio-settings/StudioSettingsModal";
 import { Settings } from "lucide-react";
+import { getDocs, updateDoc, doc as firestoreDoc } from "firebase/firestore";
 
-export default function GridPage() {
-    const params = useParams<{ flipCode: string }>();
+export default function StudioPage() {
+    const params = useParams<{ processPlusCode: string }>();
     const router = useRouter();
     const { user } = useAuth();
-    const [grid, setGrid] = useState<Grid | null>(null);
-    const [topics, setTopics] = useState<Topic[]>([]);
+    const [studio, setStudio] = useState<Studio | null>(null);
+    const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isCreatingTopic, setIsCreatingTopic] = useState(false);
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
     const [copiedShare, setCopiedShare] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -29,61 +30,80 @@ export default function GridPage() {
         setCopiedShare(true);
         setTimeout(() => setCopiedShare(false), 2000);
     };
-    const [newTopicTitle, setNewTopicTitle] = useState("");
-    const [newTopicPrompt, setNewTopicPrompt] = useState("");
+    const [newProjectTitle, setNewProjectTitle] = useState("");
+    const [newProjectPrompt, setNewProjectPrompt] = useState("");
 
     type SortOption = "newest_activity" | "newest_created" | "most_responses" | "needs_review";
     const [sortOption, setSortOption] = useState<SortOption>("newest_activity");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Fetch Grid
+    // Fetch Studio
     useEffect(() => {
-        if (!params.flipCode) return;
-        getGridByFlipCode(params.flipCode)
+        if (!params.processPlusCode) return;
+        getStudioByProcessPlusCode(params.processPlusCode)
             .then(g => {
-                setGrid(g);
+                setStudio(g);
                 setIsLoading(false);
             })
             .catch(err => {
-                console.error("Failed to fetch grid:", err);
+                console.error("Failed to fetch studio:", err);
                 setIsLoading(false);
             });
-    }, [params.flipCode]);
+    }, [params.processPlusCode]);
 
-    // Real-time Topics Listener
+    const isOwner = user && studio ? user.uid === studio.ownerId : false;
+
+    // Real-time Projects Listener
     useEffect(() => {
-        if (!grid) return;
+        if (!studio) return;
 
         const q = query(
-            collection(db, "topics"),
-            where("gridId", "==", grid.id)
+            collection(db, "projects"),
+            where("studioId", "==", studio.id)
             // orderBy("createdAt", "desc") // requires index, can skip for now or add
         );
 
         const unsub = onSnapshot(q, (snap) => {
-            const fetchedTopics = snap.docs.map(d => ({ id: d.id, ...d.data() } as Topic));
+            const fetchedProjects = snap.docs.map(d => ({ id: d.id, ...d.data() } as Project));
             // Manual sort as backup
-            fetchedTopics.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            setTopics(fetchedTopics);
+            fetchedProjects.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            setProjects(fetchedProjects);
+
+            // One-time sync for inaccurate counts (Owner only)
+            if (isOwner) {
+                fetchedProjects.forEach(async (project) => {
+                    // If count is missing or seems suspicious (e.g. 0 but we want to be sure), 
+                    // we can trigger a sync. For now, let's sync if it's undefined or 0 to be safe for legacy data.
+                    if (project.responseCount === undefined) {
+                        const respQ = query(collection(db, "responses"), where("projectId", "==", project.id));
+                        const respSnap = await getDocs(respQ);
+                        const actualCount = respSnap.size;
+                        const pendingCount = respSnap.docs.filter(d => d.data().status === "hidden").length;
+
+                        await updateDoc(firestoreDoc(db, "projects", project.id), {
+                            responseCount: actualCount,
+                            pendingCount: pendingCount
+                        });
+                    }
+                });
+            }
         }, (error) => {
-            console.error("Error fetching topics:", error);
+            console.error("Error fetching projects:", error);
         });
 
         return unsub;
-    }, [grid]);
+    }, [studio, isOwner]);
 
-    const isOwner = user && grid ? user.uid === grid.ownerId : false;
-
-    const handleCreateTopic = async (e: React.FormEvent) => {
+    const handleCreateProject = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!grid || !isOwner || !newTopicTitle.trim()) return;
+        if (!studio || !isOwner || !newProjectTitle.trim()) return;
 
-        setIsCreatingTopic(true);
+        setIsCreatingProject(true);
         try {
-            await addDoc(collection(db, "topics"), {
-                gridId: grid.id,
-                title: newTopicTitle.trim(),
-                promptText: newTopicPrompt.trim() || "Share your thoughts!",
+            await addDoc(collection(db, "projects"), {
+                studioId: studio.id,
+                title: newProjectTitle.trim(),
+                promptText: newProjectPrompt.trim() || "Share your thoughts!",
                 status: "active",
                 settings: {
                     maxDuration: 120,
@@ -94,27 +114,27 @@ export default function GridPage() {
                     selfieDecorations: true,
                     studentReplies: true,
                     videoReactions: true,
-                    feedbackType: "none",
-                    privateFeedback: false
+                    feedbackbackType: "none",
+                    privatefeedbackback: false
                 },
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
             });
-            setNewTopicTitle("");
-            setNewTopicPrompt("");
+            setNewProjectTitle("");
+            setNewProjectPrompt("");
         } catch (error) {
-            console.error("Failed to create topic:", error);
+            console.error("Failed to create project:", error);
         } finally {
-            setIsCreatingTopic(false);
+            setIsCreatingProject(false);
         }
     };
 
-    const handleDeleteTopic = async (topicId: string) => {
-        if (!confirm("Are you sure you want to delete this topic?")) return;
+    const handleDeleteProject = async (projectId: string) => {
+        if (!confirm("Are you sure you want to delete this project?")) return;
         try {
-            await deleteTopic(topicId);
+            await deleteProject(projectId);
         } catch (error) {
-            console.error("Failed to delete topic:", error);
+            console.error("Failed to delete project:", error);
         }
     };
 
@@ -126,16 +146,16 @@ export default function GridPage() {
         );
     }
 
-    if (!grid) {
+    if (!studio) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <p className="text-xl font-bold text-slate-900">Grid not found!</p>
+                <p className="text-xl font-bold text-slate-900">Studio not found!</p>
                 <Link href="/dashboard" className="text-sky-500 hover:underline">Return to Dashboard</Link>
             </div>
         );
     }
 
-    const filteredAndSortedTopics = topics
+    const filteredAndSortedProjects = projects
         .filter(t =>
             t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             t.promptText.toLowerCase().includes(searchQuery.toLowerCase())
@@ -171,19 +191,19 @@ export default function GridPage() {
                     <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-6">
                         <Link href="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard</Link>
                         <span>/</span>
-                        <span className="text-slate-800">{grid.title}</span>
+                        <span className="text-slate-800">{studio.title}</span>
                     </nav>
 
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div>
                             <div className="inline-block px-3 py-1 bg-sky-100 text-sky-600 text-sm font-bold rounded-full mb-3 shadow-inner">
-                                Flip Code: <span className="font-mono">{grid.flipCode}</span>
+                                ProcessPlus Code: <span className="font-mono">{studio.processPlusCode}</span>
                             </div>
                             <h1 className="text-4xl font-black text-slate-900 mb-2 tracking-tight flex items-center gap-3">
-                                {grid.icon && <span>{grid.icon}</span>}
-                                {grid.title}
+                                {studio.icon && <span>{studio.icon}</span>}
+                                {studio.title}
                             </h1>
-                            <p className="text-slate-500 font-medium">Manage your topics and student responses.</p>
+                            <p className="text-slate-500 font-medium">Manage your projects and student responses.</p>
                         </div>
 
                         <div className="flex flex-wrap gap-3">
@@ -209,14 +229,14 @@ export default function GridPage() {
                                     <button
                                         onClick={async () => {
                                             if (confirm("Delete this entire GRID? This action accepts no gravity and cannot be undone.")) {
-                                                await deleteGrid(grid.id);
+                                                await deleteStudio(studio.id);
                                                 router.push("/dashboard");
                                             }
                                         }}
                                         className="flex items-center gap-2 px-5 py-3 bg-red-50 text-red-600 font-bold rounded-full hover:bg-red-100 transition-all shadow-sm hover:shadow-md"
                                     >
                                         <Trash2 size={18} />
-                                        Delete Grid
+                                        Delete Studio
                                     </button>
                                 </>
                             )}
@@ -226,7 +246,7 @@ export default function GridPage() {
             </div>
 
             <main className="max-w-5xl mx-auto px-4 py-12">
-                {/* Create Topic Form */}
+                {/* Create Project Form */}
                 {isOwner && (
                     <div className="mb-12 bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-full -mr-8 -mt-8 opacity-50" />
@@ -236,18 +256,18 @@ export default function GridPage() {
                                 <Plus size={28} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-slate-900">Add a New Topic</h2>
+                                <h2 className="text-2xl font-black text-slate-900">Add a New Project</h2>
                                 <p className="text-slate-500">Spark a discussion with your students.</p>
                             </div>
                         </div>
 
-                        <form onSubmit={handleCreateTopic} className="space-y-4 relative">
+                        <form onSubmit={handleCreateProject} className="space-y-4 relative">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Topic Title</label>
+                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Project Title</label>
                                 <input
                                     type="text"
-                                    value={newTopicTitle}
-                                    onChange={(e) => setNewTopicTitle(e.target.value)}
+                                    value={newProjectTitle}
+                                    onChange={(e) => setNewProjectTitle(e.target.value)}
                                     placeholder="e.g., Weekly Reflection, Book Report"
                                     className="w-full px-5 py-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold text-lg outline-none placeholder:font-normal placeholder:text-slate-400"
                                     required
@@ -257,8 +277,8 @@ export default function GridPage() {
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Prompt</label>
                                 <textarea
-                                    value={newTopicPrompt}
-                                    onChange={(e) => setNewTopicPrompt(e.target.value)}
+                                    value={newProjectPrompt}
+                                    onChange={(e) => setNewProjectPrompt(e.target.value)}
                                     placeholder="What do you want your students to discuss?"
                                     className="w-full px-5 py-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all min-h-[120px] outline-none placeholder:text-slate-400 resize-y"
                                 />
@@ -267,10 +287,10 @@ export default function GridPage() {
                             <div className="flex justify-end pt-2">
                                 <button
                                     type="submit"
-                                    disabled={isCreatingTopic || !newTopicTitle.trim()}
+                                    disabled={isCreatingProject || !newProjectTitle.trim()}
                                     className="px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
                                 >
-                                    {isCreatingTopic ? (
+                                    {isCreatingProject ? (
                                         <>
                                             <Loader2 className="animate-spin" size={20} />
                                             Creating...
@@ -278,7 +298,7 @@ export default function GridPage() {
                                     ) : (
                                         <>
                                             <Plus size={20} />
-                                            Create Topic
+                                            Create Project
                                         </>
                                     )}
                                 </button>
@@ -287,12 +307,12 @@ export default function GridPage() {
                     </div>
                 )}
 
-                {/* Topics List Controls */}
+                {/* Projects List Controls */}
                 <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
                         <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                            <span className="bg-slate-900 text-white size-6 rounded flex items-center justify-center text-xs">{topics.length}</span>
-                            Active Topics
+                            <span className="bg-slate-900 text-white size-6 rounded flex items-center justify-center text-xs">{projects.length}</span>
+                            Active Projects
                         </h2>
 
                         <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -300,7 +320,7 @@ export default function GridPage() {
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
                                     type="text"
-                                    placeholder="Search topics..."
+                                    placeholder="Search projects..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-shadow"
@@ -330,37 +350,37 @@ export default function GridPage() {
                         </div>
                     </div>
 
-                    <div className="grid gap-4">
-                        {filteredAndSortedTopics.map((topic) => (
-                            <div key={topic.id} className="group bg-white rounded-2xl p-1 border border-slate-200 hover:border-sky-500/30 hover:shadow-xl transition-all duration-300">
+                    <div className="studio gap-4">
+                        {filteredAndSortedProjects.map((project) => (
+                            <div key={project.id} className="group bg-white rounded-2xl p-1 border border-slate-200 hover:border-sky-500/30 hover:shadow-xl transition-all duration-300">
                                 <div className="flex items-center gap-4 p-5">
-                                    <Link href={`/grids/${grid.flipCode}/topics/${topic.id}`} className="flex-1 flex items-start gap-5">
+                                    <Link href={`/studios/${studio.processPlusCode}/projects/${project.id}`} className="flex-1 flex items-start gap-5">
                                         <div className="size-16 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white flex flex-col items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
-                                            {topic.icon ? (
-                                                <span className="text-3xl">{topic.icon}</span>
+                                            {project.icon ? (
+                                                <span className="text-3xl">{project.icon}</span>
                                             ) : (
                                                 <Calendar size={28} className="text-white/90" />
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-sky-500 transition-colors mb-1 truncate">{topic.title}</h3>
-                                            <p className="text-slate-500 line-clamp-2 leading-relaxed text-sm pr-12">{topic.promptText}</p>
+                                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-sky-500 transition-colors mb-1 truncate">{project.title}</h3>
+                                            <p className="text-slate-500 line-clamp-2 leading-relaxed text-sm pr-12">{project.promptText}</p>
                                             <div className="flex items-center gap-3 mt-3 text-xs font-semibold">
-                                                <span className={`${topic.responseCount ? 'text-slate-700 bg-slate-100' : 'text-slate-400 bg-slate-50'} px-2.5 py-1 rounded-md transition-colors`}>
-                                                    {topic.responseCount || 0} Responses
+                                                <span className={`${project.responseCount ? 'text-slate-700 bg-slate-100' : 'text-slate-400 bg-slate-50'} px-2.5 py-1 rounded-md transition-colors`}>
+                                                    {project.responseCount || 0} Responses
                                                 </span>
-                                                {topic.settings?.moderation && (topic.pendingCount || 0) > 0 && (
+                                                {project.settings?.moderation && (project.pendingCount || 0) > 0 && (
                                                     <span className="text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md flex items-center gap-1">
                                                         <span className="relative flex h-2 w-2">
                                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                                         </span>
-                                                        {topic.pendingCount} Pending Review
+                                                        {project.pendingCount} Pending Review
                                                     </span>
                                                 )}
-                                                {topic.lastResponseAt && (
+                                                {project.lastResponseAt && (
                                                     <span className="text-slate-400 font-medium ml-auto">
-                                                        Active {Math.floor((Date.now() - topic.lastResponseAt) / 86400000) === 0 ? "today" : `${Math.floor((Date.now() - topic.lastResponseAt) / 86400000)}d ago`}
+                                                        Active {Math.floor((Date.now() - project.lastResponseAt) / 86400000) === 0 ? "today" : `${Math.floor((Date.now() - project.lastResponseAt) / 86400000)}d ago`}
                                                     </span>
                                                 )}
                                             </div>
@@ -369,7 +389,7 @@ export default function GridPage() {
 
                                     <div className="flex items-center gap-2 shrink-0">
                                         <Link
-                                            href={`/grids/${grid.flipCode}/topics/${topic.id}`}
+                                            href={`/studios/${studio.processPlusCode}/projects/${project.id}`}
                                             className="px-4 py-2 bg-sky-50 text-sky-600 font-bold rounded-lg hover:bg-sky-100 transition-colors hidden sm:block"
                                         >
                                             View
@@ -377,9 +397,9 @@ export default function GridPage() {
 
                                         {isOwner && (
                                             <button
-                                                onClick={() => handleDeleteTopic(topic.id)}
+                                                onClick={() => handleDeleteProject(project.id)}
                                                 className="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                                title="Delete Topic"
+                                                title="Delete Project"
                                             >
                                                 <Trash2 size={20} />
                                             </button>
@@ -390,34 +410,34 @@ export default function GridPage() {
                         ))}
                     </div>
 
-                    {topics.length === 0 && (
+                    {projects.length === 0 && (
                         <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
                             <div className="mx-auto size-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
                                 <Calendar size={40} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">No topics yet</h3>
-                            <p className="text-slate-500 max-w-sm mx-auto">Create your first topic to get the conversation started.</p>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">No projects yet</h3>
+                            <p className="text-slate-500 max-w-sm mx-auto">Create your first project to get the conversation started.</p>
                         </div>
                     )}
                 </div>
             </main>
 
-            {/* Grid Settings Modal */}
-            {grid && isSettingsOpen && (
-                <GridSettingsModal
+            {/* Studio Settings Modal */}
+            {studio && isSettingsOpen && (
+                <StudioSettingsModal
                     isOpen={isSettingsOpen}
                     onClose={() => setIsSettingsOpen(false)}
-                    grid={grid}
+                    studio={studio}
                     onSave={async (id, updates) => {
-                        await updateGrid(id, updates);
-                        // Refresh grid details
-                        const updated = await getGridByFlipCode(updates.flipCode || grid.flipCode);
+                        await updateStudio(id, updates);
+                        // Refresh studio details
+                        const updated = await getStudioByProcessPlusCode(updates.processPlusCode || studio.processPlusCode);
                         if (updated) {
-                            // If flip code changed, we need to redirect
-                            if (updates.flipCode && updates.flipCode !== params.flipCode) {
-                                router.push(`/grids/${updates.flipCode}`);
+                            // If processPlus code changed, we need to redirect
+                            if (updates.processPlusCode && updates.processPlusCode !== params.processPlusCode) {
+                                router.push(`/studios/${updates.processPlusCode}`);
                             } else {
-                                setGrid(updated);
+                                setStudio(updated);
                             }
                         }
                     }}

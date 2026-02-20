@@ -4,42 +4,42 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, ArrowLeft, Copy, ExternalLink } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { getGrid, getTopicsForGrid } from "@/lib/firestore";
-import { Grid, Topic } from "@/lib/types";
-import CreateTopicModal from "@/components/topics/CreateTopicModal";
+import { getStudio, getProjectsForStudio } from "@/lib/firestore";
+import { Studio, Project } from "@/lib/types";
+import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import Link from "next/link";
 
-export default function GridDetailPage() {
-    const { gridId } = useParams<{ gridId: string }>();
+export default function StudioDetailPage() {
+    const { studioId } = useParams<{ studioId: string }>();
     const { user, loading } = useAuth();
     const router = useRouter();
-    const [grid, setGrid] = useState<Grid | null>(null);
-    const [topics, setTopics] = useState<Topic[]>([]);
-    const [showCreateTopic, setShowCreateTopic] = useState(false);
+    const [studio, setStudio] = useState<Studio | null>(null);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [showCreateProject, setShowCreateProject] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) router.push("/login");
     }, [user, loading, router]);
 
     useEffect(() => {
-        if (gridId) {
-            getGrid(gridId).then(setGrid);
-            getTopicsForGrid(gridId).then(setTopics);
+        if (studioId) {
+            getStudio(studioId).then(setStudio);
+            getProjectsForStudio(studioId).then(setProjects);
         }
-    }, [gridId]);
+    }, [studioId]);
 
-    const handleTopicCreated = (t: Topic) => {
-        setTopics(prev => [t, ...prev]);
-        setShowCreateTopic(false);
+    const handleProjectCreated = (t: Project) => {
+        setProjects(prev => [t, ...prev]);
+        setShowCreateProject(false);
     };
 
     const copyJoinLink = () => {
-        if (grid) {
-            navigator.clipboard.writeText(`${window.location.origin}/join?code=${grid.flipCode}`);
+        if (studio) {
+            navigator.clipboard.writeText(`${window.location.origin}/join?code=${studio.processPlusCode}`);
         }
     };
 
-    if (loading || !grid) {
+    if (loading || !studio) {
         return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading...</div>;
     }
 
@@ -51,66 +51,66 @@ export default function GridDetailPage() {
                         <ArrowLeft size={20} />
                     </Link>
                     <div className="flex-1 min-w-0">
-                        <h1 className="font-black text-slate-900 text-lg truncate">{grid.title}</h1>
+                        <h1 className="font-black text-slate-900 text-lg truncate">{studio.title}</h1>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-slate-400">Join Code:</span>
-                            <span className="text-xs font-bold text-sky-500 font-mono">{grid.flipCode}</span>
+                            <span className="text-xs font-bold text-sky-500 font-mono">{studio.processPlusCode}</span>
                             <button onClick={copyJoinLink} className="text-slate-400 hover:text-sky-500 transition-colors" aria-label="Copy join link">
                                 <Copy size={12} />
                             </button>
                         </div>
                     </div>
                     <button
-                        onClick={() => setShowCreateTopic(true)}
+                        onClick={() => setShowCreateProject(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold rounded-xl transition-colors"
                     >
                         <Plus size={16} />
-                        New Topic
+                        New Project
                     </button>
                 </div>
             </header>
 
             <main className="max-w-7xl mx-auto px-4 py-8">
-                {topics.length === 0 ? (
+                {projects.length === 0 ? (
                     <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
-                        <p className="text-slate-400 mb-4">No topics yet</p>
+                        <p className="text-slate-400 mb-4">No projects yet</p>
                         <button
-                            onClick={() => setShowCreateTopic(true)}
+                            onClick={() => setShowCreateProject(true)}
                             className="px-6 py-3 bg-sky-500 text-white font-bold rounded-xl hover:bg-sky-600 transition-colors"
                         >
-                            Create First Topic
+                            Create First Project
                         </button>
                     </div>
                 ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {topics.map(topic => (
-                            <div key={topic.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="studio sm:studio-cols-2 lg:studio-cols-3 gap-6">
+                        {projects.map(project => (
+                            <div key={project.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                                 <div className="p-5">
                                     <div className="flex items-start justify-between gap-2 mb-3">
-                                        <h3 className="font-bold text-slate-900 leading-tight">{topic.title}</h3>
+                                        <h3 className="font-bold text-slate-900 leading-tight">{project.title}</h3>
                                         <span className={`shrink-0 text-xs font-bold px-2 py-1 rounded-full ${
-                                            topic.status === "active"
+                                            project.status === "active"
                                                 ? "bg-emerald-100 text-emerald-700"
                                                 : "bg-slate-100 text-slate-500"
                                         }`}>
-                                            {topic.status}
+                                            {project.status}
                                         </span>
                                     </div>
-                                    <p className="text-slate-500 text-sm line-clamp-2 mb-4">{topic.promptText}</p>
+                                    <p className="text-slate-500 text-sm line-clamp-2 mb-4">{project.promptText}</p>
                                     <div className="flex items-center gap-2 text-xs text-slate-400 mb-4">
-                                        <span>Max: {topic.settings.maxDuration}s</span>
-                                        {topic.settings.moderation && (
+                                        <span>Max: {project.settings.maxDuration}s</span>
+                                        {project.settings.moderation && (
                                             <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
                                                 Moderated
                                             </span>
                                         )}
                                     </div>
                                     <Link
-                                        href={`/grids/${grid.flipCode}/topics/${topic.id}`}
+                                        href={`/studios/${studio.processPlusCode}/projects/${project.id}`}
                                         className="flex items-center gap-1 text-sky-500 text-sm font-bold hover:text-sky-600 transition-colors"
                                     >
                                         <ExternalLink size={14} />
-                                        View Topic Page
+                                        View Project Page
                                     </Link>
                                 </div>
                             </div>
@@ -119,11 +119,11 @@ export default function GridDetailPage() {
                 )}
             </main>
 
-            {showCreateTopic && (
-                <CreateTopicModal
-                    gridId={gridId}
-                    onClose={() => setShowCreateTopic(false)}
-                    onCreated={handleTopicCreated}
+            {showCreateProject && (
+                <CreateProjectModal
+                    studioId={studioId}
+                    onClose={() => setShowCreateProject(false)}
+                    onCreated={handleProjectCreated}
                 />
             )}
         </div>

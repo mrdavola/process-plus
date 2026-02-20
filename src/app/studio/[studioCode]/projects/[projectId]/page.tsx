@@ -3,17 +3,18 @@
 import { useEffect, useState } from "react";
 import { Share2, Copy, Video, Play, Search, Plus, Settings, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { getGridByFlipCode, getTopic, createResponse, approveResponse, hideResponse, deleteResponse, deleteTopic, deleteGrid, updateTopic } from "@/lib/firestore";
-import type { Grid, Topic, Response } from "@/lib/types";
+import { getStudioByProcessPlusCode, getProject, createResponse, approveResponse, hideResponse, deleteResponse, deleteProject, deleteStudio, updateProject } from "@/lib/firestore";
+import type { Studio, Project, Response } from "@/lib/types";
 import { onSnapshot, collection, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
-import ResponseCard from "@/components/topic/ResponseCard";
+import ResponseCard from "@/components/project-settings/ResponseCard";
 import Link from "next/link";
-import TheaterModal from "@/components/topic/TheaterModal";
+import TheaterModal from "@/components/project-settings/TheaterModal";
 import RecorderModal from "@/components/recorder/RecorderModal";
+import ProjectSettingsModal from "@/components/project-settings/ProjectSettingsModal";
+import SpotlightCarousel from "@/components/interactions/SpotlightCarousel";
 import Navbar from "@/components/layout/Navbar";
-import TopicSettingsModal from "@/components/topic/TopicSettingsModal";
 
 function getYouTubeEmbedUrl(url: string) {
     let videoId = "";
@@ -29,23 +30,23 @@ function getYouTubeEmbedUrl(url: string) {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
 }
 
-export default function TopicPage() {
-    const params = useParams<{ flipCode: string; topicId: string }>();
+export default function ProjectPage() {
+    const params = useParams<{ processPlusCode: string; projectId: string }>();
     const { user } = useAuth();
 
-    const [grid, setGrid] = useState<Grid | null>(null);
-    const [topic, setTopic] = useState<Topic | null>(null);
+    const [studio, setStudio] = useState<Studio | null>(null);
+    const [project, setProject] = useState<Project | null>(null);
     const [responses, setResponses] = useState<Response[]>([]);
     const [isRecorderOpen, setIsRecorderOpen] = useState(false);
     const [theaterIndex, setTheaterIndex] = useState<number | null>(null);
     const [replyToId, setReplyToId] = useState<string | undefined>();
     const [searchQuery, setSearchQuery] = useState("");
-    const [copiedTopic, setCopiedTopic] = useState(false);
-    const [copiedGrid, setCopiedGrid] = useState(false);
+    const [copiedProject, setCopiedProject] = useState(false);
+    const [copiedStudio, setCopiedStudio] = useState(false);
     const [copiedShare, setCopiedShare] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-    type SortOption = "newest" | "oldest" | "most_liked" | "most_viewed" | "random";
+    type SortOption = "newest" | "oldest" | "most_responses" | "most_viewed" | "random";
     type FilterOption = "all" | "approved" | "pending";
     const [sortOption, setSortOption] = useState<SortOption>("newest");
     const [filterOption, setFilterOption] = useState<FilterOption>("all");
@@ -56,30 +57,30 @@ export default function TopicPage() {
         setTimeout(() => setter(false), 2000);
     };
 
-    const isOwner = user && grid ? user.uid === grid.ownerId : false;
+    const isOwner = user && studio ? user.uid === studio.ownerId : false;
 
-    // Load grid + topic
+    // Load studio + project
     useEffect(() => {
-        if (!params.flipCode || !params.topicId) return;
-        getGridByFlipCode(params.flipCode).then(setGrid).catch(console.error);
-        getTopic(params.topicId).then(setTopic).catch(console.error);
-    }, [params.flipCode, params.topicId]);
+        if (!params.processPlusCode || !params.projectId) return;
+        getStudioByProcessPlusCode(params.processPlusCode).then(setStudio).catch(console.error);
+        getProject(params.projectId).then(setProject).catch(console.error);
+    }, [params.processPlusCode, params.projectId]);
 
     // Real-time listener: Owner sees ALL, Student/Guest sees ACTIVE only
     useEffect(() => {
-        if (!params.topicId) return;
+        if (!params.projectId) return;
 
         let q;
         if (isOwner) {
             q = query(
                 collection(db, "responses"),
-                where("topicId", "==", params.topicId),
+                where("projectId", "==", params.projectId),
                 orderBy("createdAt", "desc")
             );
         } else {
             q = query(
                 collection(db, "responses"),
-                where("topicId", "==", params.topicId),
+                where("projectId", "==", params.projectId),
                 where("status", "==", "active"),
                 orderBy("createdAt", "desc")
             );
@@ -95,7 +96,7 @@ export default function TopicPage() {
             }
         );
         return unsub;
-    }, [params.topicId, isOwner]);
+    }, [params.projectId, isOwner]);
 
     // Admin Handlers
     const handleApprove = async (id: string) => {
@@ -116,7 +117,7 @@ export default function TopicPage() {
     };
 
     const handleSpark = (id: string) => {
-        alert("✨ Spark Response: This feature will turn this response into a new Topic! (Coming soon)");
+        alert("✨ Spark Response: This feature will turn this response into a new Project! (Coming soon)");
     };
 
     const handleMixTape = (id: string) => {
@@ -141,15 +142,16 @@ export default function TopicPage() {
         if (sortOption === "oldest") {
             return (a.createdAt || 0) - (b.createdAt || 0);
         }
-        if (sortOption === "most_liked") {
-            const likesA = a.reactionsCount ?? a.reactions?.length ?? 0;
-            const likesB = b.reactionsCount ?? b.reactions?.length ?? 0;
-            return likesB - likesA;
+        if (sortOption === "most_responses") {
+            const obsA = a.observationsCount ?? 0;
+            const obsB = b.observationsCount ?? 0;
+            return obsB - obsA;
         }
         if (sortOption === "most_viewed") {
             return (b.views || 0) - (a.views || 0);
         }
         if (sortOption === "random") {
+            // eslint-disable-next-line react-hooks/purity
             return Math.random() - 0.5;
         }
         return 0;
@@ -172,19 +174,19 @@ export default function TopicPage() {
         }
     }, [currentTheaterIndex]);
 
-    if (!topic) {
+    if (!project) {
         return <div className="min-h-screen flex items-center justify-center text-slate-500 font-display">Loading...</div>;
     }
 
-    if (!isOwner && topic.status === "hidden") {
+    if (!isOwner && project.status === "hidden") {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 font-display p-4">
                 <Video size={64} className="text-slate-300 mb-6" />
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Topic Unavailable</h2>
-                <p className="text-lg mb-8">This topic is currently hidden by the educator.</p>
-                {grid && (
-                    <Link href={`/grids/${grid.flipCode}`} className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-bold transition-all">
-                        Return to Grid
+                <h2 className="text-3xl font-bold text-slate-900 mb-2">Project Unavailable</h2>
+                <p className="text-lg mb-8">This project is currently hidden by the educator.</p>
+                {studio && (
+                    <Link href={`/studios/${studio.processPlusCode}`} className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-bold transition-all">
+                        Return to Studio
                     </Link>
                 )}
             </div>
@@ -197,55 +199,55 @@ export default function TopicPage() {
 
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
 
-                {/* Topic Header */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+                {/* Project Header */}
+                <div className="studio studio-cols-1 lg:studio-cols-12 gap-8 mb-12">
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
-                        {isOwner && grid && (
+                        {isOwner && studio && (
                             <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
                                 <Link href="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard</Link>
                                 <span>/</span>
-                                <Link href={`/grids/${grid.flipCode}`} className="hover:text-sky-500 transition-colors">{grid.title}</Link>
+                                <Link href={`/studios/${studio.processPlusCode}`} className="hover:text-sky-500 transition-colors">{studio.title}</Link>
                                 <span>/</span>
-                                <span className="text-slate-800">{topic.title}</span>
+                                <span className="text-slate-800">{project.title}</span>
                             </nav>
                         )}
 
                         <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.1] flex items-center gap-3">
-                            {topic.icon && <span>{topic.icon}</span>}
-                            {topic.title}
+                            {project.icon && <span>{project.icon}</span>}
+                            {project.title}
                         </h1>
 
                         <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl whitespace-pre-wrap">
-                            {topic.promptText}
+                            {project.promptText}
                         </p>
 
-                        {topic.topicTip && (
+                        {project.projectTip && (
                             <div className="bg-sky-50 border border-sky-100 rounded-xl p-4 flex items-start gap-3 max-w-2xl">
                                 <span className="text-xl">💡</span>
                                 <div>
-                                    <h4 className="font-bold text-sky-900 text-sm uppercase tracking-wide mb-1">Topic Tip</h4>
-                                    <p className="text-sky-800 text-sm leading-relaxed">{topic.topicTip}</p>
+                                    <h4 className="font-bold text-sky-900 text-sm uppercase tracking-wide mb-1">Project Tip</h4>
+                                    <p className="text-sky-800 text-sm leading-relaxed">{project.projectTip}</p>
                                 </div>
                             </div>
                         )}
 
                         <div className="flex flex-wrap items-center gap-3 pt-4">
-                            {/* Topic Join Code */}
-                            {topic && topic.joinCode && (
+                            {/* Project Join Code */}
+                            {project && project.joinCode && (
                                 <button
-                                    onClick={() => handleCopy(topic.joinCode, setCopiedTopic)}
-                                    className={`flex items-center gap-2 border rounded-full px-5 py-2.5 shadow-sm transition-all group ${copiedTopic
+                                    onClick={() => handleCopy(project.joinCode, setCopiedProject)}
+                                    className={`flex items-center gap-2 border rounded-full px-5 py-2.5 shadow-sm transition-all group ${copiedProject
                                         ? "bg-emerald-50 border-emerald-200"
                                         : "bg-white border-slate-200 hover:border-sky-300"
                                         }`}
-                                    aria-label="Copy topic join code"
+                                    aria-label="Copy project join code"
                                 >
-                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Topic Code</span>
-                                    {copiedTopic ? (
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Project Code</span>
+                                    {copiedProject ? (
                                         <span className="text-sm font-bold text-emerald-600 ml-1">Copied!</span>
                                     ) : (
                                         <>
-                                            <span className="text-lg font-bold text-sky-500 font-mono ml-1">{topic.joinCode}</span>
+                                            <span className="text-lg font-bold text-sky-500 font-mono ml-1">{project.joinCode}</span>
                                             <Copy size={16} className="text-slate-400 group-hover:text-sky-500 transition-colors ml-1" />
                                         </>
                                     )}
@@ -264,18 +266,18 @@ export default function TopicPage() {
                                 <span>{copiedShare ? "Copied!" : "Share Link"}</span>
                             </button>
 
-                            {/* Grid Link (Secondary) */}
-                            {isOwner && grid && (
+                            {/* Studio Link (Secondary) */}
+                            {isOwner && studio && (
                                 <button
-                                    onClick={() => handleCopy(grid.flipCode, setCopiedGrid)}
+                                    onClick={() => handleCopy(studio.processPlusCode, setCopiedStudio)}
                                     className={`flex items-center gap-2 px-5 py-2.5 bg-transparent border-none hover:bg-slate-100 rounded-full transition-all group`}
-                                    aria-label="Copy grid join code"
+                                    aria-label="Copy studio join code"
                                 >
-                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Grid Code</span>
-                                    {copiedGrid ? (
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Studio Code</span>
+                                    {copiedStudio ? (
                                         <span className="text-sm font-bold text-emerald-600 ml-1">Copied!</span>
                                     ) : (
-                                        <span className="text-sm font-bold text-slate-500 font-mono ml-1">{grid.flipCode}</span>
+                                        <span className="text-sm font-bold text-slate-500 font-mono ml-1">{studio.processPlusCode}</span>
                                     )}
                                 </button>
                             )}
@@ -286,19 +288,19 @@ export default function TopicPage() {
                                     <button
                                         onClick={() => setIsSettingsOpen(true)}
                                         className="p-2.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-full transition-colors ml-2"
-                                        title="Topic Settings"
+                                        title="Project Settings"
                                     >
                                         <Settings size={20} />
                                     </button>
                                     <button
                                         onClick={async () => {
                                             if (confirm("Delete this TOPIC? This cannot be undone.")) {
-                                                await deleteTopic(params.topicId);
-                                                window.location.href = `/grids/${params.flipCode}`;
+                                                await deleteProject(params.projectId);
+                                                window.location.href = `/studios/${params.processPlusCode}`;
                                             }
                                         }}
                                         className="p-2.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                                        title="Delete Topic"
+                                        title="Delete Project"
                                     >
                                         <Trash2 size={20} />
                                     </button>
@@ -307,11 +309,11 @@ export default function TopicPage() {
                         </div>
                     </div>
 
-                    {topic.mediaResource && (
+                    {project.mediaResource && (
                         <div className="lg:col-span-5 relative w-full aspect-video rounded-2xl overflow-hidden shadow-soft bg-slate-900 border border-slate-200/50">
-                            {topic.mediaResource.type === "youtube" ? (
+                            {project.mediaResource.type === "youtube" ? (
                                 <iframe
-                                    src={getYouTubeEmbedUrl(topic.mediaResource.url)}
+                                    src={getYouTubeEmbedUrl(project.mediaResource.url)}
                                     className="w-full h-full border-0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
@@ -320,8 +322,8 @@ export default function TopicPage() {
                                 <div className="group cursor-pointer relative w-full h-full">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
-                                        src={topic.mediaResource.url}
-                                        alt="Topic Media"
+                                        src={project.mediaResource.url}
+                                        alt="Project Media"
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center">
@@ -354,7 +356,7 @@ export default function TopicPage() {
                         </div>
 
                         <div className="flex items-center gap-3 flex-1 md:justify-end flex-wrap">
-                            {isOwner && topic.settings.moderation && (
+                            {isOwner && project.settings.moderation && (
                                 <div className="relative">
                                     <select
                                         value={filterOption}
@@ -388,7 +390,7 @@ export default function TopicPage() {
                                 >
                                     <option value="newest">Newest First</option>
                                     <option value="oldest">Oldest First</option>
-                                    <option value="most_liked">Most Liked</option>
+                                    <option value="most_observed">Most Observed</option>
                                     <option value="most_viewed">Most Viewed</option>
                                     <option value="random">Randomize</option>
                                 </select>
@@ -408,7 +410,12 @@ export default function TopicPage() {
                     </div>
                 </div>
 
-                {/* Masonry Grid */}
+                <SpotlightCarousel
+                    responses={filteredResponses}
+                    onSelect={(id) => setTheaterResponseId(id)}
+                />
+
+                {/* Masonry Studio */}
                 {topLevelResponses.length === 0 ? (
                     <div className="text-center py-20">
                         <p className="text-slate-400 text-lg">No responses yet. Be the first!</p>
@@ -433,10 +440,10 @@ export default function TopicPage() {
                 )}
 
                 {/* FAB */}
-                {(!isOwner && topic.status !== "active") ? (
+                {(!isOwner && project.status !== "active") ? (
                     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
                         <div className="bg-slate-800 text-white px-6 py-3 rounded-full shadow-lg font-bold text-sm tracking-wide flex items-center gap-2">
-                            <span>⛄️</span> Topic is {topic.status}
+                            <span>⛄️</span> Project is {project.status}
                         </div>
                     </div>
                 ) : (
@@ -460,10 +467,10 @@ export default function TopicPage() {
                     setIsRecorderOpen(false);
                     setReplyToId(undefined); // Reset
                 }}
-                topicId={params.topicId}
-                topicTitle={topic.title}
-                promptText={topic.promptText}
-                topicSettings={topic.settings}
+                projectId={params.projectId}
+                projectTitle={project.title}
+                promptText={project.promptText}
+                projectSettings={project.settings}
                 userId={user?.uid ?? "guest"}
                 replyToId={replyToId}
             />
@@ -477,7 +484,7 @@ export default function TopicPage() {
                     const newId = filteredResponses[idx]?.id;
                     if (newId) setTheaterResponseId(newId);
                 }}
-                topic={topic}
+                project={project}
                 currentUserId={user?.uid}
                 isOwner={isOwner}
                 onReply={(responseId: string) => {
@@ -490,11 +497,11 @@ export default function TopicPage() {
                 }}
             />
 
-            <TopicSettingsModal
+            <ProjectSettingsModal
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
-                topic={topic}
-                onSave={updateTopic}
+                project={project}
+                onSave={updateProject}
             />
         </div>
     );

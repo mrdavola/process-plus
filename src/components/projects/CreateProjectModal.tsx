@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { createTopic } from "@/lib/firestore";
-import { Topic } from "@/lib/types";
+import { createProject } from "@/lib/firestore";
+import { Project } from "@/lib/types";
 
-interface CreateTopicModalProps {
-    gridId: string;
+interface CreateProjectModalProps {
+    studioId: string;
     onClose: () => void;
-    onCreated: (topic: Topic) => void;
+    onCreated: (project: Project) => void;
 }
 
 const DURATION_OPTIONS = [15, 30, 60, 90, 180, 300];
 
-export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateTopicModalProps) {
+export default function CreateProjectModal({ studioId, onClose, onCreated }: CreateProjectModalProps) {
     const [title, setTitle] = useState("");
     const [promptText, setPromptText] = useState("");
     const [maxDuration, setMaxDuration] = useState(120);
@@ -27,8 +27,8 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
         setBusy(true);
         setError(null);
         try {
-            const topicData = {
-                gridId,
+            const projectData = {
+                studioId,
                 title: title.trim(),
                 promptText: promptText.trim(),
                 settings: {
@@ -40,15 +40,15 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
                     selfieDecorations: true,
                     studentReplies: false, // Defaulting to false as requested
                     videoReactions: true,
-                    feedbackType: "none" as const,
-                    privateFeedback: false
+                    feedbackbackType: "none" as const,
+                    privatefeedbackback: false
                 },
                 status: "active" as const,
             };
-            const id = await createTopic(topicData);
-            onCreated({ id, ...topicData, joinCode: "pending", createdAt: Date.now() });
+            const id = await createProject(projectData);
+            onCreated({ id, ...projectData, joinCode: "pending", createdAt: Date.now() });
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to create topic");
+            setError(e instanceof Error ? e.message : "Failed to create project");
         } finally {
             setBusy(false);
         }
@@ -58,7 +58,7 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 border border-slate-100 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-black text-slate-900">New Topic</h2>
+                    <h2 className="text-2xl font-black text-slate-900">New Project</h2>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                         <X size={20} />
                     </button>
@@ -66,7 +66,7 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Topic Title</label>
+                        <label className="block text-xs font-bold uppercase text-slate-400 mb-1">Project Title</label>
                         <input
                             type="text"
                             value={title}
@@ -131,7 +131,7 @@ export default function CreateTopicModal({ gridId, onClose, onCreated }: CreateT
                         disabled={busy || !title.trim() || !promptText.trim()}
                         className="w-full py-3 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
                     >
-                        {busy ? "Creating..." : "Post Topic"}
+                        {busy ? "Creating..." : "Post Project"}
                     </button>
                 </form>
             </div>

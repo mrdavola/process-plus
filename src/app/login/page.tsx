@@ -101,12 +101,12 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <div className="mt-6 grid grid-cols-1 gap-3">
+                        <div className="mt-6 studio studio-cols-1 gap-3">
                             <a
                                 href="/join"
                                 className="w-full inline-flex justify-center py-3 px-4 border border-slate-300 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50"
                             >
-                                Enter a Flip Code
+                                Enter a ProcessPlus Code
                             </a>
                         </div>
                     </div>

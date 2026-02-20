@@ -17,11 +17,11 @@ export default function Navbar() {
         <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
-                    <div className="flex items-center justify-center size-10 rounded-xl bg-sky-100 text-sky-500 group-hover:bg-sky-500 group-hover:text-white transition-colors">
+                    <div className="flex items-center justify-center size-10 rounded-xl bg-brand-amber/20 text-brand-amber group-hover:bg-brand-amber group-hover:text-brand-warm transition-colors">
                         <Video size={24} className="fill-current" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-slate-900">
-                        Flipgrid <span className="text-sky-500">Rebuild</span>
+                    <span className="text-2xl font-display tracking-tight text-brand-warm">
+                        Process<span className="text-brand-amber">+</span>
                     </span>
                 </Link>
 
@@ -31,14 +31,14 @@ export default function Navbar() {
                             {user ? (
                                 <div className="flex items-center gap-4">
                                     {!pathname.includes("/dashboard") && (
-                                        <Link href="/dashboard" className="text-sm font-bold text-sky-500 bg-sky-50 px-3 py-1.5 rounded-lg hover:bg-sky-100 hover:text-sky-600 transition-colors">
+                                        <Link href="/dashboard" className="text-sm font-bold text-brand-amber bg-brand-cream px-3 py-1.5 rounded-lg hover:bg-brand-amber/10 transition-colors">
                                             My Dashboard
                                         </Link>
                                     )}
                                     <NotificationBell />
                                     <div className="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="size-8 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+                                            <div className="size-8 rounded-full bg-brand-amber/20 text-brand-amber flex items-center justify-center font-bold">
                                                 {user.displayName?.charAt(0).toUpperCase() || "U"}
                                             </div>
                                             <span className="text-sm font-medium text-slate-700 hidden sm:block">
@@ -59,7 +59,7 @@ export default function Navbar() {
                                     <Link href="/login" className="text-sm font-bold text-slate-600 hover:text-slate-900 px-4 py-2 hidden sm:block">
                                         Educator Login
                                     </Link>
-                                    <Link href="/login" className="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold rounded-xl shadow-md shadow-sky-500/20 transition-all hover:-translate-y-0.5">
+                                    <Link href="/login" className="px-5 py-2 bg-brand-amber hover:bg-brand-amber/90 text-brand-warm text-sm font-bold rounded-xl shadow-md shadow-brand-amber/20 transition-all hover:-translate-y-0.5">
                                         Sign Up
                                     </Link>
                                 </div>

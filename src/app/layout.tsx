@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import { Lexend, Noto_Sans } from "next/font/google";
+import { Inter, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 
-const lexend = Lexend({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-lexend",
+  variable: "--font-inter",
   display: "swap",
 });
 
-const notoSans = Noto_Sans({
+const dmSerifDisplay = DM_Serif_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-noto",
+  weight: "400",
+  variable: "--font-dm-serif",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Flipgrid Rebuild",
-  description: "A rebuild of the classic Flipgrid experience.",
+  title: "Process+",
+  description: "A community learning space built around documenting the journey of learning.",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lexend.variable} ${notoSans.variable} antialiased bg-slate-50 font-body`}
+        className={`${inter.variable} ${dmSerifDisplay.variable} antialiased bg-brand-cream font-body text-brand-warm`}
       >
         <AuthProvider>{children}</AuthProvider>
       </body>

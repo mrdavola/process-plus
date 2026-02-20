@@ -10,15 +10,16 @@ import { v4 as uuidv4 } from "uuid";
 interface SubmitStateProps {
     videoBlobUrl: string;
     selfieBlob: Blob;
-    topicId: string;
-    topicTitle: string;
+    reflections: string[];
+    projectId: string;
+    projectTitle: string;
     userId: string;
     moderation?: boolean;
     replyToId?: string;
     onSuccess: () => void;
 }
 
-export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTitle, userId, moderation = false, replyToId, onSuccess }: SubmitStateProps) {
+export default function SubmitState({ videoBlobUrl, selfieBlob, reflections, projectId, projectTitle, userId, moderation = false, replyToId, onSuccess }: SubmitStateProps) {
     const [displayName, setDisplayName] = useState("");
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState("");
@@ -53,7 +54,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
             const initialStatus = moderation ? "hidden" : "active";
 
             await createResponse({
-                topicId,
+                projectId,
                 userId,
                 userDisplayName: trimmedName,
                 videoUrl: videoDownloadUrl,
@@ -61,6 +62,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
                 status: initialStatus,
                 views: 0,
                 reactions: [],
+                reflections,
                 ...(replyToId && { replyToId }),
                 createdAt: Date.now(),
             });
@@ -89,7 +91,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
                     <p className="text-white/60 max-w-xs">
                         {moderation
                             ? "Your video has been sent to your teacher for approval."
-                            : "Your response is live on the grid."}
+                            : "Your response is live on the studio."}
                     </p>
                 </div>
             </div>
@@ -103,7 +105,7 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, topicId, topicTi
                     <Upload size={32} />
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Submit to {topicTitle}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Submit to {projectTitle}</h2>
                 <p className="text-gray-500 mb-8">Almost there! Add your name so everyone knows it&apos;s you.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

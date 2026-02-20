@@ -19,7 +19,7 @@ import {
     arrayRemove
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Grid, Topic, Response, UserProfile, UserRole, TopicStatus, Notification } from "./types";
+import { Studio, Project, Response, UserProfile, UserRole, ProjectStatus, Notification } from "./types";
 
 // Helper to recursively remove undefined fields
 function removeUndefined(obj: any): any {
@@ -39,9 +39,9 @@ function removeUndefined(obj: any): any {
     return obj;
 }
 
-// --- Grids ---
+// --- Studios ---
 
-export async function generateUniqueFlipCode(): Promise<string> {
+export async function generateUniqueProcessPlusCode(): Promise<string> {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let code = "";
     let isUnique = false;
@@ -53,7 +53,7 @@ export async function generateUniqueFlipCode(): Promise<string> {
         }
 
         // Check if code exists
-        const q = query(collection(db, "grids"), where("flipCode", "==", code));
+        const q = query(collection(db, "studios"), where("processPlusCode", "==", code));
         const snap = await getDocs(q);
         if (snap.empty) {
             isUnique = true;
@@ -62,76 +62,76 @@ export async function generateUniqueFlipCode(): Promise<string> {
     return code;
 }
 
-export async function createGrid(data: Omit<Grid, "id" | "flipCode" | "createdAt" | "updatedAt">): Promise<string> {
-    const flipCode = await generateUniqueFlipCode();
+export async function createStudio(data: Omit<Studio, "id" | "processPlusCode" | "createdAt" | "updatedAt">): Promise<string> {
+    const processPlusCode = await generateUniqueProcessPlusCode();
 
-    const gridData: Omit<Grid, "id"> = {
+    const studioData: Omit<Studio, "id"> = {
         ...data,
-        flipCode,
+        processPlusCode,
         createdAt: Date.now(),
         updatedAt: Date.now()
     };
 
-    const docRef = await addDoc(collection(db, "grids"), gridData);
+    const docRef = await addDoc(collection(db, "studios"), studioData);
     return docRef.id;
 }
 
-export async function getGrid(id: string): Promise<Grid | null> {
-    const docRef = doc(db, "grids", id);
+export async function getStudio(id: string): Promise<Studio | null> {
+    const docRef = doc(db, "studios", id);
     const snap = await getDoc(docRef);
-    return snap.exists() ? ({ id: snap.id, ...snap.data() } as Grid) : null;
+    return snap.exists() ? ({ id: snap.id, ...snap.data() } as Studio) : null;
 }
 
-export async function getGridByFlipCode(flipCode: string): Promise<Grid | null> {
-    const q = query(collection(db, "grids"), where("flipCode", "==", flipCode));
+export async function getStudioByProcessPlusCode(processPlusCode: string): Promise<Studio | null> {
+    const q = query(collection(db, "studios"), where("processPlusCode", "==", processPlusCode));
     const snap = await getDocs(q);
     if (snap.empty) return null;
     const doc = snap.docs[0];
-    return { id: doc.id, ...doc.data() } as Grid;
+    return { id: doc.id, ...doc.data() } as Studio;
 }
 
-export async function updateTopic(id: string, data: Partial<Omit<Topic, "id" | "gridId" | "joinCode" | "createdAt">>) {
-    const docRef = doc(db, "topics", id);
+export async function updateProject(id: string, data: Partial<Omit<Project, "id" | "studioId" | "joinCode" | "createdAt">>) {
+    const docRef = doc(db, "projects", id);
     const cleanedData = removeUndefined(data);
     await updateDoc(docRef, { ...cleanedData, updatedAt: Date.now() });
 }
 
-export async function deleteGrid(gridId: string): Promise<void> {
-    // 1. Get all topics for this grid
-    const topicsQ = query(collection(db, "topics"), where("gridId", "==", gridId));
-    const topicsSnap = await getDocs(topicsQ);
+export async function deleteStudio(studioId: string): Promise<void> {
+    // 1. Get all projects for this studio
+    const projectsQ = query(collection(db, "projects"), where("studioId", "==", studioId));
+    const projectsSnap = await getDocs(projectsQ);
 
-    // 2. Delete all topics (which should cascade delete responses)
-    const deletePromises = topicsSnap.docs.map(doc => deleteTopic(doc.id));
+    // 2. Delete all projects (which should cascade delete responses)
+    const deletePromises = projectsSnap.docs.map(doc => deleteProject(doc.id));
     await Promise.all(deletePromises);
 
-    // 3. Delete the grid itself
-    await deleteDoc(doc(db, "grids", gridId));
+    // 3. Delete the studio itself
+    await deleteDoc(doc(db, "studios", studioId));
 }
 
-export async function getGridsForOwner(ownerId: string): Promise<Grid[]> {
+export async function getStudiosForOwner(ownerId: string): Promise<Studio[]> {
     const q = query(
-        collection(db, "grids"),
+        collection(db, "studios"),
         where("ownerId", "==", ownerId),
         orderBy("createdAt", "desc")
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Grid));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Studio));
 }
 
-export async function updateGrid(id: string, data: Partial<Omit<Grid, "id">>) {
-    const docRef = doc(db, "grids", id);
+export async function updateStudio(id: string, data: Partial<Omit<Studio, "id">>) {
+    const docRef = doc(db, "studios", id);
 
-    // If flipCode is being updated, verify uniqueness
-    if (data.flipCode) {
-        const q = query(collection(db, "grids"), where("flipCode", "==", data.flipCode));
+    // If processPlusCode is being updated, verify uniqueness
+    if (data.processPlusCode) {
+        const q = query(collection(db, "studios"), where("processPlusCode", "==", data.processPlusCode));
         const snap = await getDocs(q);
 
-        // If there's a match, make sure it's not the current grid
+        // If there's a match, make sure it's not the current studio
         if (!snap.empty) {
             const matchId = snap.docs[0].id;
             if (matchId !== id) {
-                throw new Error("Flip code is already taken.");
+                throw new Error("ProcessPlus code is already taken.");
             }
         }
     }
@@ -145,17 +145,17 @@ export async function updateGrid(id: string, data: Partial<Omit<Grid, "id">>) {
     });
 }
 
-export async function generateUniqueTopicCode(): Promise<string> {
+export async function generateUniqueProjectCode(): Promise<string> {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let code = "";
     let isUnique = false;
 
     while (!isUnique) {
         code = "";
-        for (let i = 0; i < 7; i++) { // Let's make it 7 chars to avoid grid collisions
+        for (let i = 0; i < 7; i++) { // Let's make it 7 chars to avoid studio collisions
             code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        const q = query(collection(db, "topics"), where("joinCode", "==", code));
+        const q = query(collection(db, "projects"), where("joinCode", "==", code));
         const snap = await getDocs(q);
         if (snap.empty) {
             isUnique = true;
@@ -164,9 +164,9 @@ export async function generateUniqueTopicCode(): Promise<string> {
     return code;
 }
 
-export async function createTopic(data: Omit<Topic, "id" | "joinCode" | "createdAt">): Promise<string> {
-    const joinCode = await generateUniqueTopicCode();
-    const docRef = await addDoc(collection(db, "topics"), {
+export async function createProject(data: Omit<Project, "id" | "joinCode" | "createdAt">): Promise<string> {
+    const joinCode = await generateUniqueProjectCode();
+    const docRef = await addDoc(collection(db, "projects"), {
         ...data,
         joinCode,
         createdAt: serverTimestamp()
@@ -174,34 +174,41 @@ export async function createTopic(data: Omit<Topic, "id" | "joinCode" | "created
     return docRef.id;
 }
 
-export async function getTopic(id: string): Promise<Topic | null> {
-    const docRef = doc(db, "topics", id);
+export async function getProject(id: string): Promise<Project | null> {
+    const docRef = doc(db, "projects", id);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
-        return { id: snap.id, ...snap.data() } as Topic;
+        return { id: snap.id, ...snap.data() } as Project;
     }
     return null;
 }
 
-export async function getTopicByJoinCode(joinCode: string): Promise<Topic | null> {
-    const q = query(collection(db, "topics"), where("joinCode", "==", joinCode));
+export async function getProjectByJoinCode(joinCode: string): Promise<Project | null> {
+    const q = query(collection(db, "projects"), where("joinCode", "==", joinCode));
     const snap = await getDocs(q);
     if (snap.empty) return null;
     const doc = snap.docs[0];
-    return { id: doc.id, ...doc.data() } as Topic;
+    return { id: doc.id, ...doc.data() } as Project;
 }
 
-export async function getTopicsForGrid(gridId: string): Promise<Topic[]> {
+export async function getProjectsForStudio(studioId: string): Promise<Project[]> {
     const q = query(
-        collection(db, "topics"),
-        where("gridId", "==", gridId),
+        collection(db, "projects"),
+        where("studioId", "==", studioId),
         orderBy("createdAt", "desc")
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Topic));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Project));
 }
 
 // --- Responses ---
+
+export async function incrementResponseViews(responseId: string): Promise<void> {
+    const ref = doc(db, "responses", responseId);
+    await updateDoc(ref, {
+        views: increment(1)
+    });
+}
 
 export async function createResponse(data: Omit<Response, "id">): Promise<string> {
     const batch = writeBatch(db);
@@ -212,11 +219,12 @@ export async function createResponse(data: Omit<Response, "id">): Promise<string
         createdAt: serverTimestamp()
     });
 
-    const topicRef = doc(db, "topics", data.topicId);
-    const topicSnap = await getDoc(topicRef);
+    const projectRef = doc(db, "projects", data.projectId);
+    const projectSnap = await getDoc(projectRef);
 
-    if (topicSnap.exists()) {
-        const topic = topicSnap.data() as Topic;
+    if (projectSnap.exists()) {
+        const projectData = projectSnap.data();
+        const projectId = projectRef.id; // Use the ref ID, NOT projectData.id (which is undefined)
 
         const updates: any = {
             responseCount: increment(1),
@@ -225,15 +233,15 @@ export async function createResponse(data: Omit<Response, "id">): Promise<string
         if (data.status === "hidden") {
             updates.pendingCount = increment(1);
         }
-        batch.update(topicRef, updates);
+        batch.update(projectRef, updates);
 
-        const gridRef = doc(db, "grids", topic.gridId);
-        const gridSnap = await getDoc(gridRef);
+        const studioRef = doc(db, "studios", projectData.studioId);
+        const studioSnap = await getDoc(studioRef);
 
-        if (gridSnap.exists()) {
-            const grid = { id: gridSnap.id, ...gridSnap.data() } as Grid;
+        if (studioSnap.exists()) {
+            const studio = { id: studioSnap.id, ...studioSnap.data() } as Studio;
             const notificationType = data.status === "hidden" ? "pending_approval" : "new_response";
-            const recipients = Array.from(new Set([grid.ownerId, ...(grid.coPilots || [])]));
+            const recipients = Array.from(new Set([studio.ownerId, ...(studio.coPilots || [])]));
 
             for (const recipientId of recipients) {
                 if (recipientId === data.userId) continue;
@@ -241,12 +249,12 @@ export async function createResponse(data: Omit<Response, "id">): Promise<string
                 const notifRef = doc(collection(db, "notifications"));
                 batch.set(notifRef, {
                     recipientId,
-                    gridId: grid.id,
-                    topicId: topic.id,
+                    studioId: studio.id,
+                    projectId,  // Now correctly using projectRef.id
                     responseId: newResponseRef.id,
                     type: notificationType,
                     title: data.status === "hidden" ? "New response pending approval" : "New response",
-                    body: `${data.userDisplayName} posted in ${topic.title}`,
+                    body: `${data.userDisplayName} posted in ${projectData.title}`,
                     createdAt: Date.now(),
                     read: false
                 });
@@ -258,10 +266,10 @@ export async function createResponse(data: Omit<Response, "id">): Promise<string
     return newResponseRef.id;
 }
 
-export async function getResponsesForTopic(topicId: string): Promise<Response[]> {
+export async function getResponsesForProject(projectId: string): Promise<Response[]> {
     const q = query(
         collection(db, "responses"),
-        where("topicId", "==", topicId),
+        where("projectId", "==", projectId),
         where("status", "==", "active"),
         orderBy("createdAt", "desc")
     );
@@ -296,22 +304,33 @@ export async function updateUserRole(uid: string, role: UserRole): Promise<void>
     await updateDoc(doc(db, "users", uid), { role });
 }
 
-export async function updateTopicStatus(topicId: string, status: TopicStatus): Promise<void> {
-    await updateDoc(doc(db, "topics", topicId), { status });
+export async function updateProjectStatus(projectId: string, status: ProjectStatus): Promise<void> {
+    await updateDoc(doc(db, "projects", projectId), { status });
 }
 
 // import { arrayUnion, arrayRemove } from "firebase/firestore"; // Now at top
 
-export async function toggleResponseReaction(responseId: string, userId: string, currentlyLiked: boolean): Promise<void> {
-    const docRef = doc(db, "responses", responseId);
-    if (currentlyLiked) {
-        await updateDoc(docRef, { reactions: arrayRemove(userId) });
-    } else {
-        await updateDoc(docRef, { reactions: arrayUnion(userId) });
-    }
+export async function addObservation(responseId: string, userId: string, text: string): Promise<void> {
+    const observationsRef = collection(db, "responses", responseId, "observations");
+    await addDoc(observationsRef, {
+        userId,
+        text,
+        createdAt: serverTimestamp()
+    });
+
+    // Optionally increment a counter on the parent response
+    const responseRef = doc(db, "responses", responseId);
+    await updateDoc(responseRef, {
+        observationsCount: increment(1)
+    });
 }
 
-export async function addResponseFeedback(responseId: string, feedbackText: string): Promise<void> {
+export async function toggleSpotlight(responseId: string, currentlySpotlighted: boolean): Promise<void> {
+    const docRef = doc(db, "responses", responseId);
+    await updateDoc(docRef, { isSpotlighted: !currentlySpotlighted });
+}
+
+export async function addResponsefeedback(responseId: string, feedbackText: string): Promise<void> {
     const docRef = doc(db, "responses", responseId);
     await updateDoc(docRef, { "feedback.text": feedbackText });
 }
@@ -325,7 +344,7 @@ export async function approveResponse(responseId: string): Promise<void> {
     batch.update(doc(db, "responses", responseId), { status: "active" });
 
     if (data.status === "hidden") {
-        batch.update(doc(db, "topics", data.topicId), { pendingCount: increment(-1) });
+        batch.update(doc(db, "projects", data.projectId), { pendingCount: increment(-1) });
     }
     await batch.commit();
 }
@@ -339,22 +358,22 @@ export async function hideResponse(responseId: string): Promise<void> {
     batch.update(doc(db, "responses", responseId), { status: "hidden" });
 
     if (data.status === "active") {
-        batch.update(doc(db, "topics", data.topicId), { pendingCount: increment(1) });
+        batch.update(doc(db, "projects", data.projectId), { pendingCount: increment(1) });
     }
     await batch.commit();
 }
 
-export async function deleteTopic(topicId: string): Promise<void> {
+export async function deleteProject(projectId: string): Promise<void> {
     // 1. Get all responses
-    const resQ = query(collection(db, "responses"), where("topicId", "==", topicId));
+    const resQ = query(collection(db, "responses"), where("projectId", "==", projectId));
     const resSnap = await getDocs(resQ);
 
     // 2. Delete all responses
     const deletePromises = resSnap.docs.map(d => deleteResponse(d.id));
     await Promise.all(deletePromises);
 
-    // 3. Delete topic
-    await deleteDoc(doc(db, "topics", topicId));
+    // 3. Delete project
+    await deleteDoc(doc(db, "projects", projectId));
 }
 
 export async function deleteResponse(responseId: string): Promise<void> {
@@ -370,24 +389,24 @@ export async function deleteResponse(responseId: string): Promise<void> {
         updates.pendingCount = increment(-1);
     }
 
-    batch.update(doc(db, "topics", data.topicId), updates);
+    batch.update(doc(db, "projects", data.projectId), updates);
     await batch.commit();
 }
 
 export async function findDestinationByCode(code: string): Promise<string | null> {
     const normalizedCode = code.trim().toLowerCase();
 
-    // Check Grids first
-    const grid = await getGridByFlipCode(normalizedCode);
-    if (grid) return `/grids/${grid.flipCode}`;
+    // Check Studios first
+    const studio = await getStudioByProcessPlusCode(normalizedCode);
+    if (studio) return `/studios/${studio.processPlusCode}`;
 
-    // Check Topics next
-    const topic = await getTopicByJoinCode(normalizedCode);
-    if (topic) {
-        // Need to find the parent grid to form the URL
-        const parentGrid = await getGrid(topic.gridId);
-        if (parentGrid) {
-            return `/grids/${parentGrid.flipCode}/topics/${topic.id}`;
+    // Check Projects next
+    const project = await getProjectByJoinCode(normalizedCode);
+    if (project) {
+        // Need to find the parent studio to form the URL
+        const parentStudio = await getStudio(project.studioId);
+        if (parentStudio) {
+            return `/studios/${parentStudio.processPlusCode}/projects/${project.id}`;
         }
     }
     return null;
