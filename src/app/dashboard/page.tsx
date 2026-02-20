@@ -134,7 +134,7 @@ export default function DashboardPage() {
                         {studios.map((studio) => (
                             <Link
                                 key={studio.id}
-                                href={`/studios/${studio.processPlusCode}`}
+                                href={`/studio/${studio.processPlusCode}`}
                                 className="group bg-white rounded-2xl p-6 border border-brand-amber/10 hover:border-brand-amber hover:shadow-md transition-all duration-300 flex flex-col h-full"
                             >
                                 <div className="flex items-start justify-between mb-4">
