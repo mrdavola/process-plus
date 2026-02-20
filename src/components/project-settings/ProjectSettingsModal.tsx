@@ -326,7 +326,8 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className="px-8 py-3 bg-brand-amber hover:bg-brand-amber/90 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                            className="px-8 py-3 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                            style={{ backgroundColor: '#c2410c' }}
                         >
                             {isSaving ? "Saving..." : "Save Settings"}
                         </button>

@@ -55,7 +55,8 @@ export default function ReflectionState({ prompts, onComplete }: ReflectionState
                     <button
                         type="submit"
                         disabled={!isComplete}
-                        className="w-full py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all mt-8"
+                        className="w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all mt-8"
+                        style={{ backgroundColor: '#c2410c' }}
                     >
                         Review & Submit <ArrowRight size={20} />
                     </button>

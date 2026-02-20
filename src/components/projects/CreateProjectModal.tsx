@@ -129,7 +129,8 @@ export default function CreateProjectModal({ studioId, onClose, onCreated }: Cre
                     <button
                         type="submit"
                         disabled={busy || !title.trim() || !promptText.trim()}
-                        className="w-full py-3 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        className="w-full py-3 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        style={{ backgroundColor: '#c2410c' }}
                     >
                         {busy ? "Creating..." : "Post Project"}
                     </button>

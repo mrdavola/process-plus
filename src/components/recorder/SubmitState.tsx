@@ -136,7 +136,8 @@ export default function SubmitState({ videoBlobUrl, selfieBlob, reflections, pro
                     <button
                         type="submit"
                         disabled={isUploading || !displayName.trim()}
-                        className="w-full py-4 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-brand-amber/20 flex items-center justify-center gap-2 transition-all"
+                        className="w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+                        style={{ backgroundColor: '#c2410c' }}
                     >
                         {isUploading ? "Uploading..." : "Submit Video"}
                     </button>

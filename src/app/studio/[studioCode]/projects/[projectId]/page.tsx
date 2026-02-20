@@ -450,7 +450,8 @@ export default function ProjectPage() {
                     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
                         <button
                             onClick={() => setIsRecorderOpen(true)}
-                            className="flex items-center gap-3 bg-brand-amber hover:bg-brand-amber/90 text-white px-8 py-4 rounded-full shadow-xl shadow-brand-amber/40 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 group"
+                            className="flex items-center gap-3 text-white px-8 py-4 rounded-full shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 group"
+                            style={{ backgroundColor: '#c2410c' }}
                         >
                             <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-colors">
                                 <Video size={24} className="fill-current" />

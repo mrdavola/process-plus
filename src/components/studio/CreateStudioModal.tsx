@@ -93,8 +93,8 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                                     type="button"
                                     onClick={() => setAccessType(type)}
                                     className={`p-3 rounded-xl border-2 text-sm font-bold transition-colors ${accessType === type
-                                            ? "border-brand-amber bg-brand-amber/5 text-brand-amber/90"
-                                            : "border-slate-200 text-slate-600 hover:border-slate-300"
+                                        ? "border-brand-amber bg-brand-amber/5 text-brand-amber/90"
+                                        : "border-slate-200 text-slate-600 hover:border-slate-300"
                                         }`}
                                 >
                                     {type === "public" ? "Public / PLC" : "School Domain"}
@@ -121,7 +121,8 @@ export default function CreateStudioModal({ ownerId, onClose, onCreated }: Creat
                     <button
                         type="submit"
                         disabled={busy || !title.trim() || !processPlusCode.trim()}
-                        className="w-full py-3 bg-brand-amber hover:bg-brand-amber/90 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        className="w-full py-3 disabled:opacity-50 text-white font-bold rounded-xl transition-colors"
+                        style={{ backgroundColor: '#c2410c' }}
                     >
                         {busy ? "Creating..." : "Create Studio"}
                     </button>
