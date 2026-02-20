@@ -27,7 +27,7 @@ export default function SpotlightCarousel({ responses, onSelect }: SpotlightCaro
                     <div
                         key={entry.id}
                         onClick={() => onSelect(entry.id)}
-                        className="snap-start shrink-0 w-64 aspect-[3/4] relative rounded-2xl overflow-hidden cursor-pointer group shadow-soft hover:shadow-float outline outline-1 outline-transparent hover:outline-brand-amber/50 transition-all flex border border-slate-200"
+                        className="snap-start shrink-0 w-64 aspect-[3/4] relative rounded-2xl overflow-hidden cursor-pointer group hover:-translate-y-1 outline outline-2 outline-transparent hover:outline-brand-amber transition-all flex border-2 border-slate-200"
                     >
                         {/* Background Thumbnail */}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -37,8 +37,8 @@ export default function SpotlightCarousel({ responses, onSelect }: SpotlightCaro
                             className="w-full h-full object-cover opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
                         />
 
-                        {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
+                        {/* Overlay Solid Gradient for Flat Look */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-warm via-brand-warm/60 to-transparent" />
 
                         {/* Content */}
                         <div className="absolute inset-0 p-5 flex flex-col justify-end">
@@ -54,8 +54,8 @@ export default function SpotlightCarousel({ responses, onSelect }: SpotlightCaro
 
                         {/* Play Icon - Appears on Hover */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-xl scale-90 group-hover:scale-100 transition-transform">
-                                <Play fill="currentColor" size={24} className="text-white ml-1" />
+                            <div className="w-14 h-14 bg-brand-amber text-white rounded-full flex items-center justify-center border-4 border-white/20 scale-90 group-hover:scale-100 transition-transform">
+                                <Play fill="currentColor" size={24} className="ml-1" />
                             </div>
                         </div>
                     </div>

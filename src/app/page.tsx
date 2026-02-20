@@ -98,32 +98,32 @@ export default function Home() {
       <section className="py-24 bg-white border-t border-brand-amber/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="studio md:studio-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-sky-100 rounded-2xl flex items-center justify-center text-sky-600 mb-6">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-brand-cream rounded-2xl flex items-center justify-center text-brand-amber mb-6">
                 <Video size={28} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Video Recorder</h3>
-              <p className="text-slate-500 leading-relaxed">
+              <h3 className="text-xl font-bold text-brand-warm mb-3">Video Recorder</h3>
+              <p className="text-brand-slate leading-relaxed">
                 A powerful recorder with pause/resume, stitching, and a dedicated selfie mode for custom thumbnails.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-brand-amber/10 rounded-2xl flex items-center justify-center text-brand-amber mb-6">
                 <Users size={28} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Community Studio</h3>
-              <p className="text-slate-500 leading-relaxed">
+              <h3 className="text-xl font-bold text-brand-warm mb-3">Community Studio</h3>
+              <p className="text-brand-slate leading-relaxed">
                 See everyone&apos;s responses in a beautiful masonry studio. Watch, react, and connect with your class.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 mb-6">
                 <Sparkles size={28} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Creative Tools</h3>
-              <p className="text-slate-500 leading-relaxed">
+              <h3 className="text-xl font-bold text-brand-warm mb-3">Creative Tools</h3>
+              <p className="text-brand-slate leading-relaxed">
                 Express yourself with text, drawing, stickers, and emojis directly on your video and selfie.
               </p>
             </div>

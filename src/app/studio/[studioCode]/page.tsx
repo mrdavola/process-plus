@@ -140,17 +140,17 @@ export default function StudioPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <Loader2 className="animate-spin text-sky-500" size={32} />
+            <div className="min-h-screen bg-brand-cream flex items-center justify-center">
+                <Loader2 className="animate-spin text-brand-amber" size={32} />
             </div>
         );
     }
 
     if (!studio) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <p className="text-xl font-bold text-slate-900">Studio not found!</p>
-                <Link href="/dashboard" className="text-sky-500 hover:underline">Return to Dashboard</Link>
+            <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center gap-4">
+                <p className="text-xl font-bold text-brand-warm">Studio not found!</p>
+                <Link href="/dashboard" className="text-brand-amber hover:underline hover:text-brand-amber/80 font-bold">Return to Dashboard</Link>
             </div>
         );
     }
@@ -183,27 +183,27 @@ export default function StudioPage() {
         });
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-brand-cream text-brand-warm">
             <Navbar />
             {/* Banner/Header */}
-            <div className="bg-white border-b border-slate-200 shadow-sm relative z-10">
+            <div className="bg-white border-b border-brand-amber/10 shadow-sm relative z-10">
                 <div className="max-w-5xl mx-auto px-4 py-8">
-                    <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-6">
-                        <Link href="/dashboard" className="hover:text-sky-500 transition-colors">Dashboard</Link>
+                    <nav className="flex items-center gap-2 text-sm font-bold text-brand-slate mb-6">
+                        <Link href="/dashboard" className="hover:text-brand-amber transition-colors">Dashboard</Link>
                         <span>/</span>
-                        <span className="text-slate-800">{studio.title}</span>
+                        <span className="text-brand-warm">{studio.title}</span>
                     </nav>
 
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div>
-                            <div className="inline-block px-3 py-1 bg-sky-100 text-sky-600 text-sm font-bold rounded-full mb-3 shadow-inner">
+                            <div className="inline-block px-3 py-1 bg-brand-amber/10 text-brand-amber text-sm font-bold rounded-full mb-3 shadow-inner">
                                 ProcessPlus Code: <span className="font-mono">{studio.processPlusCode}</span>
                             </div>
-                            <h1 className="text-4xl font-black text-slate-900 mb-2 tracking-tight flex items-center gap-3">
+                            <h1 className="text-4xl font-display text-brand-warm mb-2 tracking-tight flex items-center gap-3">
                                 {studio.icon && <span>{studio.icon}</span>}
                                 {studio.title}
                             </h1>
-                            <p className="text-slate-500 font-medium">Manage your projects and student responses.</p>
+                            <p className="text-brand-slate font-medium">Manage your projects and student responses.</p>
                         </div>
 
                         <div className="flex flex-wrap gap-3">
@@ -221,7 +221,7 @@ export default function StudioPage() {
                                 <>
                                     <button
                                         onClick={() => setIsSettingsOpen(true)}
-                                        className="flex items-center gap-2 px-5 py-3 border border-slate-200 text-slate-500 font-bold rounded-full hover:bg-slate-50 transition-all shadow-sm hover:text-sky-600"
+                                        className="flex items-center gap-2 px-5 py-3 border border-brand-amber/20 text-brand-slate font-bold rounded-full hover:bg-brand-cream transition-all shadow-sm hover:text-brand-amber"
                                     >
                                         <Settings size={18} />
                                         Settings
@@ -248,39 +248,39 @@ export default function StudioPage() {
             <main className="max-w-5xl mx-auto px-4 py-12">
                 {/* Create Project Form */}
                 {isOwner && (
-                    <div className="mb-12 bg-white rounded-3xl p-8 shadow-sm border border-slate-100 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-full -mr-8 -mt-8 opacity-50" />
+                    <div className="mb-12 bg-white rounded-3xl p-8 shadow-sm border border-brand-amber/10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-amber/5 rounded-bl-full -mr-8 -mt-8 opacity-50" />
 
                         <div className="flex items-center gap-4 mb-8 relative">
-                            <div className="size-12 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-lg rotate-3 group-hover:rotate-6 transition-transform">
+                            <div className="size-12 rounded-2xl bg-brand-amber/20 text-brand-amber flex items-center justify-center font-bold text-xl group-hover:scale-110 transition-transform rotate-3">
                                 <Plus size={28} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-slate-900">Add a New Project</h2>
-                                <p className="text-slate-500">Spark a discussion with your students.</p>
+                                <h2 className="text-2xl font-display text-brand-warm">Add a New Project</h2>
+                                <p className="text-brand-slate">Spark a discussion with your students.</p>
                             </div>
                         </div>
 
                         <form onSubmit={handleCreateProject} className="space-y-4 relative">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Project Title</label>
+                                <label className="block text-sm font-bold text-brand-warm mb-2 ml-1">Project Title</label>
                                 <input
                                     type="text"
                                     value={newProjectTitle}
                                     onChange={(e) => setNewProjectTitle(e.target.value)}
                                     placeholder="e.g., Weekly Reflection, Book Report"
-                                    className="w-full px-5 py-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-bold text-lg outline-none placeholder:font-normal placeholder:text-slate-400"
+                                    className="w-full px-5 py-4 rounded-xl border-2 border-brand-amber/10 bg-brand-cream text-brand-warm focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all font-bold text-lg outline-none placeholder:font-normal placeholder:text-brand-slate"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Prompt</label>
+                                <label className="block text-sm font-bold text-brand-warm mb-2 ml-1">Prompt</label>
                                 <textarea
                                     value={newProjectPrompt}
                                     onChange={(e) => setNewProjectPrompt(e.target.value)}
                                     placeholder="What do you want your students to discuss?"
-                                    className="w-full px-5 py-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-black focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all min-h-[120px] outline-none placeholder:text-slate-400 resize-y"
+                                    className="w-full px-5 py-4 rounded-xl border-2 border-brand-amber/10 bg-brand-cream text-brand-warm focus:bg-white focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 transition-all min-h-[120px] outline-none placeholder:text-brand-slate resize-y"
                                 />
                             </div>
 
@@ -288,7 +288,7 @@ export default function StudioPage() {
                                 <button
                                     type="submit"
                                     disabled={isCreatingProject || !newProjectTitle.trim()}
-                                    className="px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                                    className="px-8 py-4 bg-brand-amber hover:bg-brand-amber/90 text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2 text-lg"
                                 >
                                     {isCreatingProject ? (
                                         <>
@@ -310,8 +310,8 @@ export default function StudioPage() {
                 {/* Projects List Controls */}
                 <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
-                        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                            <span className="bg-slate-900 text-white size-6 rounded flex items-center justify-center text-xs">{projects.length}</span>
+                        <h2 className="text-xl font-display text-brand-warm flex items-center gap-2">
+                            <span className="bg-brand-amber text-white size-6 rounded flex items-center justify-center text-xs font-bold">{projects.length}</span>
                             Active Projects
                         </h2>
 
@@ -352,34 +352,34 @@ export default function StudioPage() {
 
                     <div className="studio gap-4">
                         {filteredAndSortedProjects.map((project) => (
-                            <div key={project.id} className="group bg-white rounded-2xl p-1 border border-slate-200 hover:border-sky-500/30 hover:shadow-xl transition-all duration-300">
+                            <div key={project.id} className="group bg-white rounded-2xl p-1 border border-brand-amber/10 hover:border-brand-amber hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center gap-4 p-5">
                                     <Link href={`/studios/${studio.processPlusCode}/projects/${project.id}`} className="flex-1 flex items-start gap-5">
-                                        <div className="size-16 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white flex flex-col items-center justify-center shadow-md shrink-0 group-hover:scale-105 transition-transform">
+                                        <div className="size-16 rounded-xl bg-brand-cream text-brand-amber flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
                                             {project.icon ? (
                                                 <span className="text-3xl">{project.icon}</span>
                                             ) : (
-                                                <Calendar size={28} className="text-white/90" />
+                                                <Calendar size={28} className="text-brand-amber/90" />
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-sky-500 transition-colors mb-1 truncate">{project.title}</h3>
-                                            <p className="text-slate-500 line-clamp-2 leading-relaxed text-sm pr-12">{project.promptText}</p>
-                                            <div className="flex items-center gap-3 mt-3 text-xs font-semibold">
-                                                <span className={`${project.responseCount ? 'text-slate-700 bg-slate-100' : 'text-slate-400 bg-slate-50'} px-2.5 py-1 rounded-md transition-colors`}>
+                                            <h3 className="text-xl font-bold text-brand-warm group-hover:text-brand-amber transition-colors mb-1 truncate">{project.title}</h3>
+                                            <p className="text-brand-slate line-clamp-2 leading-relaxed text-sm pr-12">{project.promptText}</p>
+                                            <div className="flex items-center gap-3 mt-3 text-xs font-bold">
+                                                <span className={`${project.responseCount ? 'text-brand-warm bg-brand-cream/50' : 'text-brand-slate bg-slate-50'} px-3 py-1.5 rounded-md transition-colors border border-brand-amber/10`}>
                                                     {project.responseCount || 0} Responses
                                                 </span>
                                                 {project.settings?.moderation && (project.pendingCount || 0) > 0 && (
-                                                    <span className="text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md flex items-center gap-1">
+                                                    <span className="text-white bg-brand-amber px-2.5 py-1 rounded-md flex items-center gap-1 shadow-sm">
                                                         <span className="relative flex h-2 w-2">
-                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                                                         </span>
                                                         {project.pendingCount} Pending Review
                                                     </span>
                                                 )}
                                                 {project.lastResponseAt && (
-                                                    <span className="text-slate-400 font-medium ml-auto">
+                                                    <span className="text-brand-slate font-medium ml-auto">
                                                         Active {Math.floor((Date.now() - project.lastResponseAt) / 86400000) === 0 ? "today" : `${Math.floor((Date.now() - project.lastResponseAt) / 86400000)}d ago`}
                                                     </span>
                                                 )}
@@ -390,7 +390,7 @@ export default function StudioPage() {
                                     <div className="flex items-center gap-2 shrink-0">
                                         <Link
                                             href={`/studios/${studio.processPlusCode}/projects/${project.id}`}
-                                            className="px-4 py-2 bg-sky-50 text-sky-600 font-bold rounded-lg hover:bg-sky-100 transition-colors hidden sm:block"
+                                            className="px-6 py-3 bg-brand-amber/10 text-brand-amber font-bold rounded-lg hover:bg-brand-amber/20 transition-colors hidden sm:block"
                                         >
                                             View
                                         </Link>
@@ -411,12 +411,12 @@ export default function StudioPage() {
                     </div>
 
                     {projects.length === 0 && (
-                        <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200">
-                            <div className="mx-auto size-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
+                        <div className="text-center py-24 bg-white rounded-3xl border border-brand-amber/20">
+                            <div className="mx-auto size-20 bg-brand-cream rounded-full flex items-center justify-center text-brand-amber mb-6">
                                 <Calendar size={40} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">No projects yet</h3>
-                            <p className="text-slate-500 max-w-sm mx-auto">Create your first project to get the conversation started.</p>
+                            <h3 className="text-xl font-display text-brand-warm mb-2">No projects yet</h3>
+                            <p className="text-brand-slate max-w-sm mx-auto font-medium">Create your first project to get the conversation started.</p>
                         </div>
                     )}
                 </div>
