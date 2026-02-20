@@ -6,6 +6,11 @@ const config: Config = {
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
+    safelist: [
+        {
+            pattern: /(bg|text|border)-brand-amber/,
+        },
+    ],
     theme: {
         extend: {
             colors: {
@@ -24,7 +29,7 @@ const config: Config = {
                     sub: "#475569", // brand.slate
                 },
                 brand: {
-                    amber: '#ea580c',
+                    amber: '#c2410c', // Updated to darker orange
                     sage: '#6B7F6E',
                     slate: '#475569',
                     cream: '#FDF6EC',
