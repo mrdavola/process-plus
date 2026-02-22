@@ -449,7 +449,14 @@ export async function getResponsesForUser(userId: string): Promise<Response[]> {
         orderBy("createdAt", "asc")  // oldest first so timeline reads top→bottom
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Response));
+    return snap.docs.map(d => {
+        const data = d.data();
+        return {
+            id: d.id,
+            ...data,
+            createdAt: data.createdAt?.toMillis ? data.createdAt.toMillis() : data.createdAt,
+        } as Response;
+    });
 }
 
 export async function getOrCreateJourneyToken(userId: string, displayName: string): Promise<string> {

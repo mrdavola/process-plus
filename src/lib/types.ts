@@ -47,6 +47,8 @@ export interface ProjectSettings {
     guestCode?: string;       // bypass domain restrictions
     feedbackbackType: "basic" | "rubric" | "none";
     privatefeedbackback: boolean; // teacher-only Responses
+    reflectionRequired: boolean;  // if false, students can skip reflections
+    reflectionPrompts: string[];  // custom questions (defaults used if empty)
 }
 
 export type ProjectStatus = "active" | "frozen" | "hidden";

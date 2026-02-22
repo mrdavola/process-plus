@@ -117,7 +117,7 @@ export default function DashboardPage() {
                 </h2>
 
                 {isLoadingStudios ? (
-                    <div className="studio studio-cols-1 md:studio-cols-2 lg:studio-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[1, 2, 3].map((i) => (
                             <div key={i} className="h-48 bg-slate-200 rounded-2xl animate-pulse" />
                         ))}
@@ -131,7 +131,7 @@ export default function DashboardPage() {
                         <p className="text-brand-slate max-w-sm mx-auto mt-2">Create your first studio above to start collecting video responses from your students.</p>
                     </div>
                 ) : (
-                    <div className="studio studio-cols-1 md:studio-cols-2 lg:studio-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {studios.map((studio) => (
                             <Link
                                 key={studio.id}

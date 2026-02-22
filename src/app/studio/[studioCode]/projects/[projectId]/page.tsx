@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Share2, Copy, Video, Play, Search, Plus, Settings, Trash2 } from "lucide-react";
+import { Share2, Copy, Video, Play, Search, Settings, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { getStudioByProcessPlusCode, getProject, createResponse, approveResponse, hideResponse, deleteResponse, deleteProject, deleteStudio, updateProject, setResponseFeatured } from "@/lib/firestore";
+import { getStudioByProcessPlusCode, getProject, createResponse, approveResponse, hideResponse, deleteResponse, deleteProject, updateProject, setResponseFeatured } from "@/lib/firestore";
 import type { Studio, Project, Response } from "@/lib/types";
+import SparkResponseModal from "@/components/project-settings/SparkResponseModal";
 import { onSnapshot, collection, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
@@ -45,6 +46,7 @@ export default function ProjectPage() {
     const [copiedStudio, setCopiedStudio] = useState(false);
     const [copiedShare, setCopiedShare] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [sparkResponseId, setSparkResponseId] = useState<string | null>(null);
 
     type SortOption = "newest" | "oldest" | "most_responses" | "most_viewed" | "random";
     type FilterOption = "all" | "approved" | "pending";
@@ -117,11 +119,7 @@ export default function ProjectPage() {
     };
 
     const handleSpark = (id: string) => {
-        alert("✨ Spark Response: This feature will turn this response into a new Project! (Coming soon)");
-    };
-
-    const handleMixTape = (id: string) => {
-        alert("📼 Add to MixTape: This feature will add this response to a combined playlist! (Coming soon)");
+        setSparkResponseId(id);
     };
 
     const handleFeature = async (id: string, isFeatured: boolean) => {
@@ -180,14 +178,14 @@ export default function ProjectPage() {
     }, [currentTheaterIndex]);
 
     if (!project) {
-        return <div className="min-h-screen flex items-center justify-center text-slate-500 font-display">Loading...</div>;
+        return <div className="min-h-screen flex items-center justify-center text-brand-slate font-display">Loading...</div>;
     }
 
     if (!isOwner && project.status === "hidden") {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 font-display p-4">
-                <Video size={64} className="text-slate-300 mb-6" />
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Project Unavailable</h2>
+            <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center text-brand-slate font-display p-4">
+                <Video size={64} className="text-brand-amber/30 mb-6" />
+                <h2 className="text-3xl font-bold text-brand-warm mb-2">Project Unavailable</h2>
                 <p className="text-lg mb-8">This project is currently hidden by the educator.</p>
                 {studio && (
                     <Link href={`/studio/${studio.processPlusCode}`} className="bg-brand-amber hover:bg-brand-amber/90 text-white px-6 py-3 rounded-full font-bold transition-all">
@@ -199,30 +197,30 @@ export default function ProjectPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 font-display flex flex-col">
+        <div className="min-h-screen bg-brand-cream font-display flex flex-col">
             <Navbar />
 
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
 
                 {/* Project Header */}
-                <div className="studio studio-cols-1 lg:studio-cols-12 gap-8 mb-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
                         {isOwner && studio && (
-                            <nav className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
+                            <nav className="flex items-center gap-2 text-sm font-medium text-brand-slate mb-2">
                                 <Link href="/dashboard" className="hover:text-brand-amber transition-colors">Dashboard</Link>
                                 <span>/</span>
                                 <Link href={`/studio/${studio.processPlusCode}`} className="hover:text-brand-amber transition-colors">{studio.title}</Link>
                                 <span>/</span>
-                                <span className="text-slate-800">{project.title}</span>
+                                <span className="text-brand-warm">{project.title}</span>
                             </nav>
                         )}
 
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.1] flex items-center gap-3">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-brand-warm leading-[1.1] flex items-center gap-3">
                             {project.icon && <span>{project.icon}</span>}
                             {project.title}
                         </h1>
 
-                        <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl whitespace-pre-wrap">
+                        <p className="text-lg md:text-xl text-brand-slate leading-relaxed max-w-2xl whitespace-pre-wrap">
                             {project.promptText}
                         </p>
 
@@ -343,14 +341,14 @@ export default function ProjectPage() {
                 </div>
 
                 {/* Stats Bar */}
-                <div className="sticky top-16 z-30 bg-slate-50/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-8 sm:px-8 border-b border-slate-200/50 mb-8">
+                <div className="sticky top-16 z-30 bg-brand-cream/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-8 sm:px-8 border-b border-brand-amber/10 mb-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-6">
                             <div className="flex flex-col">
-                                <span className="text-2xl font-bold text-slate-900 leading-none">{responses.length}</span>
-                                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Responses</span>
+                                <span className="text-2xl font-bold text-brand-warm leading-none">{responses.length}</span>
+                                <span className="text-xs font-medium text-brand-slate uppercase tracking-wide mt-1">Responses</span>
                             </div>
-                            <div className="w-px h-8 bg-slate-300" />
+                            <div className="w-px h-8 bg-brand-amber/20" />
                             <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-lg">
                                 <span className="relative flex h-2 w-2">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -366,7 +364,7 @@ export default function ProjectPage() {
                                     <select
                                         value={filterOption}
                                         onChange={(e) => setFilterOption(e.target.value as FilterOption)}
-                                        className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
+                                        className="w-full sm:w-auto pl-4 pr-8 py-2 border border-brand-amber/20 bg-white text-brand-warm font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
                                         style={{
                                             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                             backgroundPosition: `right 0.5rem center`,
@@ -385,7 +383,7 @@ export default function ProjectPage() {
                                 <select
                                     value={sortOption}
                                     onChange={(e) => setSortOption(e.target.value as SortOption)}
-                                    className="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 bg-white text-slate-700 font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
+                                    className="w-full sm:w-auto pl-4 pr-8 py-2 border border-brand-amber/20 bg-white text-brand-warm font-medium rounded-xl appearance-none text-sm focus:ring-2 focus:ring-brand-amber/50 outline-none"
                                     style={{
                                         backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                         backgroundPosition: `right 0.5rem center`,
@@ -403,7 +401,7 @@ export default function ProjectPage() {
 
                             <div className="relative w-full sm:w-auto sm:flex-1 md:flex-none md:w-64">
                                 <input
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-brand-amber focus:border-transparent outline-none transition-all text-sm"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-amber/20 bg-white text-brand-warm placeholder-brand-slate focus:ring-2 focus:ring-brand-amber focus:border-transparent outline-none transition-all text-sm"
                                     placeholder="Search by name..."
                                     type="text"
                                     value={searchQuery}
@@ -437,7 +435,6 @@ export default function ProjectPage() {
                                     onHide={handleHide}
                                     onDelete={handleDelete}
                                     onSpark={handleSpark}
-                                    onMixTape={handleMixTape}
                                     onFeature={handleFeature}
                                 />
                             </div>
@@ -508,8 +505,23 @@ export default function ProjectPage() {
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
                 project={project}
-                onSave={updateProject}
+                onSave={async (id, updates) => {
+                    await updateProject(id, updates);
+                    // Refresh project state so new settings (e.g. maxDuration) take effect immediately
+                    const refreshed = await getProject(id);
+                    if (refreshed) setProject(refreshed);
+                }}
             />
+
+            {sparkResponseId && studio && (
+                <SparkResponseModal
+                    response={responses.find(r => r.id === sparkResponseId)!}
+                    project={project}
+                    studioId={studio.id}
+                    studioCode={params.studioCode}
+                    onClose={() => setSparkResponseId(null)}
+                />
+            )}
         </div>
     );
 }

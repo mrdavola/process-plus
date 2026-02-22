@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Image as ImageIcon, Clock, CalendarIcon, ShieldCheck, MessageSquare, RefreshCw } from "lucide-react";
+import { X, Image as ImageIcon, Clock, CalendarIcon, MessageSquare, RefreshCw, Plus, Trash2, RotateCcw } from "lucide-react";
 import { Project, ProjectStatus } from "@/lib/types";
 import EmojiPicker from "emoji-picker-react";
 
@@ -18,9 +18,12 @@ const Toggle = ({ checked, onChange, title, description }: { checked: boolean; o
             <h4 className="font-bold text-slate-900">{title}</h4>
             {description && <p className="text-sm text-slate-500">{description}</p>}
         </div>
-        <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ml-4 ${checked ? 'bg-brand-amber' : 'bg-slate-300'}`}>
+        <div
+            className="w-12 h-6 rounded-full transition-colors relative shrink-0 ml-4 overflow-hidden"
+            style={{ backgroundColor: checked ? '#c2410c' : '#9ca3af' }}
+        >
             <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
-            <div className={`absolute top-1 left-1 bg-white size-4 rounded-full transition-transform ${checked ? 'translate-x-6' : ''}`} />
+            <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-6' : ''}`} />
         </div>
     </label>
 );
@@ -50,6 +53,19 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
     const [studentReplies, setStudentReplies] = useState(project.settings.studentReplies ?? false);
     const [videoReactions, setVideoReactions] = useState(project.settings.videoReactions ?? true);
     const [guestCode, setGuestCode] = useState(project.settings.guestCode || "");
+
+    // Reflection
+    const DEFAULT_PROMPTS = [
+        "What were you thinking when you started this?",
+        "What changed as you worked through it?",
+        "What would you do differently next time?",
+    ];
+    const [reflectionRequired, setReflectionRequired] = useState(project.settings.reflectionRequired ?? true);
+    const [reflectionPrompts, setReflectionPrompts] = useState<string[]>(
+        project.settings.reflectionPrompts && project.settings.reflectionPrompts.length > 0
+            ? project.settings.reflectionPrompts
+            : DEFAULT_PROMPTS
+    );
 
     // feedbackback
     const [feedbackbackType, setfeedbackbackType] = useState<"basic" | "rubric" | "none">(project.settings.feedbackbackType ?? "none");
@@ -84,7 +100,9 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                     videoReactions,
                     guestCode: guestCode.trim() || undefined,
                     feedbackbackType,
-                    privatefeedbackback
+                    privatefeedbackback,
+                    reflectionRequired,
+                    reflectionPrompts: reflectionPrompts.filter(p => p.trim().length > 0),
                 }
             });
             onClose();
@@ -99,7 +117,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm p-4">
             <div className="min-h-full flex items-center justify-center">
                 <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl my-4">
-                    <div className="sticky top-0 bg-white/80 backdrop-blur border-b border-slate-100 flex items-center justify-between px-6 py-4 z-20">
+                    <div className="sticky top-0 bg-white border-b border-slate-100 flex items-center justify-between px-6 py-4 z-20">
                         <h2 className="text-xl font-black text-slate-900">Edit Project Settings</h2>
                         <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
                             <X size={20} />
@@ -218,12 +236,77 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                             </div>
                         </section>
 
-                        {/* 3. Visibility & Status */}
+                        {/* 3. Reflection Questions */}
                         <section>
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">3. Visibility & Status</h3>
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">3. Reflection Questions</h3>
+                            <p className="text-sm text-slate-500 mb-4">Students answer these after recording. Edit, reorder, or remove any question.</p>
+
+                            <div className="space-y-4 bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                                <Toggle
+                                    title="Require Reflections"
+                                    description="When off, students see a 'Skip' button and can submit without answering."
+                                    checked={reflectionRequired}
+                                    onChange={setReflectionRequired}
+                                />
+
+                                <hr className="border-slate-200" />
+
+                                <div className="space-y-3">
+                                    {reflectionPrompts.map((prompt, i) => (
+                                        <div key={i} className="flex gap-2 items-start">
+                                            <span className="mt-3 text-xs font-bold text-slate-400 w-5 shrink-0 text-right">{i + 1}.</span>
+                                            <input
+                                                type="text"
+                                                value={prompt}
+                                                onChange={(e) => {
+                                                    const updated = [...reflectionPrompts];
+                                                    updated[i] = e.target.value;
+                                                    setReflectionPrompts(updated);
+                                                }}
+                                                placeholder={`Question ${i + 1}…`}
+                                                className="flex-1 px-3 py-2.5 rounded-xl border-2 border-slate-100 bg-white text-slate-800 focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/10 outline-none transition-all text-sm font-medium"
+                                            />
+                                            {reflectionPrompts.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setReflectionPrompts(reflectionPrompts.filter((_, idx) => idx !== i))}
+                                                    className="mt-2 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Remove question"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex gap-2 pt-1">
+                                    {reflectionPrompts.length < 5 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setReflectionPrompts([...reflectionPrompts, ""])}
+                                            className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors"
+                                        >
+                                            <Plus size={14} /> Add Question
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => setReflectionPrompts(DEFAULT_PROMPTS)}
+                                        className="flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-slate-600 px-3 py-2 rounded-lg transition-colors"
+                                    >
+                                        <RotateCcw size={13} /> Reset to defaults
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* 4. Visibility & Status */}
+                        <section>
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">4. Visibility & Status</h3>
 
                             <div className="space-y-5 bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                                <div className="studio studio-cols-1 md:studio-cols-3 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <label className={`flex flex-col items-center justify-center cursor-pointer p-4 rounded-xl border-2 transition-all ${status === "active" ? "border-brand-amber bg-brand-amber/5" : "border-slate-200 bg-white hover:border-slate-300"}`}>
                                         <input type="radio" value="active" checked={status === "active"} onChange={() => setStatus("active")} className="sr-only" />
                                         <span className="font-bold text-slate-900 mb-1">Active</span>
@@ -241,7 +324,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     </label>
                                 </div>
 
-                                <div className="studio studio-cols-1 md:studio-cols-2 gap-4 pt-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-1 ml-1 flex items-center gap-2"><CalendarIcon size={14} className="text-slate-400" /> Scheduled Release</label>
                                         <input type="date" value={scheduledRelease} onChange={(e) => setScheduledRelease(e.target.value)} className="w-full px-4 py-2 rounded-xl border-2 border-slate-100 bg-white text-slate-700 focus:border-brand-amber outline-none" />
@@ -256,7 +339,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
 
                         {/* 4. Safety & Interaction */}
                         <section>
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">4. Moderation & Safety Controls</h3>
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">5. Moderation & Safety Controls</h3>
                             <div className="space-y-3 bg-slate-50 rounded-2xl p-5 border border-slate-100">
 
                                 <Toggle title="Video Moderation" description="New videos stay hidden until you approve them." checked={moderation} onChange={setModeration} />
@@ -291,13 +374,13 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                             </div>
                         </section>
 
-                        {/* 5. feedbackback Controls */}
+                        {/* 5. Feedback Controls */}
                         <section>
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">5. feedbackback Controls</h3>
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">6. Feedback Controls</h3>
                             <div className="space-y-4 bg-slate-50 rounded-2xl p-5 border border-slate-100">
                                 <div className="flex items-center justify-between py-2 border-b border-slate-200">
                                     <div>
-                                        <h4 className="font-bold text-slate-900 flex items-center gap-2"><MessageSquare size={16} className="text-brand-amber" /> feedbackback Type</h4>
+                                        <h4 className="font-bold text-slate-900 flex items-center gap-2"><MessageSquare size={16} className="text-brand-amber" /> Feedback Type</h4>
                                     </div>
                                     <select
                                         value={feedbackbackType}
@@ -310,7 +393,7 @@ export default function ProjectSettingsModal({ isOpen, onClose, project, onSave 
                                     </select>
                                 </div>
 
-                                <Toggle title="Private feedbackback" description="Allow teacher-only Responses/video feedbackback." checked={privatefeedbackback} onChange={setPrivatefeedbackback} />
+                                <Toggle title="Private Feedback" description="Allow teacher-only Responses/video feedback." checked={privatefeedbackback} onChange={setPrivatefeedbackback} />
                             </div>
                         </section>
 

@@ -1,5 +1,5 @@
 
-import { Play, Eye, MoreHorizontal, Check, Ban, Trash2, Zap, ListVideo, Star } from "lucide-react";
+import { Play, MoreHorizontal, Check, Ban, Trash2, Zap, Star } from "lucide-react";
 import { Response } from "@/lib/types";
 import { useState } from "react";
 
@@ -11,11 +11,10 @@ interface ResponseCardProps {
     onHide?: (id: string) => void;
     onDelete?: (id: string) => void;
     onSpark?: (id: string) => void;
-    onMixTape?: (id: string) => void;
     onFeature?: (id: string, isFeatured: boolean) => void;
 }
 
-export default function ResponseCard({ response, onClick, isOwner, onApprove, onHide, onDelete, onSpark, onMixTape, onFeature }: ResponseCardProps) {
+export default function ResponseCard({ response, onClick, isOwner, onApprove, onHide, onDelete, onSpark, onFeature }: ResponseCardProps) {
     const [showMenu, setShowMenu] = useState(false);
 
     return (
@@ -108,12 +107,6 @@ export default function ResponseCard({ response, onClick, isOwner, onApprove, on
                                 className="w-full text-left px-4 py-2 text-sm font-medium text-purple-600 hover:bg-purple-50 flex items-center gap-2"
                             >
                                 <Zap size={14} /> Spark Response
-                            </button>
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onMixTape?.(response.id); setShowMenu(false); }}
-                                className="w-full text-left px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 flex items-center gap-2"
-                            >
-                                <ListVideo size={14} /> Add to MixTape
                             </button>
                             <hr className="my-1 border-slate-100" />
                             <button

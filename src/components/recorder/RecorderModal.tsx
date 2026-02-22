@@ -50,6 +50,12 @@ export default function RecorderModal({
         "What would you do differently next time?"
     ];
 
+    const reflectionPrompts = (projectSettings?.reflectionPrompts && projectSettings.reflectionPrompts.length > 0)
+        ? projectSettings.reflectionPrompts
+        : defaultPrompts;
+
+    const reflectionRequired = projectSettings?.reflectionRequired ?? true;
+
     const isMicOnly = projectSettings?.micOnly ?? false;
 
     const { status, startRecording, stopRecording, pauseRecording, resumeRecording, mediaBlobUrl, clearBlobUrl } =
@@ -214,9 +220,14 @@ export default function RecorderModal({
 
                             {recorderState === "REFLECTION" && (
                                 <ReflectionState
-                                    prompts={defaultPrompts}
+                                    prompts={reflectionPrompts}
+                                    required={reflectionRequired}
                                     onComplete={(resps) => {
                                         setReflections(resps);
+                                        setRecorderState("SELFIE");
+                                    }}
+                                    onSkip={() => {
+                                        setReflections([]);
                                         setRecorderState("SELFIE");
                                     }}
                                 />

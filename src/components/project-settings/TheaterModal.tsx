@@ -144,9 +144,12 @@ export default function TheaterModal({ responses, allResponses, currentIndex, on
                                 ))}
                             </div>
 
-                            {/* Only show coach for the author of the response */}
-                            {currentUserId === response.userId && (
-                                <FeedbackCoach reflections={response.reflections} />
+                            {/* Show Process Coach for the student (their own) and for teachers */}
+                            {(currentUserId === response.userId || isOwner) && (
+                                <FeedbackCoach
+                                    reflections={response.reflections}
+                                    isTeacher={isOwner && currentUserId !== response.userId}
+                                />
                             )}
                         </div>
                     )}

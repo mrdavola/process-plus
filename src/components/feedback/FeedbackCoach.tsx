@@ -5,9 +5,10 @@ import { Sparkles, Loader2, Bot, ChevronDown, ChevronUp } from "lucide-react";
 
 interface FeedbackCoachProps {
     reflections: string[];
+    isTeacher?: boolean;
 }
 
-export default function FeedbackCoach({ reflections }: FeedbackCoachProps) {
+export default function FeedbackCoach({ reflections, isTeacher = false }: FeedbackCoachProps) {
     const [feedback, setFeedback] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -38,6 +39,11 @@ export default function FeedbackCoach({ reflections }: FeedbackCoachProps) {
 
     if (!reflections || reflections.length === 0) return null;
 
+    const label = isTeacher ? "Preview Process Coach" : "Process Coach";
+    const sublabel = isTeacher
+        ? "See what the AI coach will tell this student"
+        : "Get Socratic feedback on your reflection";
+
     return (
         <div className="mt-6 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 overflow-hidden text-left w-full mx-auto container max-w-2xl px-2">
             {!hasAttemptedOrExpanded(feedback, isExpanded) ? (
@@ -50,8 +56,8 @@ export default function FeedbackCoach({ reflections }: FeedbackCoachProps) {
                             <Bot size={20} />
                         </div>
                         <div className="text-left">
-                            <h4 className="font-bold text-sm">Process Coach</h4>
-                            <p className="text-xs text-indigo-600/70">Get Socratic feedback on your reflection</p>
+                            <h4 className="font-bold text-sm">{label}</h4>
+                            <p className="text-xs text-indigo-600/70">{sublabel}</p>
                         </div>
                     </div>
                     <Sparkles size={18} className="text-indigo-400" />
@@ -79,8 +85,16 @@ export default function FeedbackCoach({ reflections }: FeedbackCoachProps) {
                                     <span className="text-indigo-500/80 text-sm font-medium">The coach is thinking...</span>
                                 </div>
                             ) : (
-                                <div className="prose prose-sm prose-indigo max-w-none text-indigo-900/80 leading-relaxed font-medium">
-                                    {feedback}
+                                <div>
+                                    <div className="prose prose-sm prose-indigo max-w-none text-indigo-900/80 leading-relaxed font-medium">
+                                        {feedback}
+                                    </div>
+                                    <button
+                                        onClick={getCoachFeedback}
+                                        className="mt-3 text-xs text-indigo-400 hover:text-indigo-600 font-medium transition-colors"
+                                    >
+                                        ↺ Regenerate
+                                    </button>
                                 </div>
                             )}
                         </div>

@@ -251,7 +251,7 @@ export default function Home() {
               Go to My Dashboard <ArrowRight size={20} strokeWidth={3} />
             </Link>
           ) : (
-            <Link href="/auth/signin"
+            <Link href="/login"
               className="px-10 py-4 text-white text-lg font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-1"
               style={{ backgroundColor: ORANGE }}>
               Get Started Free <ArrowRight size={20} strokeWidth={3} />

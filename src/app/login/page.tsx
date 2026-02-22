@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
-import { Loader2, Video } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
     const { user, loading } = useAuth();
@@ -25,7 +25,6 @@ export default function LoginPage() {
         try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
-            // AuthContext will handle user creation/update
             router.push("/dashboard");
         } catch (err: any) {
             console.error("Login failed:", err);
@@ -36,37 +35,34 @@ export default function LoginPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="animate-spin text-indigo-600" size={32} />
+            <div className="min-h-screen flex items-center justify-center bg-brand-cream">
+                <Loader2 className="animate-spin text-brand-amber" size={32} />
             </div>
         );
     }
 
-    if (user) return null; // Redirecting...
+    if (user) return null;
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-brand-cream flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
-                    <div className="size-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
-                        <Video size={28} className="fill-current" />
+                    <div className="size-14 rounded-2xl flex items-center justify-center text-white shadow-md" style={{ backgroundColor: '#c2410c' }}>
+                        <Sparkles size={28} />
                     </div>
                 </div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
-                    Sign in to your account
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-warm">
+                    Sign in to Process+
                 </h2>
-                <p className="mt-2 text-center text-sm text-slate-600">
-                    Or{" "}
-                    <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                        create a free educator account
-                    </a>
+                <p className="mt-2 text-center text-sm text-brand-slate">
+                    Educators — sign in to manage your studio
                 </p>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-slate-200">
+                <div className="bg-white py-8 px-6 shadow-sm rounded-2xl border border-brand-amber/10">
                     {error && (
-                        <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium">
+                        <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium">
                             {error}
                         </div>
                     )}
@@ -74,7 +70,8 @@ export default function LoginPage() {
                     <button
                         onClick={handleGoogleLogin}
                         disabled={isLoggingIn}
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-full flex justify-center items-center py-3 px-4 rounded-xl shadow-md text-sm font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5"
+                        style={{ backgroundColor: '#c2410c' }}
                     >
                         {isLoggingIn ? (
                             <Loader2 className="animate-spin mr-2" size={20} />
@@ -92,19 +89,19 @@ export default function LoginPage() {
                     <div className="mt-6">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300" />
+                                <div className="w-full border-t border-brand-amber/20" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-slate-500">
+                                <span className="px-3 bg-white text-brand-slate font-medium">
                                     Students
                                 </span>
                             </div>
                         </div>
 
-                        <div className="mt-6 studio studio-cols-1 gap-3">
+                        <div className="mt-6">
                             <a
                                 href="/join"
-                                className="w-full inline-flex justify-center py-3 px-4 border border-slate-300 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50"
+                                className="w-full inline-flex justify-center py-3 px-4 border border-brand-amber/30 rounded-xl bg-brand-cream text-sm font-bold text-brand-warm hover:border-brand-amber transition-all"
                             >
                                 Enter a ProcessPlus Code
                             </a>
