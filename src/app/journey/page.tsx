@@ -2,19 +2,30 @@
 
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { BookOpen, Share2, Check, Loader2, Bookmark } from "lucide-react";
-import Link from "next/link";
+import { BookOpen, Share2, Check, Loader2, Bookmark, PenLine } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import JourneyFilter, { JourneyFilterState } from "@/components/journey/JourneyFilter";
 import { EnrichedMoment } from "@/components/journey/JourneyMoment";
 import { useAuth } from "@/lib/auth-context";
-import { getResponsesForUser, getOrCreateJourneyToken, getProject, getStudio, getUserProfile, toggleJourneyPin } from "@/lib/firestore";
-import { Response, Project, Studio, UserProfile } from "@/lib/types";
+import {
+    getResponsesForUser,
+    getOrCreateJourneyToken,
+    getProject,
+    getStudio,
+    getUserProfile,
+    toggleJourneyPin,
+    createJourneyEntry,
+    getJourneyEntries,
+    deleteJourneyEntry,
+    addJourneyRecommendation,
+    getJourneyRecommendationsForStudent,
+    removeJourneyRecommendation,
+} from "@/lib/firestore";
+import { Response, Project, Studio, UserProfile, JourneyEntry, JourneyRecommendation } from "@/lib/types";
 
 const ORANGE = "#c2410c";
 
-// Enrich responses with project + studio data
 async function enrich(responses: Response[]): Promise<EnrichedMoment[]> {
     const projectCache = new Map<string, Project | null>();
     const studioCache = new Map<string, Studio | null>();
@@ -46,9 +57,8 @@ function JourneyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Teachers can view any student's journey via ?userId=xxx&studioId=xxx
     const viewingUserId = searchParams.get("userId") ?? user?.uid;
-    const filterStudioId = searchParams.get("studioId"); // teacher pre-filter
+    const filterStudioId = searchParams.get("studioId");
 
     const [student, setStudent] = useState<UserProfile | null>(null);
     const [moments, setMoments] = useState<EnrichedMoment[]>([]);
@@ -58,6 +68,16 @@ function JourneyContent() {
         projectId: null,
     });
     const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+
+    // Journal entries
+    const [entries, setEntries] = useState<JourneyEntry[]>([]);
+    const [showEntryInput, setShowEntryInput] = useState(false);
+    const [entryDraft, setEntryDraft] = useState("");
+    const [savingEntry, setSavingEntry] = useState(false);
+
+    // Recommendations
+    const [recommendations, setRecommendations] = useState<JourneyRecommendation[]>([]);
+
     const [sharing, setSharing] = useState(false);
     const [copied, setCopied] = useState(false);
     const [shareError, setShareError] = useState(false);
@@ -74,14 +94,17 @@ function JourneyContent() {
         async function load() {
             setIsLoading(true);
             try {
-                const [viewedProfile, responses] = await Promise.all([
+                const [viewedProfile, responses, entriesData, recs] = await Promise.all([
                     getUserProfile(viewingUserId!),
                     getResponsesForUser(viewingUserId!),
+                    getJourneyEntries(viewingUserId!),
+                    getJourneyRecommendationsForStudent(viewingUserId!),
                 ]);
                 setStudent(viewedProfile);
                 const enriched = await enrich(responses);
                 setMoments(enriched);
-                // Load current user's pins (may differ from viewed user)
+                setEntries(entriesData);
+                setRecommendations(recs);
                 if (user) {
                     const myProfile = await getUserProfile(user.uid);
                     setPinnedIds(new Set(myProfile?.pinnedResponseIds ?? []));
@@ -94,9 +117,9 @@ function JourneyContent() {
         }
 
         load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [viewingUserId]);
 
-    // Apply filter
     const visibleMoments = useMemo(() => {
         return moments.filter((m) => {
             if (filter.studioId && m.studio?.id !== filter.studioId) return false;
@@ -104,6 +127,15 @@ function JourneyContent() {
             return true;
         });
     }, [moments, filter]);
+
+    const recsByResponseId = useMemo(() => {
+        const map = new Map<string, JourneyRecommendation[]>();
+        for (const r of recommendations) {
+            if (!map.has(r.responseId)) map.set(r.responseId, []);
+            map.get(r.responseId)!.push(r);
+        }
+        return map;
+    }, [recommendations]);
 
     const isOwnJourney = user?.uid === viewingUserId;
 
@@ -117,6 +149,38 @@ function JourneyContent() {
         });
     };
 
+    const handleAddEntry = async () => {
+        if (!user || !entryDraft.trim()) return;
+        setSavingEntry(true);
+        const entry = await createJourneyEntry(user.uid, entryDraft);
+        setEntries(prev => [...prev, entry].sort((a, b) => a.createdAt - b.createdAt));
+        setEntryDraft("");
+        setShowEntryInput(false);
+        setSavingEntry(false);
+    };
+
+    const handleDeleteEntry = async (id: string) => {
+        await deleteJourneyEntry(id);
+        setEntries(prev => prev.filter(e => e.id !== id));
+    };
+
+    const handleRecommend = async (responseId: string) => {
+        if (!user || !profile || isOwnJourney) return;
+        const existing = recommendations.find(r => r.responseId === responseId && r.teacherId === user.uid);
+        if (existing) {
+            await removeJourneyRecommendation(existing.id);
+            setRecommendations(prev => prev.filter(r => r.id !== existing.id));
+        } else {
+            const rec = await addJourneyRecommendation(
+                user.uid,
+                profile.displayName,
+                viewingUserId!,
+                responseId,
+            );
+            setRecommendations(prev => [...prev, rec]);
+        }
+    };
+
     const handleShare = async () => {
         if (!user || !viewingUserId) return;
         setSharing(true);
@@ -125,7 +189,6 @@ function JourneyContent() {
             const displayName = student?.displayName || user.displayName || "Student";
             const token = await getOrCreateJourneyToken(viewingUserId, displayName);
             const url = `${window.location.origin}/j/${token}`;
-            // Try clipboard API, fall back to prompt
             try {
                 await navigator.clipboard.writeText(url);
             } catch {
@@ -140,7 +203,7 @@ function JourneyContent() {
         } finally {
             setSharing(false);
         }
-    };;
+    };
 
     if (authLoading || (isLoading && !moments.length)) {
         return (
@@ -181,6 +244,14 @@ function JourneyContent() {
                         </div>
 
                         <div className="flex gap-3 shrink-0">
+                            {isOwnJourney && (
+                                <button
+                                    onClick={() => setShowEntryInput(true)}
+                                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border border-slate-200 bg-white text-slate-700 hover:border-slate-300 transition-all shadow-sm"
+                                >
+                                    <PenLine size={16} /> Add Note
+                                </button>
+                            )}
                             <button
                                 onClick={handleShare}
                                 disabled={sharing}
@@ -203,6 +274,30 @@ function JourneyContent() {
                         </div>
                     </div>
                 </header>
+
+                {/* Journal entry input */}
+                {showEntryInput && (
+                    <div className="mb-6 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <textarea
+                            autoFocus
+                            value={entryDraft}
+                            onChange={e => setEntryDraft(e.target.value)}
+                            placeholder="Write a reflection, note, or thought..."
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-gray-900 font-medium min-h-[100px] resize-y"
+                        />
+                        <div className="flex gap-3 mt-3 justify-end">
+                            <button onClick={() => setShowEntryInput(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+                            <button
+                                onClick={handleAddEntry}
+                                disabled={!entryDraft.trim() || savingEntry}
+                                className="px-5 py-2 text-sm font-bold text-white rounded-xl disabled:opacity-50"
+                                style={{ backgroundColor: '#c2410c' }}
+                            >
+                                Save Note
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* What is a Journey? — soft explanation */}
                 {isOwnJourney && (
@@ -229,9 +324,14 @@ function JourneyContent() {
                 {/* Timeline */}
                 <JourneyTimeline
                     moments={visibleMoments}
+                    entries={isOwnJourney || !filterStudioId ? entries : []}
                     isReadOnly={!isOwnJourney}
                     pinnedIds={pinnedIds}
                     onTogglePin={isOwnJourney ? handleTogglePin : undefined}
+                    onDeleteEntry={isOwnJourney ? handleDeleteEntry : undefined}
+                    recsByResponseId={recsByResponseId}
+                    onRecommend={!isOwnJourney && user ? handleRecommend : undefined}
+                    currentTeacherId={user?.uid}
                 />
             </div>
         </div>

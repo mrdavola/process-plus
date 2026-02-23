@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Calendar, ChevronDown, ChevronUp, Star, Play, Pin } from "lucide-react";
-import { Response, Project, Studio } from "@/lib/types";
+import { Response, Project, Studio, JourneyRecommendation } from "@/lib/types";
 
 export interface EnrichedMoment extends Response {
     project?: Project | null;
@@ -14,6 +14,9 @@ interface JourneyMomentProps {
     isReadOnly?: boolean;
     isPinned?: boolean;
     onTogglePin?: (responseId: string, newPinned: boolean) => void;
+    recommendations?: JourneyRecommendation[];
+    onRecommend?: (responseId: string) => void;
+    currentTeacherId?: string;
 }
 
 const ORANGE = "#c2410c";
@@ -37,7 +40,7 @@ function getPullQuote(reflections: string[] | undefined): string {
     return snippet.length > 220 ? snippet.substring(0, 220) + "…" : snippet;
 }
 
-export default function JourneyMoment({ moment, isReadOnly = false, isPinned, onTogglePin }: JourneyMomentProps) {
+export default function JourneyMoment({ moment, isReadOnly = false, isPinned, onTogglePin, recommendations, onRecommend, currentTeacherId }: JourneyMomentProps) {
     const [expanded, setExpanded] = useState(false);
     const [playing, setPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,10 +90,29 @@ export default function JourneyMoment({ moment, isReadOnly = false, isPinned, on
                         </span>
                     )}
 
+                    {recommendations && recommendations.length > 0 && (
+                        <span className="flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                            ⭐ {recommendations.map(r => r.teacherName).join(", ")} recommended this
+                        </span>
+                    )}
+
+                    {onRecommend && (
+                        <button
+                            onClick={() => onRecommend(moment.id)}
+                            className={`ml-auto flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold border transition-all ${
+                                recommendations?.some(r => r.teacherId === currentTeacherId)
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : "bg-white text-slate-400 border-slate-200 hover:border-amber-200 hover:text-amber-600"
+                            }`}
+                        >
+                            ⭐ {recommendations?.some(r => r.teacherId === currentTeacherId) ? "Recommended" : "Recommend"}
+                        </button>
+                    )}
+
                     {onTogglePin && (
                         <button
                             onClick={() => onTogglePin(moment.id, !isPinned)}
-                            className={`ml-auto flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold border transition-all ${
+                            className={`${onRecommend ? "" : "ml-auto "}flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold border transition-all ${
                                 isPinned
                                     ? "bg-amber-50 text-amber-700 border-amber-200"
                                     : "bg-white text-slate-400 border-slate-200 hover:border-amber-200 hover:text-amber-600"

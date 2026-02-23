@@ -100,6 +100,23 @@ export interface Response {
     observationsCount?: number;
 }
 
+export interface JourneyEntry {
+    id: string;
+    userId: string;
+    text: string;
+    createdAt: number;
+}
+
+export interface JourneyRecommendation {
+    id: string;
+    teacherId: string;
+    teacherName: string;
+    studentId: string;
+    responseId: string;
+    note?: string;
+    createdAt: number;
+}
+
 export interface JourneyShare {
     id: string;           // token used in URL /j/[token]
     userId: string;       // whose journey it is

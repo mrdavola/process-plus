@@ -19,7 +19,7 @@ import {
     arrayRemove
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Studio, Project, Response, UserProfile, UserRole, ProjectStatus, Notification, JourneyShare } from "./types";
+import { Studio, Project, Response, UserProfile, UserRole, ProjectStatus, Notification, JourneyShare, JourneyEntry, JourneyRecommendation } from "./types";
 
 // Helper to recursively remove undefined fields
 function removeUndefined(obj: any): any {
@@ -483,6 +483,62 @@ export async function getJourneyByToken(token: string): Promise<JourneyShare | n
 
 export async function setResponseFeatured(responseId: string, isFeatured: boolean): Promise<void> {
     await updateDoc(doc(db, "responses", responseId), { isFeatured });
+}
+
+export async function createJourneyEntry(userId: string, text: string): Promise<JourneyEntry> {
+    const data = {
+        userId,
+        text: text.trim(),
+        createdAt: Date.now(),
+    };
+    const ref = await addDoc(collection(db, "journeyEntries"), data);
+    return { id: ref.id, ...data };
+}
+
+export async function getJourneyEntries(userId: string): Promise<JourneyEntry[]> {
+    const q = query(
+        collection(db, "journeyEntries"),
+        where("userId", "==", userId),
+        orderBy("createdAt", "asc")
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as JourneyEntry));
+}
+
+export async function deleteJourneyEntry(entryId: string): Promise<void> {
+    await deleteDoc(doc(db, "journeyEntries", entryId));
+}
+
+export async function addJourneyRecommendation(
+    teacherId: string,
+    teacherName: string,
+    studentId: string,
+    responseId: string,
+    note?: string
+): Promise<JourneyRecommendation> {
+    const data = {
+        teacherId,
+        teacherName,
+        studentId,
+        responseId,
+        note: note?.trim() ?? null,
+        createdAt: Date.now(),
+    };
+    const ref = await addDoc(collection(db, "journeyRecommendations"), removeUndefined(data));
+    return { id: ref.id, ...data } as JourneyRecommendation;
+}
+
+export async function getJourneyRecommendationsForStudent(studentId: string): Promise<JourneyRecommendation[]> {
+    const q = query(
+        collection(db, "journeyRecommendations"),
+        where("studentId", "==", studentId)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as JourneyRecommendation));
+}
+
+export async function removeJourneyRecommendation(recId: string): Promise<void> {
+    await deleteDoc(doc(db, "journeyRecommendations", recId));
 }
 
 export async function toggleJourneyPin(uid: string, responseId: string, pinned: boolean): Promise<void> {

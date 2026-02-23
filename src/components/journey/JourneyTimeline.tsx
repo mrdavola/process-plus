@@ -3,12 +3,23 @@
 import { useMemo } from "react";
 import { BookOpen, Pin } from "lucide-react";
 import JourneyMoment, { EnrichedMoment } from "./JourneyMoment";
+import JourneyEntryCard from "./JourneyEntryCard";
+import { JourneyEntry, JourneyRecommendation } from "@/lib/types";
+
+type TimelineItem =
+    | { kind: "moment"; data: EnrichedMoment }
+    | { kind: "entry"; data: JourneyEntry };
 
 interface JourneyTimelineProps {
     moments: EnrichedMoment[];
+    entries?: JourneyEntry[];
     isReadOnly?: boolean;
     pinnedIds?: Set<string>;
     onTogglePin?: (responseId: string, newPinned: boolean) => void;
+    onDeleteEntry?: (id: string) => void;
+    recsByResponseId?: Map<string, JourneyRecommendation[]>;
+    onRecommend?: (responseId: string) => void;
+    currentTeacherId?: string;
 }
 
 function formatMonthYear(ts: number | undefined): string {
@@ -16,23 +27,42 @@ function formatMonthYear(ts: number | undefined): string {
     return new Date(ts).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
-export default function JourneyTimeline({ moments, isReadOnly = false, pinnedIds, onTogglePin }: JourneyTimelineProps) {
-    // Group moments by month+year
+export default function JourneyTimeline({
+    moments,
+    entries,
+    isReadOnly = false,
+    pinnedIds,
+    onTogglePin,
+    onDeleteEntry,
+    recsByResponseId,
+    onRecommend,
+    currentTeacherId,
+}: JourneyTimelineProps) {
+    const allItems = useMemo((): TimelineItem[] => {
+        const items: TimelineItem[] = [
+            ...moments.map(m => ({ kind: "moment" as const, data: m })),
+            ...(entries ?? []).map(e => ({ kind: "entry" as const, data: e })),
+        ];
+        items.sort((a, b) => (a.data.createdAt as number) - (b.data.createdAt as number));
+        return items;
+    }, [moments, entries]);
+
+    // Group all items by month+year
     const grouped = useMemo(() => {
-        const groups: { label: string; items: EnrichedMoment[] }[] = [];
+        const groups: { label: string; items: TimelineItem[] }[] = [];
         let currentLabel = "";
-        for (const m of moments) {
-            const label = formatMonthYear(m.createdAt as number);
+        for (const item of allItems) {
+            const label = formatMonthYear(item.data.createdAt as number);
             if (label !== currentLabel) {
                 currentLabel = label;
                 groups.push({ label, items: [] });
             }
-            groups[groups.length - 1].items.push(m);
+            groups[groups.length - 1].items.push(item);
         }
         return groups;
-    }, [moments]);
+    }, [allItems]);
 
-    if (moments.length === 0) {
+    if (moments.length === 0 && (!entries || entries.length === 0)) {
         return (
             <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
                 <BookOpen size={48} className="text-slate-300" />
@@ -62,6 +92,9 @@ export default function JourneyTimeline({ moments, isReadOnly = false, pinnedIds
                                 isReadOnly={isReadOnly}
                                 isPinned={true}
                                 onTogglePin={onTogglePin}
+                                recommendations={recsByResponseId?.get(m.id)}
+                                onRecommend={onRecommend}
+                                currentTeacherId={currentTeacherId}
                             />
                         ))}
                     </div>
@@ -81,17 +114,27 @@ export default function JourneyTimeline({ moments, isReadOnly = false, pinnedIds
                             </span>
                         </div>
 
-                        {/* Moments in this group */}
                         <div className="space-y-6">
-                            {group.items.map((moment) => (
-                                <JourneyMoment
-                                    key={moment.id}
-                                    moment={moment}
-                                    isReadOnly={isReadOnly}
-                                    isPinned={pinnedIds?.has(moment.id)}
-                                    onTogglePin={onTogglePin}
-                                />
-                            ))}
+                            {group.items.map((item) =>
+                                item.kind === "moment" ? (
+                                    <JourneyMoment
+                                        key={item.data.id}
+                                        moment={item.data}
+                                        isReadOnly={isReadOnly}
+                                        isPinned={pinnedIds?.has(item.data.id)}
+                                        onTogglePin={onTogglePin}
+                                        recommendations={recsByResponseId?.get(item.data.id)}
+                                        onRecommend={onRecommend}
+                                        currentTeacherId={currentTeacherId}
+                                    />
+                                ) : (
+                                    <JourneyEntryCard
+                                        key={item.data.id}
+                                        entry={item.data}
+                                        onDelete={onDeleteEntry}
+                                    />
+                                )
+                            )}
                         </div>
                     </div>
                 ))}
