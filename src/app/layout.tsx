@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import RoleGuard from "@/components/auth/RoleGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${dmSerifDisplay.variable} antialiased bg-brand-cream font-body text-brand-warm`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <RoleGuard>{children}</RoleGuard>
+        </AuthProvider>
       </body>
     </html>
   );
