@@ -5,12 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import { Studio, Project } from "@/lib/types";
 import { getStudioByProcessPlusCode, deleteStudio, deleteProject, updateStudio } from "@/lib/firestore";
 import { useAuth } from "@/lib/auth-context";
-import { Loader2, Plus, ArrowLeft, Trash2, Calendar, Share, MoreVertical, Search, ArrowDownUp } from "lucide-react";
+import { Loader2, Plus, Trash2, Calendar, Share, Search, ArrowDownUp, Users } from "lucide-react";
 import Link from "next/link";
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Navbar from "@/components/layout/Navbar";
 import StudioSettingsModal from "@/components/studio-settings/StudioSettingsModal";
+import StudentRoster from "@/components/studio/StudentRoster";
 import { Settings } from "lucide-react";
 import { getDocs, updateDoc, doc as firestoreDoc } from "firebase/firestore";
 
@@ -36,6 +37,8 @@ export default function StudioPage() {
     type SortOption = "newest_activity" | "newest_created" | "most_responses" | "needs_review";
     const [sortOption, setSortOption] = useState<SortOption>("newest_activity");
     const [searchQuery, setSearchQuery] = useState("");
+    type StudioTab = "projects" | "students";
+    const [studioTab, setStudioTab] = useState<StudioTab>("projects");
 
     // Fetch Studio
     useEffect(() => {
@@ -245,7 +248,44 @@ export default function StudioPage() {
                 </div>
             </div>
 
+            {/* Tab bar */}
+            <div className="bg-white border-b border-brand-amber/10">
+                <div className="max-w-5xl mx-auto px-4 flex gap-1">
+                    <button
+                        onClick={() => setStudioTab("projects")}
+                        className={`flex items-center gap-2 px-5 py-4 text-sm font-bold border-b-2 transition-colors ${
+                            studioTab === "projects"
+                                ? "border-brand-amber text-brand-warm"
+                                : "border-transparent text-brand-slate hover:text-brand-warm"
+                        }`}
+                    >
+                        <Calendar size={16} /> Active Projects
+                    </button>
+                    <button
+                        onClick={() => setStudioTab("students")}
+                        className={`flex items-center gap-2 px-5 py-4 text-sm font-bold border-b-2 transition-colors ${
+                            studioTab === "students"
+                                ? "border-brand-amber text-brand-warm"
+                                : "border-transparent text-brand-slate hover:text-brand-warm"
+                        }`}
+                    >
+                        <Users size={16} /> Students
+                    </button>
+                </div>
+            </div>
+
             <main className="max-w-5xl mx-auto px-4 py-12">
+                {studioTab === "students" && studio && (
+                    <div className="bg-white rounded-3xl p-8 shadow-sm border border-brand-amber/10">
+                        <h2 className="text-xl font-display text-brand-warm mb-6 flex items-center gap-2">
+                            <Users size={20} className="text-brand-amber" /> Student Roster
+                        </h2>
+                        <StudentRoster studioId={studio.id} />
+                    </div>
+                )}
+
+                {studioTab === "projects" && (
+                <>
                 {/* Create Project Form */}
                 {isOwner && (
                     <div className="mb-12 bg-white rounded-3xl p-8 shadow-sm border border-brand-amber/10 relative overflow-hidden">
@@ -421,6 +461,8 @@ export default function StudioPage() {
                         </div>
                     )}
                 </div>
+                </>
+                )}
             </main>
 
             {/* Studio Settings Modal */}

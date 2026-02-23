@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import NotificationBell from "./NotificationBell";
 
 export default function Navbar() {
-    const { user, loading } = useAuth();
+    const { user, profile, loading } = useAuth();
     const pathname = usePathname();
 
     const isHome = pathname === "/";
@@ -35,7 +35,7 @@ export default function Navbar() {
                                             My Dashboard
                                         </Link>
                                     )}
-                                    {!pathname.includes("/journey") && !pathname.startsWith("/j/") && (
+                                    {profile?.role === "student" && !pathname.includes("/journey") && !pathname.startsWith("/j/") && (
                                         <Link href="/journey" className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                                             <BookOpen size={15} />
                                             My Journey
