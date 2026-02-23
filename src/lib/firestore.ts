@@ -485,11 +485,20 @@ export async function setResponseFeatured(responseId: string, isFeatured: boolea
     await updateDoc(doc(db, "responses", responseId), { isFeatured });
 }
 
-export async function createJourneyEntry(userId: string, text: string): Promise<JourneyEntry> {
-    const data = {
+export async function createJourneyEntry(
+    userId: string,
+    text: string,
+    authorId: string,
+    authorName: string,
+    imageUrl?: string,
+): Promise<JourneyEntry> {
+    const data: Omit<JourneyEntry, "id"> = {
         userId,
+        authorId,
+        authorName,
         text: text.trim(),
         createdAt: Date.now(),
+        ...(imageUrl ? { imageUrl } : {}),
     };
     const ref = await addDoc(collection(db, "journeyEntries"), data);
     return { id: ref.id, ...data };
@@ -541,9 +550,26 @@ export async function removeJourneyRecommendation(recId: string): Promise<void> 
     await deleteDoc(doc(db, "journeyRecommendations", recId));
 }
 
+export async function toggleHideFromJourney(uid: string, responseId: string, hidden: boolean): Promise<void> {
+    await updateDoc(doc(db, "users", uid), {
+        hiddenResponseIds: hidden ? arrayUnion(responseId) : arrayRemove(responseId),
+    });
+}
+
 export async function toggleJourneyPin(uid: string, responseId: string, pinned: boolean): Promise<void> {
     const ref = doc(db, "users", uid);
     await updateDoc(ref, {
         pinnedResponseIds: pinned ? arrayUnion(responseId) : arrayRemove(responseId),
     });
+}
+
+
+export async function getAllUsers(): Promise<UserProfile[]> {
+    const snap = await getDocs(collection(db, "users"));
+    return snap.docs.map(d => ({ uid: d.id, ...d.data() } as UserProfile));
+}
+
+export async function getAllStudios(): Promise<Studio[]> {
+    const snap = await getDocs(collection(db, "studios"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Studio));
 }
