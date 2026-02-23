@@ -51,7 +51,7 @@ export default function StudioTable({ studios }: StudioTableProps) {
                             </td>
                         </tr>
                     ))}
-                    {studios.length === 0 && (
+                    {sorted.length === 0 && (
                         <tr>
                             <td colSpan={5} className="px-4 py-8 text-center text-slate-400">No studios yet.</td>
                         </tr>
