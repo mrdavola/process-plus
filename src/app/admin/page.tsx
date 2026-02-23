@@ -107,7 +107,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Tab content */}
-                {tab === "users" && <UserTable users={users} />}
+                {tab === "users" && <UserTable users={users} currentUserId={user?.uid} />}
                 {tab === "studios" && <StudioTable studios={studios} />}
             </div>
         </div>

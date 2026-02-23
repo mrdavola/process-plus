@@ -6,6 +6,7 @@ import { updateUserRole } from "@/lib/firestore";
 
 interface UserTableProps {
     users: UserProfile[];
+    currentUserId?: string;
 }
 
 const ROLE_OPTIONS: UserRole[] = ["student", "teacher", "admin"];
@@ -16,7 +17,7 @@ const ROLE_COLORS: Record<UserRole, string> = {
     admin: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
-export default function UserTable({ users }: UserTableProps) {
+export default function UserTable({ users, currentUserId }: UserTableProps) {
     const [search, setSearch] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [localRoles, setLocalRoles] = useState<Record<string, UserRole>>({});
@@ -72,7 +73,8 @@ export default function UserTable({ users }: UserTableProps) {
                                     <td className="px-4 py-3">
                                         <select
                                             value={role}
-                                            disabled={updatingId === u.uid}
+                                            disabled={updatingId === u.uid || u.uid === currentUserId}
+                                            title={u.uid === currentUserId ? "Cannot change your own role" : undefined}
                                             onChange={e => handleRoleChange(u.uid, e.target.value as UserRole)}
                                             className={`text-xs font-bold border rounded-full px-2.5 py-1 cursor-pointer disabled:opacity-50 ${ROLE_COLORS[role]}`}
                                         >
