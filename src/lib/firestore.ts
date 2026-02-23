@@ -566,7 +566,9 @@ export async function toggleJourneyPin(uid: string, responseId: string, pinned: 
 
 export async function getAllUsers(): Promise<UserProfile[]> {
     const snap = await getDocs(collection(db, "users"));
-    return snap.docs.map(d => ({ uid: d.id, ...d.data() } as UserProfile));
+    return snap.docs
+        .map(d => ({ uid: d.id, ...d.data() } as UserProfile))
+        .filter(u => u.email && u.displayName && u.role);
 }
 
 export async function getAllStudios(): Promise<Studio[]> {

@@ -4,9 +4,14 @@ service cloud.firestore {
 
     // Users: any authenticated user can read profiles (needed for studio member lists)
     match /users/{userId} {
-      allow read: if request.auth != null;
+      allow get: if request.auth != null;
+      allow list: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
       allow create: if request.auth != null && request.auth.uid == userId;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == userId ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
     }
 
     // Studios: owner or coPilots can write; authenticated users can read
@@ -68,6 +73,24 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Journey entries: any authenticated user can create (teachers annotate student journeys);
+    // delete allowed by the entry author or the student who owns the journey
+    match /journeyEntries/{entryId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow delete: if request.auth != null && (
+        resource.data.authorId == request.auth.uid ||
+        resource.data.userId == request.auth.uid
+      );
+    }
+
+    // Journey recommendations: any authenticated user can read; teachers create/delete their own
+    match /journeyRecommendations/{recId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.teacherId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.teacherId == request.auth.uid;
     }
   }
 }
