@@ -14,12 +14,7 @@ export default function RoleGuard({ children }: { children: React.ReactNode }) {
             window.location.href = "/dashboard";
         };
 
-        return (
-            <>
-                {children}
-                <RolePicker uid={user.uid} onComplete={handleComplete} />
-            </>
-        );
+        return <RolePicker uid={user.uid} onComplete={handleComplete} />;
     }
 
     return <>{children}</>;

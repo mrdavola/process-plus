@@ -20,7 +20,7 @@ export default function RolePicker({ uid, onComplete }: RolePickerProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-brand-cream flex flex-col items-center justify-center p-6">
+        <div className="fixed inset-0 z-50 bg-[#FDF6EC] flex flex-col items-center justify-center p-6">
             <div className="max-w-xl w-full text-center mb-10">
                 <h1 className="text-4xl font-bold text-brand-warm mb-3">Welcome to Process+</h1>
                 <p className="text-brand-slate text-lg">How will you use Process+?</p>
