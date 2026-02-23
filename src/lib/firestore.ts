@@ -301,7 +301,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateUserRole(uid: string, role: UserRole): Promise<void> {
-    await updateDoc(doc(db, "users", uid), { role });
+    await updateDoc(doc(db, "users", uid), { role, roleConfirmed: true });
 }
 
 export async function updateProjectStatus(projectId: string, status: ProjectStatus): Promise<void> {

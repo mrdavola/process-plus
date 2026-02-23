@@ -7,6 +7,8 @@ export interface UserProfile {
     displayName: string;
     role: UserRole;
     createdAt?: number;
+    roleConfirmed?: boolean;
+    pinnedResponseIds?: string[];
 }
 
 export interface Studio {
