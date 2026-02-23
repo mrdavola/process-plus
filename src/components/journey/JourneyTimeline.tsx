@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Pin } from "lucide-react";
 import JourneyMoment, { EnrichedMoment } from "./JourneyMoment";
 
 interface JourneyTimelineProps {
     moments: EnrichedMoment[];
     isReadOnly?: boolean;
+    pinnedIds?: Set<string>;
+    onTogglePin?: (responseId: string, newPinned: boolean) => void;
 }
 
 function formatMonthYear(ts: number | undefined): string {
@@ -14,7 +16,7 @@ function formatMonthYear(ts: number | undefined): string {
     return new Date(ts).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
-export default function JourneyTimeline({ moments, isReadOnly = false }: JourneyTimelineProps) {
+export default function JourneyTimeline({ moments, isReadOnly = false, pinnedIds, onTogglePin }: JourneyTimelineProps) {
     // Group moments by month+year
     const grouped = useMemo(() => {
         const groups: { label: string; items: EnrichedMoment[] }[] = [];
@@ -42,8 +44,30 @@ export default function JourneyTimeline({ moments, isReadOnly = false }: Journey
         );
     }
 
+    const pinned = pinnedIds ? moments.filter(m => pinnedIds.has(m.id)) : [];
+
     return (
         <div className="relative">
+            {/* Pinned Highlights section */}
+            {pinned.length > 0 && (
+                <div className="mb-10 p-6 bg-amber-50 rounded-3xl border border-amber-200">
+                    <p className="text-xs font-black uppercase tracking-widest text-amber-700 mb-4 flex items-center gap-2">
+                        <Pin size={14} /> Pinned Highlights
+                    </p>
+                    <div className="space-y-4">
+                        {pinned.map(m => (
+                            <JourneyMoment
+                                key={m.id}
+                                moment={m}
+                                isReadOnly={isReadOnly}
+                                isPinned={true}
+                                onTogglePin={onTogglePin}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Vertical connecting line */}
             <div className="absolute left-[17px] md:left-[31px] top-0 bottom-0 w-0.5 bg-orange-100 z-0" />
 
@@ -64,6 +88,8 @@ export default function JourneyTimeline({ moments, isReadOnly = false }: Journey
                                     key={moment.id}
                                     moment={moment}
                                     isReadOnly={isReadOnly}
+                                    isPinned={pinnedIds?.has(moment.id)}
+                                    onTogglePin={onTogglePin}
                                 />
                             ))}
                         </div>

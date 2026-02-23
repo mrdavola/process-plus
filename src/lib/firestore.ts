@@ -484,3 +484,10 @@ export async function getJourneyByToken(token: string): Promise<JourneyShare | n
 export async function setResponseFeatured(responseId: string, isFeatured: boolean): Promise<void> {
     await updateDoc(doc(db, "responses", responseId), { isFeatured });
 }
+
+export async function toggleJourneyPin(uid: string, responseId: string, pinned: boolean): Promise<void> {
+    const ref = doc(db, "users", uid);
+    await updateDoc(ref, {
+        pinnedResponseIds: pinned ? arrayUnion(responseId) : arrayRemove(responseId),
+    });
+}

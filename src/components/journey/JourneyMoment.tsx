@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Calendar, ChevronDown, ChevronUp, Star, Play } from "lucide-react";
+import { Calendar, ChevronDown, ChevronUp, Star, Play, Pin } from "lucide-react";
 import { Response, Project, Studio } from "@/lib/types";
 
 export interface EnrichedMoment extends Response {
@@ -12,6 +12,8 @@ export interface EnrichedMoment extends Response {
 interface JourneyMomentProps {
     moment: EnrichedMoment;
     isReadOnly?: boolean;
+    isPinned?: boolean;
+    onTogglePin?: (responseId: string, newPinned: boolean) => void;
 }
 
 const ORANGE = "#c2410c";
@@ -35,7 +37,7 @@ function getPullQuote(reflections: string[] | undefined): string {
     return snippet.length > 220 ? snippet.substring(0, 220) + "…" : snippet;
 }
 
-export default function JourneyMoment({ moment, isReadOnly = false }: JourneyMomentProps) {
+export default function JourneyMoment({ moment, isReadOnly = false, isPinned, onTogglePin }: JourneyMomentProps) {
     const [expanded, setExpanded] = useState(false);
     const [playing, setPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -52,7 +54,7 @@ export default function JourneyMoment({ moment, isReadOnly = false }: JourneyMom
             {/* Timeline dot */}
             <div
                 className="absolute left-[9px] md:left-[23px] top-7 w-4 h-4 rounded-full border-4 border-white shadow-sm transition-transform group-hover:scale-125 z-20"
-                style={{ backgroundColor: ORANGE }}
+                style={{ backgroundColor: isPinned ? '#d97706' : ORANGE }}
             />
 
             <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-md">
@@ -79,10 +81,24 @@ export default function JourneyMoment({ moment, isReadOnly = false }: JourneyMom
                     )}
 
                     {moment.isFeatured && (
-                        <span className="ml-auto flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span className="flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
                             <Star size={12} fill="currentColor" />
                             Featured by teacher
                         </span>
+                    )}
+
+                    {onTogglePin && (
+                        <button
+                            onClick={() => onTogglePin(moment.id, !isPinned)}
+                            className={`ml-auto flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold border transition-all ${
+                                isPinned
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : "bg-white text-slate-400 border-slate-200 hover:border-amber-200 hover:text-amber-600"
+                            }`}
+                        >
+                            <Pin size={12} fill={isPinned ? "currentColor" : "none"} />
+                            {isPinned ? "Pinned" : "Pin"}
+                        </button>
                     )}
                 </div>
 

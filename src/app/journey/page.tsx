@@ -9,7 +9,7 @@ import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import JourneyFilter, { JourneyFilterState } from "@/components/journey/JourneyFilter";
 import { EnrichedMoment } from "@/components/journey/JourneyMoment";
 import { useAuth } from "@/lib/auth-context";
-import { getResponsesForUser, getOrCreateJourneyToken, getProject, getStudio, getUserProfile } from "@/lib/firestore";
+import { getResponsesForUser, getOrCreateJourneyToken, getProject, getStudio, getUserProfile, toggleJourneyPin } from "@/lib/firestore";
 import { Response, Project, Studio, UserProfile } from "@/lib/types";
 
 const ORANGE = "#c2410c";
@@ -42,7 +42,7 @@ async function enrich(responses: Response[]): Promise<EnrichedMoment[]> {
 }
 
 function JourneyContent() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -57,6 +57,7 @@ function JourneyContent() {
         studioId: filterStudioId ?? null,
         projectId: null,
     });
+    const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
     const [sharing, setSharing] = useState(false);
     const [copied, setCopied] = useState(false);
     const [shareError, setShareError] = useState(false);
@@ -73,13 +74,18 @@ function JourneyContent() {
         async function load() {
             setIsLoading(true);
             try {
-                const [profile, responses] = await Promise.all([
+                const [viewedProfile, responses] = await Promise.all([
                     getUserProfile(viewingUserId!),
                     getResponsesForUser(viewingUserId!),
                 ]);
-                setStudent(profile);
+                setStudent(viewedProfile);
                 const enriched = await enrich(responses);
                 setMoments(enriched);
+                // Load current user's pins (may differ from viewed user)
+                if (user) {
+                    const myProfile = await getUserProfile(user.uid);
+                    setPinnedIds(new Set(myProfile?.pinnedResponseIds ?? []));
+                }
             } catch (e) {
                 console.error("Journey load error:", e);
             } finally {
@@ -100,6 +106,16 @@ function JourneyContent() {
     }, [moments, filter]);
 
     const isOwnJourney = user?.uid === viewingUserId;
+
+    const handleTogglePin = async (responseId: string, newPinned: boolean) => {
+        if (!user) return;
+        await toggleJourneyPin(user.uid, responseId, newPinned);
+        setPinnedIds(prev => {
+            const next = new Set(prev);
+            newPinned ? next.add(responseId) : next.delete(responseId);
+            return next;
+        });
+    };
 
     const handleShare = async () => {
         if (!user || !viewingUserId) return;
@@ -211,7 +227,12 @@ function JourneyContent() {
                 />
 
                 {/* Timeline */}
-                <JourneyTimeline moments={visibleMoments} isReadOnly={false} />
+                <JourneyTimeline
+                    moments={visibleMoments}
+                    isReadOnly={!isOwnJourney}
+                    pinnedIds={pinnedIds}
+                    onTogglePin={isOwnJourney ? handleTogglePin : undefined}
+                />
             </div>
         </div>
     );
