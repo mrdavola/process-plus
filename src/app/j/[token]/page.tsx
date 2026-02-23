@@ -6,7 +6,7 @@ import { BookOpen, Video } from "lucide-react";
 import Link from "next/link";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import { EnrichedMoment } from "@/components/journey/JourneyMoment";
-import { getJourneyByToken, getResponsesForUser, getProject, getStudio } from "@/lib/firestore";
+import { getJourneyByToken, getResponsesForUser, getProject, getStudio, getUserProfile } from "@/lib/firestore";
 import { Response, Project, Studio, JourneyShare } from "@/lib/types";
 
 const ORANGE = "#c2410c";
@@ -55,8 +55,13 @@ export default function SharedJourneyPage() {
                 }
                 setJourney(share);
 
-                const responses = await getResponsesForUser(share.userId);
-                const enriched = await enrich(responses);
+                const [responses, studentProfile] = await Promise.all([
+                    getResponsesForUser(share.userId),
+                    getUserProfile(share.userId),
+                ]);
+                const hiddenIds = new Set(studentProfile?.hiddenResponseIds ?? []);
+                const visibleResponses = responses.filter(r => !hiddenIds.has(r.id));
+                const enriched = await enrich(visibleResponses);
                 setMoments(enriched);
             } catch (e) {
                 console.error("Shared journey load error:", e);

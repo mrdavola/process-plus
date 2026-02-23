@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { BookOpen, Share2, Check, Loader2, Bookmark, PenLine } from "lucide-react";
+import { BookOpen, Share2, Check, Loader2, Bookmark, PenLine, ImagePlus, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import JourneyTimeline from "@/components/journey/JourneyTimeline";
 import JourneyFilter, { JourneyFilterState } from "@/components/journey/JourneyFilter";
@@ -15,6 +15,7 @@ import {
     getStudio,
     getUserProfile,
     toggleJourneyPin,
+    toggleHideFromJourney,
     createJourneyEntry,
     getJourneyEntries,
     deleteJourneyEntry,
@@ -22,6 +23,8 @@ import {
     getJourneyRecommendationsForStudent,
     removeJourneyRecommendation,
 } from "@/lib/firestore";
+import { storage } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Response, Project, Studio, UserProfile, JourneyEntry, JourneyRecommendation } from "@/lib/types";
 
 const ORANGE = "#c2410c";
@@ -68,11 +71,14 @@ function JourneyContent() {
         projectId: null,
     });
     const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+    const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
-    // Journal entries
+    // Teacher journal entries
     const [entries, setEntries] = useState<JourneyEntry[]>([]);
     const [showEntryInput, setShowEntryInput] = useState(false);
     const [entryDraft, setEntryDraft] = useState("");
+    const [entryImage, setEntryImage] = useState<File | null>(null);
+    const [entryImagePreview, setEntryImagePreview] = useState<string | null>(null);
     const [savingEntry, setSavingEntry] = useState(false);
 
     // Recommendations
@@ -108,6 +114,8 @@ function JourneyContent() {
                 if (user) {
                     const myProfile = await getUserProfile(user.uid);
                     setPinnedIds(new Set(myProfile?.pinnedResponseIds ?? []));
+                    // Student's hidden moments: always load from the viewed user's profile
+                    setHiddenIds(new Set(viewedProfile?.hiddenResponseIds ?? []));
                 }
             } catch (e) {
                 console.error("Journey load error:", e);
@@ -120,13 +128,16 @@ function JourneyContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [viewingUserId]);
 
+    const isOwnJourney = user?.uid === viewingUserId;
+
     const visibleMoments = useMemo(() => {
         return moments.filter((m) => {
+            if (!isOwnJourney && hiddenIds.has(m.id)) return false;
             if (filter.studioId && m.studio?.id !== filter.studioId) return false;
             if (filter.projectId && m.project?.id !== filter.projectId) return false;
             return true;
         });
-    }, [moments, filter]);
+    }, [moments, filter, isOwnJourney, hiddenIds]);
 
     const recsByResponseId = useMemo(() => {
         const map = new Map<string, JourneyRecommendation[]>();
@@ -136,8 +147,6 @@ function JourneyContent() {
         }
         return map;
     }, [recommendations]);
-
-    const isOwnJourney = user?.uid === viewingUserId;
 
     const handleTogglePin = async (responseId: string, newPinned: boolean) => {
         if (!user) return;
@@ -150,13 +159,40 @@ function JourneyContent() {
     };
 
     const handleAddEntry = async () => {
-        if (!user || !entryDraft.trim()) return;
+        if (!user || !profile || !entryDraft.trim() || !viewingUserId) return;
         setSavingEntry(true);
-        const entry = await createJourneyEntry(user.uid, entryDraft);
-        setEntries(prev => [...prev, entry].sort((a, b) => a.createdAt - b.createdAt));
-        setEntryDraft("");
-        setShowEntryInput(false);
-        setSavingEntry(false);
+        try {
+            let imageUrl: string | undefined;
+            if (entryImage) {
+                const storageRef = ref(storage, `journeyEntries/${viewingUserId}/${Date.now()}_${entryImage.name}`);
+                await uploadBytes(storageRef, entryImage);
+                imageUrl = await getDownloadURL(storageRef);
+            }
+            const entry = await createJourneyEntry(
+                viewingUserId,
+                entryDraft,
+                user.uid,
+                profile.displayName,
+                imageUrl,
+            );
+            setEntries(prev => [...prev, entry].sort((a, b) => a.createdAt - b.createdAt));
+            setEntryDraft("");
+            setEntryImage(null);
+            setEntryImagePreview(null);
+            setShowEntryInput(false);
+        } finally {
+            setSavingEntry(false);
+        }
+    };
+
+    const handleToggleHide = async (responseId: string, newHidden: boolean) => {
+        if (!viewingUserId) return;
+        await toggleHideFromJourney(viewingUserId, responseId, newHidden);
+        setHiddenIds(prev => {
+            const next = new Set(prev);
+            newHidden ? next.add(responseId) : next.delete(responseId);
+            return next;
+        });
     };
 
     const handleDeleteEntry = async (id: string) => {
@@ -244,7 +280,7 @@ function JourneyContent() {
                         </div>
 
                         <div className="flex gap-3 shrink-0">
-                            {isOwnJourney && (
+                            {!isOwnJourney && user && (
                                 <button
                                     onClick={() => setShowEntryInput(true)}
                                     className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold border border-slate-200 bg-white text-slate-700 hover:border-slate-300 transition-all shadow-sm"
@@ -275,26 +311,58 @@ function JourneyContent() {
                     </div>
                 </header>
 
-                {/* Journal entry input */}
+                {/* Teacher note input */}
                 {showEntryInput && (
                     <div className="mb-6 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                         <textarea
                             autoFocus
                             value={entryDraft}
                             onChange={e => setEntryDraft(e.target.value)}
-                            placeholder="Write a reflection, note, or thought..."
+                            placeholder="Add a note or observation for this student..."
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-amber text-gray-900 font-medium min-h-[100px] resize-y"
                         />
-                        <div className="flex gap-3 mt-3 justify-end">
-                            <button onClick={() => setShowEntryInput(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
-                            <button
-                                onClick={handleAddEntry}
-                                disabled={!entryDraft.trim() || savingEntry}
-                                className="px-5 py-2 text-sm font-bold text-white rounded-xl disabled:opacity-50"
-                                style={{ backgroundColor: '#c2410c' }}
-                            >
-                                Save Note
-                            </button>
+                        {/* Image preview */}
+                        {entryImagePreview && (
+                            <div className="relative mt-3 inline-block">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={entryImagePreview} alt="Preview" className="max-h-40 rounded-xl border border-slate-200 object-cover" />
+                                <button
+                                    onClick={() => { setEntryImage(null); setEntryImagePreview(null); }}
+                                    className="absolute -top-2 -right-2 bg-white border border-slate-200 rounded-full p-0.5 text-slate-500 hover:text-red-500 shadow-sm"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        )}
+                        <div className="flex items-center gap-3 mt-3">
+                            <label className="flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                                <ImagePlus size={15} />
+                                {entryImage ? "Change photo" : "Add photo"}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="sr-only"
+                                    onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setEntryImage(file);
+                                            setEntryImagePreview(URL.createObjectURL(file));
+                                        }
+                                    }}
+                                />
+                            </label>
+                            <div className="flex gap-3 ml-auto">
+                                <button onClick={() => { setShowEntryInput(false); setEntryDraft(""); setEntryImage(null); setEntryImagePreview(null); }} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+                                <button
+                                    onClick={handleAddEntry}
+                                    disabled={!entryDraft.trim() || savingEntry}
+                                    className="px-5 py-2 text-sm font-bold text-white rounded-xl disabled:opacity-50 flex items-center gap-2"
+                                    style={{ backgroundColor: '#c2410c' }}
+                                >
+                                    {savingEntry && <Loader2 size={14} className="animate-spin" />}
+                                    Save Note
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -307,9 +375,15 @@ function JourneyContent() {
                         </div>
                         <div>
                             <p className="font-bold text-slate-800 text-sm mb-1">What is My Journey?</p>
-                            <p className="text-sm text-slate-500 leading-relaxed">
-                                Your Journey is your <strong className="text-slate-700">personal learning timeline</strong> — every video Moment you&apos;ve posted across all your Studios, collected in one place in the order you made them. It builds itself automatically as you post. You can share a private link with a parent, teacher, or portfolio reviewer so they can see your growth over time.
-                            </p>
+                            {profile?.role === "teacher" ? (
+                                <p className="text-sm text-slate-500 leading-relaxed">
+                                    Your Journey collects every video Moment you&apos;ve posted — across all your Studios — into a single personal timeline. Add notes and reflections, and share a private link with others.
+                                </p>
+                            ) : (
+                                <p className="text-sm text-slate-500 leading-relaxed">
+                                    Your Journey is your <strong className="text-slate-700">personal learning timeline</strong> — every video Moment you&apos;ve posted across all your Studios, collected in one place in the order you made them. It builds itself automatically as you post. You can share a private link with a parent, teacher, or portfolio reviewer so they can see your growth over time.
+                                </p>
+                            )}
                         </div>
                     </div>
                 )}
@@ -328,6 +402,8 @@ function JourneyContent() {
                     isReadOnly={!isOwnJourney}
                     pinnedIds={pinnedIds}
                     onTogglePin={isOwnJourney ? handleTogglePin : undefined}
+                    hiddenIds={isOwnJourney ? hiddenIds : undefined}
+                    onToggleHide={isOwnJourney ? handleToggleHide : undefined}
                     onDeleteEntry={isOwnJourney ? handleDeleteEntry : undefined}
                     recsByResponseId={recsByResponseId}
                     onRecommend={!isOwnJourney && user ? handleRecommend : undefined}
