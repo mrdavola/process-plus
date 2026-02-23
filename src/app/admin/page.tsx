@@ -26,6 +26,7 @@ export default function AdminPage() {
     useEffect(() => {
         if (authLoading) return;
         if (!user || profile?.role !== "admin") {
+            setIsLoading(false);
             router.replace("/dashboard");
             return;
         }
