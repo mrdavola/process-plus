@@ -9,9 +9,10 @@ import { Plus, LogOut, Loader2, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
 import Navbar from "@/components/layout/Navbar";
+import StudentDashboard from "@/components/student/StudentDashboard";
 
 export default function DashboardPage() {
-    const { user, loading } = useAuth();
+    const { user, profile, loading } = useAuth();
     const router = useRouter();
     const [studios, setStudios] = useState<Studio[]>([]);
     const [isLoadingStudios, setIsLoadingStudios] = useState(true);
@@ -76,6 +77,15 @@ export default function DashboardPage() {
         return (
             <div className="min-h-screen bg-brand-cream flex items-center justify-center">
                 <Loader2 className="animate-spin text-brand-amber" size={32} />
+            </div>
+        );
+    }
+
+    if (profile?.role === "student") {
+        return (
+            <div className="min-h-screen bg-brand-cream text-brand-warm">
+                <Navbar />
+                <StudentDashboard userId={user.uid} />
             </div>
         );
     }
